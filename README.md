@@ -1,5 +1,19 @@
-mxgraph
+mxGraphJS
 =======
+
+模块化mxgraph.全局变量mx.
+
+全局配置变量:
+The following global variables may be defined before the client is loaded to
+  specify its language or base path, respectively.
+  
+  - mxBasePath: Specifies the path in <mxClient.basePath>.
+  - mxImageBasePath: Specifies the path in <mxClient.imageBasePath>.
+  - mxLanguage: Specifies the language for resources in <mxClient.language>.
+  - mxDefaultLanguage: Specifies the default language in <mxClient.defaultLanguage>.
+  - mxLoadResources: Specifies if any resources should be loaded. Default is true.
+  - mxLoadStylesheets: Specifies if any stylesheets should be loaded. Default is true.
+
 
 mxGraph is a fully client side JavaScript diagramming library that uses SVG and HTML for rendering. It is the underlying technology that powers the drawing functionality that you see in [draw.io](https://www.draw.io). The [sources to draw.io](https://github.com/jgraph/draw.io) are also available.
 

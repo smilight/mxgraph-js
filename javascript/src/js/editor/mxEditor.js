@@ -3112,3 +3112,5 @@ mxEditor.prototype.destroy = function ()
 		this.templates = null;
 	}
 };
+
+exports.mxEditor = mxEditor;

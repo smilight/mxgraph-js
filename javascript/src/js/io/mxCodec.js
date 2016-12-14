@@ -586,3 +586,5 @@ mxCodec.prototype.setAttribute = function(node, attribute, value)
 		node.setAttribute(attribute, value);
 	}
 };
+
+exports.mxCodec = mxCodec;

@@ -106,3 +106,5 @@ mxTemporaryCellStates.prototype.destroy = function()
 	this.view.setGraphBounds(this.oldBounds);
 	this.view.validateCellState = this.oldValidateCellState;
 };
+
+exports.mxTemporaryCellStates = mxTemporaryCellStates;

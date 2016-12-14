@@ -460,3 +460,5 @@ mxPanningHandler.prototype.destroy = function()
 	this.graph.removeListener(this.forcePanningHandler);
 	this.graph.removeListener(this.gestureHandler);
 };
+
+exports.mxPanningHandler = mxPanningHandler;

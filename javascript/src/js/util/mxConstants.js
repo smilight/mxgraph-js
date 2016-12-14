@@ -2247,3 +2247,5 @@
 	PERIMETER_TRIANGLE: 'trianglePerimeter'
 
 };
+
+exports.mxConstants = mxConstants;

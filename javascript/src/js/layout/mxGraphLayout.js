@@ -459,3 +459,5 @@ mxGraphLayout.prototype.arrangeGroups = function(cells, border, topBorder, right
 {
 	return this.graph.updateGroupBounds(cells, border, true, topBorder, rightBorder, bottomBorder, leftBorder);
 };
+
+exports.mxGraphLayout = mxGraphLayout;

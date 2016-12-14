@@ -1050,3 +1050,5 @@ mxCellEditor.prototype.destroy = function ()
 		}
 	}
 };
+
+exports.mxCellEditor = mxCellEditor;

@@ -1207,3 +1207,5 @@ mxXmlCanvas2D.prototype.fillAndStroke = function()
 {
 	this.root.appendChild(this.createElement('fillstroke'));
 };
+
+exports.mxXmlCanvas2D = mxXmlCanvas2D;

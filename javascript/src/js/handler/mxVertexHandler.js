@@ -1936,3 +1936,5 @@ mxVertexHandler.prototype.destroy = function()
 		this.customHandles = null;
 	}
 };
+
+exports.mxVertexHandler = mxVertexHandler;

@@ -1528,3 +1528,5 @@ mxCellRenderer.prototype.destroy = function(state)
 		state.shape = null;
 	}
 };
+
+exports.mxCellRenderer = mxCellRenderer;

@@ -350,3 +350,5 @@ mxHandle.prototype.destroy = function()
 		this.shape = null;
 	}
 };
+
+exports.mxHandle = mxHandle;

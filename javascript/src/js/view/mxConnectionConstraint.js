@@ -40,3 +40,5 @@ mxConnectionConstraint.prototype.point = null;
  * of the terminal.
  */
 mxConnectionConstraint.prototype.perimeter = null;
+
+exports.mxConnectionConstraint = mxConnectionConstraint;

@@ -456,3 +456,5 @@ mxXmlRequest.prototype.simulate = function(doc, target)
 		window.onbeforeunload = old;
 	}
 };
+
+exports.mxXmlRequest = mxXmlRequest;

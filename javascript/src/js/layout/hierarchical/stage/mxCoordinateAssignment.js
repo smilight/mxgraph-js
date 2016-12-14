@@ -1828,3 +1828,5 @@ WeightedCellSorter.prototype.compare = function(a, b)
 		return 0;
 	}
 };
+
+exports.mxCoordinateAssignment = mxCoordinateAssignment;

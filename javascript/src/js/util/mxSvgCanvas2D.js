@@ -2169,3 +2169,5 @@ mxSvgCanvas2D.prototype.fillAndStroke = function()
 {
 	this.addNode(true, true);
 };
+
+exports.mxSvgCanvas2D = mxSvgCanvas2D;

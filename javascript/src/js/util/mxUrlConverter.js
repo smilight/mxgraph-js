@@ -149,3 +149,5 @@ mxUrlConverter.prototype.convert = function(url)
 	
 	return url;
 };
+
+exports.mxUrlConverter = mxUrlConverter;

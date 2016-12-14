@@ -1399,3 +1399,5 @@ var mxEvent =
 	RESET: 'reset'
 
 };
+
+exports.mxEvent = mxEvent;
