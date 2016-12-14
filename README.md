@@ -1,4 +1,4 @@
-mxGraphJS
+mxgraph-js
 =======
 
 模块化mxgraph(基于版本v3.6.0).全局变量mx.

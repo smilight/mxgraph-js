@@ -5,7 +5,6 @@ var usemin = require('gulp-usemin');
 var del = require('del');
 var webpack = require('webpack');
 var runSequence = require('run-sequence');
-var ghPages = require('gulp-gh-pages');
 var packageJson = require('./package');
 
 gulp.task('clean:dist', function(cb) {
