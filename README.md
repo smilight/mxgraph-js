@@ -3,7 +3,28 @@ mxgraph-js
 
 模块化mxgraph(基于版本v3.6.0).全局变量mx.
 
+使用方法:
+```shell
+npm install mxgraph-js --save
+```
+
+然后:
+```js
+var mx = require('mxgraph-js');
+```
+
+采用script方式加载.
+```html
+<script src="./mxgraph-js"></script>
+```
+然后:
+```js
+// 注入全局变量mx
+var graph = new mx.mxGraph(container);
+```
+
 全局配置变量:
+
 The following global variables may be defined before the client is loaded to
   specify its language or base path, respectively.
   
