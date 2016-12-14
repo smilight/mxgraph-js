@@ -58,9 +58,12 @@ gulp.task('dist', function() {
 
 // deploy to gh-pages branch
 gulp.task('deploy', function() {
-  ghpages.publish(path.join(__dirname, './'), {
-  	src: ['package.json', 'README.md']
-  }, function(err) {
-  	console.log(err);
-  });
+    ghpages.publish(path.join(__dirname, './'), {
+        src: ['package.json', 'README.md', 'dist/*'],
+        logger: function(message) {
+            console.log(message);
+        }
+    }, function(err) {
+        console.log(err);
+    });
 });
