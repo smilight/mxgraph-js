@@ -1,7 +1,7 @@
 mxGraphJS
 =======
 
-模块化mxgraph.全局变量mx.
+模块化mxgraph(基于版本v3.6.0).全局变量mx.
 
 全局配置变量:
 The following global variables may be defined before the client is loaded to

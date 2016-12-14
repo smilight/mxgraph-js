@@ -8,11 +8,6 @@
 <head>
 	<title>Hello, World! example for mxGraph</title>
 
-	<!-- Sets the basepath for the library if not in same directory -->
-	<script type="text/javascript">
-		mxBasePath = '../src';
-	</script>
-
 	<!-- Loads and initializes the library -->
 	<!-- build:js mxGraphJS.js -->
 	<script type="text/javascript" src="javascript/src/js/mxClient.js"></script>
@@ -207,8 +202,6 @@
 <body onload="main(document.getElementById('graphContainer'))">
 
 	<!-- Creates a container for the graph with a grid wallpaper -->
-	<div id="graphContainer"
-		style="position:relative;overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
-	</div>
+	<div id="graphContainer"></div>
 </body>
 </html>
