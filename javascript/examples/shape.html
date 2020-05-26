@@ -14,7 +14,7 @@
 	</script>
 
 	<!-- Loads and initializes the library -->
-	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<script type="text/javascript" src="../mxClientOld.js"></script>
 
 	<!-- Example custom shape -->
 	<script type="text/javascript">
@@ -89,7 +89,15 @@
 			}
 		};
 		
-		mxCellRenderer.registerShape('box', BoxShape);
+		/*
+			The custom shape can be registered globally or in each cellRenderer
+			instance. In this example, the shape is registered globally. For
+			registering the shape in a cellRenderer instance, the following
+			code can be used:
+
+			graph.cellRenderer.registerShape('box', BoxShape);
+		*/
+		mxCellRenderer.prototype.defaultShapes['box'] = BoxShape;
 	</script>
 
 	<!-- Example code -->

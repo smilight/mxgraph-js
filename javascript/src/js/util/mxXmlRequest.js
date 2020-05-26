@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2006-2020, JGraph Ltd
- * Copyright (c) 2006-2020, draw.io AG
+ * Copyright (c) 2006-2015, JGraph Ltd
+ * Copyright (c) 2006-2015, Gaudenz Alder
  */
 /**
  * Class: mxXmlRequest
@@ -269,7 +269,7 @@ mxXmlRequest.prototype.getText = function()
  */
 mxXmlRequest.prototype.getStatus = function()
 {
-	return (this.request != null) ? this.request.status : null;
+	return this.request.status;
 };
 
 /**
@@ -310,8 +310,6 @@ mxXmlRequest.prototype.create = function()
  * Send the <request> to the target URL using the specified functions to
  * process the response asychronously.
  * 
- * Note: Due to technical limitations, onerror is currently ignored.
- * 
  * Parameters:
  * 
  * onload - Function to be invoked if a successful response was received.
@@ -332,7 +330,7 @@ mxXmlRequest.prototype.send = function(onload, onerror, timeout, ontimeout)
 				if (this.isReady())
 				{
 					onload(this);
-					this.request.onreadystatechange = null;
+					this.onreadystatechaange = null;
 				}
 			});
 		}
@@ -443,7 +441,6 @@ mxXmlRequest.prototype.simulate = function(doc, target)
 			}
 			
 			var textarea = doc.createElement('textarea');
-			textarea.setAttribute('wrap', 'off');
 			textarea.setAttribute('name', name);
 			mxUtils.write(textarea, value);
 			form.appendChild(textarea);
@@ -452,14 +449,12 @@ mxXmlRequest.prototype.simulate = function(doc, target)
 	
 	doc.body.appendChild(form);
 	form.submit();
-	
-	if (form.parentNode != null)
-	{
-		form.parentNode.removeChild(form);
-	}
+	doc.body.removeChild(form);
 
 	if (old != null)
 	{		
 		window.onbeforeunload = old;
 	}
 };
+
+exports.mxXmlRequest = mxXmlRequest;

@@ -170,7 +170,7 @@ var mxDefaultToolbarCodec = mxCodecRegistry.register(function()
 								
 								if (cell != null && style != null)
 								{
-									cell = editor.graph.cloneCell(cell);
+									cell = editor.graph.cloneCells([cell])[0];
 									cell.setStyle(style);
 								}
 								
@@ -310,3 +310,5 @@ var mxDefaultToolbarCodec = mxCodecRegistry.register(function()
  * may contain user input
  */
 mxDefaultToolbarCodec.allowEval = true;
+
+exports.mxDefaultToolbarCodec = mxDefaultToolbarCodec;

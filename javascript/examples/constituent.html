@@ -14,7 +14,7 @@
 	</script>
 
 	<!-- Loads and initializes the library -->
-	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<script type="text/javascript" src="../mxClientOld.js"></script>
 
 	<!-- Example code -->
 	<script type="text/javascript">
@@ -59,7 +59,10 @@
 				// Helper method to mark parts with constituent=1 in the style
 				graph.isPart = function(cell)
 				{
-					return this.getCurrentCellStyle(cell)['constituent'] == '1';
+					var state = this.view.getState(cell);
+					var style = (state != null) ? state.style : this.getCellStyle(cell);
+
+					return style['constituent'] == '1';
 				};
 				
 				// Redirects selection to parent

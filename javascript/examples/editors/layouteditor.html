@@ -20,10 +20,10 @@
 		mxBasePath = '../../src';
 		window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 	</script>
-	<script type="text/javascript" src="../../src/js/mxClient.js"></script>
-	<script type="text/javascript" src="js/app.js"></script>
+	<script type="text/javascript" src="../../mxClientOld.js"></script>
+	<script type="text/javascript" src="js/mxApplication.js"></script>
 </head>
-<body onload="createEditor('config/layouteditor.xml');">
+<body onload="mxApplication('config/layouteditor.xml');">
 	<div id="graph" class="base">
 		<!-- Graph Here -->
 	</div>

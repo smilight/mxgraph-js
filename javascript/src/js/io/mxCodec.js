@@ -234,31 +234,13 @@ mxCodec.prototype.lookup = function(id)
  */
 mxCodec.prototype.getElementById = function(id)
 {
-	this.updateElements();
-	
-	return this.elements[id];
-};
-
-/**
- * Function: updateElements
- *
- * Returns the element with the given ID from <document>.
- *
- * Parameters:
- *
- * id - String that contains the ID.
- */
-mxCodec.prototype.updateElements = function()
-{
 	if (this.elements == null)
 	{
 		this.elements = new Object();
-		
-		if (this.document.documentElement != null)
-		{
-			this.addElement(this.document.documentElement);
-		}
+		this.addElement(this.document.documentElement);
 	}
+	
+	return this.elements[id];
 };
 
 /**
@@ -272,16 +254,9 @@ mxCodec.prototype.addElement = function(node)
 	{
 		var id = node.getAttribute('id');
 		
-		if (id != null)
+		if (id != null && this.elements[id] == null)
 		{
-			if (this.elements[id] == null)
-			{
-				this.elements[id] = node;
-			}
-			else if (this.elements[id] != node)
-			{
-				throw new Error(id + ': Duplicate ID');
-			}
+			this.elements[id] = node;
 		}
 	}
 	
@@ -417,7 +392,6 @@ mxCodec.prototype.encode = function(obj)
  */
 mxCodec.prototype.decode = function(node, into)
 {
-	this.updateElements();
 	var obj = null;
 	
 	if (node != null && node.nodeType == mxConstants.NODETYPE_ELEMENT)
@@ -578,14 +552,7 @@ mxCodec.prototype.insertIntoGraph = function(cell)
 	
 	if (parent != null)
 	{
-		if (parent == cell)
-		{
-			throw new Error(parent.id + ': Self Reference');
-		}
-		else
-		{
-			parent.insert(cell);
-		}
+		parent.insert(cell);
 	}
 
 	if (source != null)
@@ -619,3 +586,5 @@ mxCodec.prototype.setAttribute = function(node, attribute, value)
 		node.setAttribute(attribute, value);
 	}
 };
+
+exports.mxCodec = mxCodec;

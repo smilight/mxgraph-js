@@ -39,9 +39,9 @@ mxHandle.prototype.cursor = 'default';
 mxHandle.prototype.image = null;
 
 /**
- * Variable: ignoreGrid
+ * Variable: image
  * 
- * Default is false.
+ * Specifies the <mxImage> to be used to render the handle. Default is null.
  */
 mxHandle.prototype.ignoreGrid = false;
 
@@ -238,6 +238,7 @@ mxHandle.prototype.redraw = function()
 			this.shape.bounds.y = Math.floor((pt.y + tr.y) * scale - this.shape.bounds.height / 2);
 			
 			// Needed to force update of text bounds
+			this.state.unscaledWidth = null;
 			this.shape.redraw();
 		}
 	}
@@ -349,3 +350,5 @@ mxHandle.prototype.destroy = function()
 		this.shape = null;
 	}
 };
+
+exports.mxHandle = mxHandle;

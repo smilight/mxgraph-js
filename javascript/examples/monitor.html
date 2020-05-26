@@ -14,7 +14,7 @@
 	</script>
 
 	<!-- Loads and initializes the library -->
-	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<script type="text/javascript" src="../mxClientOld.js"></script>
 
 	<!-- Example code -->
 	<script type="text/javascript">
@@ -97,19 +97,22 @@
 		 */
 		function update(graph, xml)
 		{
-			if (xml != null && xml.length > 0)
+			if (xml != null &&
+				xml.length > 0)
 			{
 				var doc = mxUtils.parseXml(xml);
 				
-				if (doc != null && doc.documentElement != null)
+				if (doc != null &&
+					doc.documentElement != null)
 				{
 					var model = graph.getModel();
 					var nodes = doc.documentElement.getElementsByTagName('update');
 					
-					if (nodes != null && nodes.length > 0)
+					if (nodes != null &&
+						nodes.length > 0)
 					{
+					
 						model.beginUpdate();
-
 						try
 						{
 							for (var i = 0; i < nodes.length; i++)

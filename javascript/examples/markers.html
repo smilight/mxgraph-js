@@ -14,7 +14,7 @@
 	</script>
 
 	<!-- Loads and initializes the library -->
-	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<script type="text/javascript" src="../mxClientOld.js"></script>
 
 	<!-- Example code -->
 	<script type="text/javascript">
@@ -75,7 +75,7 @@
 				};
 
 				// Registers the message shape
-				mxCellRenderer.registerShape('message', MessageShape);
+				mxCellRenderer.prototype.defaultShapes['message'] = MessageShape;
 				
 				// Defines custom edge shape
 				function LinkShape()
@@ -126,7 +126,7 @@
 				};
 
 				// Registers the link shape
-				mxCellRenderer.registerShape('link', LinkShape);
+				mxCellRenderer.prototype.defaultShapes['link'] = LinkShape;
 
 				// Creates the graph
 				var graph = new mxGraph(container);

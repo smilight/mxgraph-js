@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2006-2017, JGraph Ltd
- * Copyright (c) 2006-2017, Gaudenz Alder
+ * Copyright (c) 2006-2015, JGraph Ltd
+ * Copyright (c) 2006-2015, Gaudenz Alder
  */
 /**
  * Class: mxCellRenderer
@@ -20,7 +20,7 @@
  * 
  * (code)
  * mxLog.show();
- * for (var i in mxCellRenderer.defaultShapes)
+ * for (var i in mxCellRenderer.prototype.defaultShapes)
  * {
  *   mxLog.debug(i);
  * }
@@ -33,15 +33,6 @@
  * swimlane, connector, actor and cloud.
  */
 function mxCellRenderer() { };
-
-/**
- * Variable: defaultShapes
- * 
- * Static array that contains the globally registered shapes which are
- * known to all instances of this class. For adding new shapes you should
- * use the static <mxCellRenderer.registerShape> function.
- */
-mxCellRenderer.defaultShapes = new Object();
 
 /**
  * Variable: defaultEdgeShape
@@ -81,18 +72,20 @@ mxCellRenderer.prototype.legacyControlPosition = true;
 mxCellRenderer.prototype.legacySpacing = true;
 
 /**
+ * Variable: defaultShapes
+ * 
+ * Static array that contains the globally registered shapes which are
+ * known to all instances of this class. For adding new shapes you should
+ * use the static <mxCellRenderer.registerShape> function.
+ */
+mxCellRenderer.prototype.defaultShapes = new Object();
+
+/**
  * Variable: antiAlias
  * 
  * Anti-aliasing option for new shapes. Default is true.
  */
 mxCellRenderer.prototype.antiAlias = true;
-
-/**
- * Variable: minSvgStrokeWidth
- * 
- * Minimum stroke width for SVG output.
- */
-mxCellRenderer.prototype.minSvgStrokeWidth = 1;
 
 /**
  * Variable: forceControlClickHandler
@@ -121,7 +114,7 @@ mxCellRenderer.prototype.forceControlClickHandler = false;
  */
 mxCellRenderer.registerShape = function(key, shape)
 {
-	mxCellRenderer.defaultShapes[key] = shape;
+	mxCellRenderer.prototype.defaultShapes[key] = shape;
 };
 
 // Adds default shapes into the default shapes array
@@ -213,7 +206,7 @@ mxCellRenderer.prototype.createIndicatorShape = function(state)
  */
 mxCellRenderer.prototype.getShape = function(name)
 {
-	return (name != null) ? mxCellRenderer.defaultShapes[name] : null;
+	return (name != null) ? mxCellRenderer.prototype.defaultShapes[name] : null;
 };
 
 /**
@@ -268,39 +261,12 @@ mxCellRenderer.prototype.postConfigureShape = function(state)
 {
 	if (state.shape != null)
 	{
-		this.resolveColor(state, 'indicatorGradientColor', mxConstants.STYLE_GRADIENTCOLOR);
 		this.resolveColor(state, 'indicatorColor', mxConstants.STYLE_FILLCOLOR);
-		this.resolveColor(state, 'gradient', mxConstants.STYLE_GRADIENTCOLOR);
-		this.resolveColor(state, 'stroke', mxConstants.STYLE_STROKECOLOR);
+		this.resolveColor(state, 'indicatorGradientColor', mxConstants.STYLE_GRADIENTCOLOR);
 		this.resolveColor(state, 'fill', mxConstants.STYLE_FILLCOLOR);
+		this.resolveColor(state, 'stroke', mxConstants.STYLE_STROKECOLOR);
+		this.resolveColor(state, 'gradient', mxConstants.STYLE_GRADIENTCOLOR);
 	}
-};
-
-/**
- * Function: checkPlaceholderStyles
- * 
- * Checks if the style of the given <mxCellState> contains 'inherit',
- * 'indicated' or 'swimlane' for colors that support those keywords.
- */
-mxCellRenderer.prototype.checkPlaceholderStyles = function(state)
-{
-	// LATER: Check if the color has actually changed
-	if (state.style != null)
-	{
-		var values = ['inherit', 'swimlane', 'indicated'];
-		var styles = [mxConstants.STYLE_FILLCOLOR, mxConstants.STYLE_STROKECOLOR,
-			mxConstants.STYLE_GRADIENTCOLOR, mxConstants.STYLE_FONTCOLOR];
-		
-		for (var i = 0; i < styles.length; i++)
-		{
-			if (mxUtils.indexOf(values, state.style[styles[i]]) >= 0)
-			{
-				return true;
-			}
-		}
-	}
-	
-	return false;
 };
 
 /**
@@ -311,59 +277,47 @@ mxCellRenderer.prototype.checkPlaceholderStyles = function(state)
  */
 mxCellRenderer.prototype.resolveColor = function(state, field, key)
 {
-	var shape = (key == mxConstants.STYLE_FONTCOLOR) ?
-		state.text : state.shape;
+	var value = state.shape[field];
+	var graph = state.view.graph;
+	var referenced = null;
 	
-	if (shape != null)
+	if (value == 'inherit')
 	{
-		var graph = state.view.graph;
-		var value = shape[field];
-		var referenced = null;
-		
-		if (value == 'inherit')
+		referenced = graph.model.getParent(state.cell);
+	}
+	else if (value == 'swimlane')
+	{
+		if (graph.model.getTerminal(state.cell, false) != null)
 		{
-			referenced = graph.model.getParent(state.cell);
+			referenced = graph.model.getTerminal(state.cell, false);
 		}
-		else if (value == 'swimlane')
+		else
 		{
-			shape[field] = (key == mxConstants.STYLE_STROKECOLOR ||
-				key == mxConstants.STYLE_FONTCOLOR) ?
-				'#000000' : '#ffffff';
-			
-			if (graph.model.getTerminal(state.cell, false) != null)
+			referenced = state.cell;
+		}
+		
+		referenced = graph.getSwimlane(referenced);
+		key = graph.swimlaneIndicatorColorAttribute;
+	}
+	else if (value == 'indicated')
+	{
+		state.shape[field] = state.shape.indicatorColor;
+	}
+	
+	if (referenced != null)
+	{
+		var rstate = graph.getView().getState(referenced);
+		state.shape[field] = null;
+
+		if (rstate != null)
+		{
+			if (rstate.shape != null && field != 'indicatorColor')
 			{
-				referenced = graph.model.getTerminal(state.cell, false);
+				state.shape[field] = rstate.shape[field];
 			}
 			else
 			{
-				referenced = state.cell;
-			}
-			
-			referenced = graph.getSwimlane(referenced);
-			key = graph.swimlaneIndicatorColorAttribute;
-		}
-		else if (value == 'indicated' && state.shape != null)
-		{
-			shape[field] = state.shape.indicatorColor;
-		}
-	
-		if (referenced != null)
-		{
-			var rstate = graph.getView().getState(referenced);
-			shape[field] = null;
-			
-			if (rstate != null)
-			{
-				var rshape = (key == mxConstants.STYLE_FONTCOLOR) ? rstate.text : rstate.shape;
-				
-				if (rshape != null && field != 'indicatorColor')
-				{
-					shape[field] = rshape[field];
-				}
-				else
-				{
-					shape[field] = rstate.style[key];
-				}
+				state.shape[field] = rstate.style[key];
 			}
 		}
 	}
@@ -898,20 +852,7 @@ mxCellRenderer.prototype.installListeners = function(state)
  */
 mxCellRenderer.prototype.redrawLabel = function(state, forced)
 {
-	var graph = state.view.graph;
 	var value = this.getLabelValue(state);
-	var wrapping = graph.isWrapping(state.cell);
-	var clipping = graph.isLabelClipped(state.cell);
-	var isForceHtml = (state.view.graph.isHtmlLabel(state.cell) || (value != null && mxUtils.isNode(value)));
-	var dialect = (isForceHtml) ? mxConstants.DIALECT_STRICTHTML : state.view.graph.dialect;
-	var overflow = state.style[mxConstants.STYLE_OVERFLOW] || 'visible';
-
-	if (state.text != null && (state.text.wrap != wrapping || state.text.clipped != clipping ||
-		state.text.overflow != overflow || state.text.dialect != dialect))
-	{
-		state.text.destroy();
-		state.text = null;
-	}
 	
 	if (state.text == null && value != null && (mxUtils.isNode(value) || value.length > 0))
 	{
@@ -925,6 +866,8 @@ mxCellRenderer.prototype.redrawLabel = function(state, forced)
 
 	if (state.text != null)
 	{
+		var graph = state.view.graph;
+
 		// Forced is true if the style has changed, so to get the updated
 		// result in getLabelBounds we apply the new style to the shape
 		if (forced)
@@ -939,23 +882,28 @@ mxCellRenderer.prototype.redrawLabel = function(state, forced)
 			state.text.resetStyles();
 			state.text.apply(state);
 			
-			// Special case where value is obtained via hook in graph
-			state.text.valign = graph.getVerticalAlign(state);
+			// Special case opacity which is taken from textOpacity style for text
+			state.text.opacity = mxUtils.getValue(state.style, mxConstants.STYLE_TEXT_OPACITY, 100);
 		}
 		
 		var bounds = this.getLabelBounds(state);
-		var nextScale = this.getTextScale(state);
-		this.resolveColor(state, 'color', mxConstants.STYLE_FONTCOLOR);
+		var wrapping = graph.isWrapping(state.cell);
+		var clipping = graph.isLabelClipped(state.cell);
+		var isForceHtml = (state.view.graph.isHtmlLabel(state.cell) || (value != null && mxUtils.isNode(value)));
+		var dialect = (isForceHtml) ? mxConstants.DIALECT_STRICTHTML : state.view.graph.dialect;
+
+		// Text is a special case where change of dialect is possible at runtime
+		var overflow = state.style[mxConstants.STYLE_OVERFLOW] || 'visible';
 		
 		if (forced || state.text.value != value || state.text.isWrapping != wrapping ||
 			state.text.overflow != overflow || state.text.isClipping != clipping ||
-			state.text.scale != nextScale || state.text.dialect != dialect ||
-			state.text.bounds == null || !state.text.bounds.equals(bounds))
+			state.text.scale != this.getTextScale(state) || state.text.dialect != dialect ||
+			!state.text.bounds.equals(bounds))
 		{
 			state.text.dialect = dialect;
 			state.text.value = value;
 			state.text.bounds = bounds;
-			state.text.scale = nextScale;
+			state.text.scale = this.getTextScale(state);
 			state.text.wrap = wrapping;
 			state.text.clipped = clipping;
 			state.text.overflow = overflow;
@@ -982,21 +930,7 @@ mxCellRenderer.prototype.isTextShapeInvalid = function(state, shape)
 {
 	function check(property, stylename, defaultValue)
 	{
-		var result = false;
-		
-		// Workaround for spacing added to directional spacing
-		if (stylename == 'spacingTop' || stylename == 'spacingRight' ||
-			stylename == 'spacingBottom' || stylename == 'spacingLeft')
-		{
-			result = parseFloat(shape[property]) - parseFloat(shape.spacing) !=
-				(state.style[stylename] || defaultValue);
-		}
-		else
-		{
-			result = shape[property] != (state.style[stylename] || defaultValue);
-		}
-		
-		return result;
+		return shape[property] != (state.style[stylename] || defaultValue);
 	};
 
 	return check('fontStyle', mxConstants.STYLE_FONTSTYLE, mxConstants.DEFAULT_FONTSTYLE) ||
@@ -1006,10 +940,10 @@ mxCellRenderer.prototype.isTextShapeInvalid = function(state, shape)
 		check('align', mxConstants.STYLE_ALIGN, '') ||
 		check('valign', mxConstants.STYLE_VERTICAL_ALIGN, '') ||
 		check('spacing', mxConstants.STYLE_SPACING, 2) ||
-		check('spacingTop', mxConstants.STYLE_SPACING_TOP, 0) ||
-		check('spacingRight', mxConstants.STYLE_SPACING_RIGHT, 0) ||
-		check('spacingBottom', mxConstants.STYLE_SPACING_BOTTOM, 0) ||
-		check('spacingLeft', mxConstants.STYLE_SPACING_LEFT, 0) ||
+		check('spacingTop', mxConstants.STYLE_SPACING_TOP, 2) ||
+		check('spacingRight', mxConstants.STYLE_SPACING_RIGHT, 2) ||
+		check('spacingBottom', mxConstants.STYLE_SPACING_BOTTOM, 2) ||
+		check('spacingLeft', mxConstants.STYLE_SPACING_LEFT, 2) ||
 		check('horizontal', mxConstants.STYLE_HORIZONTAL, true) ||
 		check('background', mxConstants.STYLE_LABEL_BACKGROUNDCOLOR) ||
 		check('border', mxConstants.STYLE_LABEL_BORDERCOLOR) ||
@@ -1091,6 +1025,20 @@ mxCellRenderer.prototype.getLabelBounds = function(state)
 		// Minimum of 1 fixes alignment bug in HTML labels
 		bounds.width = Math.max(1, state.width);
 		bounds.height = Math.max(1, state.height);
+
+		var sc = mxUtils.getValue(state.style, mxConstants.STYLE_STROKECOLOR, mxConstants.NONE);
+		
+		if (sc != mxConstants.NONE && sc != '')
+		{
+			var s = parseFloat(mxUtils.getValue(state.style, mxConstants.STYLE_STROKEWIDTH, 1)) * scale;
+			var dx = 1 + Math.floor((s - 1) / 2);
+			var dh = Math.floor(s + 1);
+			
+			bounds.x += dx;
+			bounds.y += dx;
+			bounds.width -= dh;
+			bounds.height -= dh;
+		}
 	}
 
 	if (state.text.isPaintBoundsInverted())
@@ -1174,7 +1122,7 @@ mxCellRenderer.prototype.rotateLabelBounds = function(state, bounds)
 		if (bounds.x != cx || bounds.y != cy)
 		{
 			var rad = theta * (Math.PI / 180);
-			var pt = mxUtils.getRotatedPoint(new mxPoint(bounds.x, bounds.y),
+			pt = mxUtils.getRotatedPoint(new mxPoint(bounds.x, bounds.y),
 					Math.cos(rad), Math.sin(rad), new mxPoint(cx, cy));
 			
 			bounds.x = pt.x;
@@ -1387,9 +1335,7 @@ mxCellRenderer.prototype.insertStateAfter = function(state, node, htmlNode)
 						shapes[i].node.parentNode.appendChild(shapes[i].node);
 					}
 				}
-				else if (shapes[i].node.parentNode != null &&
-					shapes[i].node.parentNode.firstChild != null &&
-					shapes[i].node.parentNode.firstChild != shapes[i].node)
+				else if (shapes[i].node.parentNode.firstChild != null && shapes[i].node.parentNode.firstChild != shapes[i].node)
 				{
 					// Inserts the node as the first child of the parent to implement the order
 					shapes[i].node.parentNode.insertBefore(shapes[i].node, shapes[i].node.parentNode.firstChild);
@@ -1444,7 +1390,7 @@ mxCellRenderer.prototype.getShapesForState = function(state)
 mxCellRenderer.prototype.redraw = function(state, force, rendering)
 {
 	var shapeChanged = this.redrawShape(state, force, rendering);
-
+	
 	if (state.shape != null && (rendering == null || rendering))
 	{
 		this.redrawLabel(state, shapeChanged);
@@ -1483,7 +1429,6 @@ mxCellRenderer.prototype.redrawShape = function(state, force, rendering)
 		
 		if (state.shape != null)
 		{
-			state.shape.minSvgStrokeWidth = this.minSvgStrokeWidth;
 			state.shape.antiAlias = this.antiAlias;
 	
 			this.createIndicatorShape(state);
@@ -1491,39 +1436,17 @@ mxCellRenderer.prototype.redrawShape = function(state, force, rendering)
 			this.createCellOverlays(state);
 			this.installListeners(state);
 			
-			// Forces a refresh of the handler if one exists
+			// Forces a refresh of the handler of one exists
 			state.view.graph.selectionCellsHandler.updateHandler(state);
 		}
 	}
-	else if (!force && state.shape != null && (!mxUtils.equalEntries(state.shape.style,
-		state.style) || this.checkPlaceholderStyles(state)))
+	else if (state.shape != null && !mxUtils.equalEntries(state.shape.style, state.style))
 	{
 		state.shape.resetStyles();
 		this.configureShape(state);
 		// LATER: Ignore update for realtime to fix reset of current gesture
 		state.view.graph.selectionCellsHandler.updateHandler(state);
 		force = true;
-	}
-	
-	// Updates indicator shape
-	if (state.shape != null && state.shape.indicatorShape !=
-		this.getShape(state.view.graph.getIndicatorShape(state)))
-	{
-		if (state.shape.indicator != null)
-		{
-			state.shape.indicator.destroy();
-			state.shape.indicator = null;
-		}
-		
-		this.createIndicatorShape(state);
-		
-		if (state.shape.indicatorShape != null)
-		{
-			state.shape.indicator = new state.shape.indicatorShape();
-			state.shape.indicator.dialect = state.shape.dialect;
-			state.shape.indicator.init(state.node);
-			force = true;
-		}
 	}
 
 	if (state.shape != null)
@@ -1533,7 +1456,9 @@ mxCellRenderer.prototype.redrawShape = function(state, force, rendering)
 		
 		// Redraws the cell if required, ignores changes to bounds if points are
 		// defined as the bounds are updated for the given points inside the shape
-		if (force || this.isShapeInvalid(state, state.shape))
+		if (force || state.shape.bounds == null || state.shape.scale != state.view.scale ||
+			(state.absolutePoints == null && !state.shape.bounds.equals(state)) ||
+			(state.absolutePoints != null && !mxUtils.equalPoints(state.shape.points, state.absolutePoints)))
 		{
 			if (state.absolutePoints != null)
 			{
@@ -1550,7 +1475,7 @@ mxCellRenderer.prototype.redrawShape = function(state, force, rendering)
 			
 			if (rendering == null || rendering)
 			{
-				this.doRedrawShape(state);
+				state.shape.redraw();
 			}
 			else
 			{
@@ -1562,28 +1487,6 @@ mxCellRenderer.prototype.redrawShape = function(state, force, rendering)
 	}
 
 	return shapeChanged;
-};
-
-/**
- * Function: doRedrawShape
- * 
- * Invokes redraw on the shape of the given state.
- */
-mxCellRenderer.prototype.doRedrawShape = function(state)
-{
-	state.shape.redraw();
-};
-
-/**
- * Function: isShapeInvalid
- * 
- * Returns true if the given shape must be repainted.
- */
-mxCellRenderer.prototype.isShapeInvalid = function(state, shape)
-{
-	return shape.bounds == null || shape.scale != state.view.scale ||
-		(state.absolutePoints == null && !shape.bounds.equals(state)) ||
-		(state.absolutePoints != null && !mxUtils.equalPoints(shape.points, state.absolutePoints))
 };
 
 /**
@@ -1625,3 +1528,5 @@ mxCellRenderer.prototype.destroy = function(state)
 		state.shape = null;
 	}
 };
+
+exports.mxCellRenderer = mxCellRenderer;

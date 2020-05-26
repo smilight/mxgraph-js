@@ -145,8 +145,12 @@ mxCellHighlight.prototype.createShape = function()
 	var shape = this.graph.cellRenderer.createShape(this.state);
 	
 	shape.svgStrokeTolerance = this.graph.tolerance;
+	shape.scale = this.state.view.scale;
+	shape.outline = true;
 	shape.points = this.state.absolutePoints;
 	shape.apply(this.state);
+	shape.strokewidth = this.strokeWidth / this.state.view.scale / this.state.view.scale;
+	shape.arrowStrokewidth = this.strokeWidth;
 	shape.stroke = this.highlightColor;
 	shape.opacity = this.opacity;
 	shape.isDashed = this.dashed;
@@ -168,15 +172,6 @@ mxCellHighlight.prototype.createShape = function()
 	return shape;
 };
 
-/**
- * Function: repaint
- * 
- * Updates the highlight after a change of the model or view.
- */
-mxCellHighlight.prototype.getStrokeWidth = function(state)
-{
-	return this.strokeWidth;
-};
 
 /**
  * Function: repaint
@@ -187,21 +182,15 @@ mxCellHighlight.prototype.repaint = function()
 {
 	if (this.state != null && this.shape != null)
 	{
-		this.shape.scale = this.state.view.scale;
-		
 		if (this.graph.model.isEdge(this.state.cell))
 		{
-			this.shape.strokewidth = this.getStrokeWidth();
 			this.shape.points = this.state.absolutePoints;
-			this.shape.outline = false;
 		}
 		else
 		{
 			this.shape.bounds = new mxRectangle(this.state.x - this.spacing, this.state.y - this.spacing,
 					this.state.width + 2 * this.spacing, this.state.height + 2 * this.spacing);
 			this.shape.rotation = Number(this.state.style[mxConstants.STYLE_ROTATION] || '0');
-			this.shape.strokewidth = this.getStrokeWidth() / this.state.view.scale;
-			this.shape.outline = true;
 		}
 
 		// Uses cursor from shape in highlight
@@ -312,3 +301,6 @@ mxCellHighlight.prototype.destroy = function()
 		this.shape = null;
 	}
 };
+
+
+exports.mxCellHighlight = mxCellHighlight;

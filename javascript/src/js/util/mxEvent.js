@@ -17,14 +17,23 @@ var mxEvent =
 	 * <removeAllListeners> function is provided to remove all listeners that
 	 * have been added using <addListener>. The function should be invoked when
 	 * the last reference is removed in the JavaScript code, typically when the
-	 * referenced DOM node is removed from the DOM.
-	 *
-	 * Function: addListener
+	 * referenced DOM node is removed from the DOM, and helps to reduce memory
+	 * leaks in IE6.
 	 * 
-	 * Binds the function to the specified event on the given element. Use
-	 * <mxUtils.bind> in order to bind the "this" keyword inside the function
-	 * to a given execution scope.
+	 * Variable: objects
+	 * 
+	 * Contains all objects where any listener was added using <addListener>.
+	 * This is used to reduce memory leaks in IE, see <mxClient.dispose>.
 	 */
+	objects: [],
+
+	 /**
+	  * Function: addListener
+	  * 
+	  * Binds the function to the specified event on the given element. Use
+	  * <mxUtils.bind> in order to bind the "this" keyword inside the function
+	  * to a given execution scope.
+	  */
 	addListener: function()
 	{
 		var updateListenerList = function(element, eventName, funct)
@@ -32,6 +41,7 @@ var mxEvent =
 			if (element.mxListenerList == null)
 			{
 				element.mxListenerList = [];
+				mxEvent.objects.push(element);
 			}
 			
 			var entry = {name: eventName, f: funct};
@@ -83,6 +93,13 @@ var mxEvent =
 				if (element.mxListenerList.length == 0)
 				{
 					element.mxListenerList = null;
+					
+					var idx = mxUtils.indexOf(mxEvent.objects, element);
+					
+					if (idx >= 0)
+					{
+						mxEvent.objects.splice(idx, 1);
+					}
 				}
 			}
 		};
@@ -287,28 +304,21 @@ var mxEvent =
 	 */
 	release: function(element)
 	{
-		try
+		if (element != null)
 		{
-			if (element != null)
+			mxEvent.removeAllListeners(element);
+			
+			var children = element.childNodes;
+			
+			if (children != null)
 			{
-				mxEvent.removeAllListeners(element);
-				
-				var children = element.childNodes;
-				
-				if (children != null)
-				{
-			        var childCount = children.length;
-			        
-			        for (var i = 0; i < childCount; i += 1)
-			        {
-			        	mxEvent.release(children[i]);
-			        }
-			    }
-			}
-		}
-		catch (e)
-		{
-			// ignores errors as this is typically called in cleanup code
+		        var childCount = children.length;
+		        
+		        for (var i = 0; i < childCount; i += 1)
+		        {
+		        	mxEvent.release(children[i]);
+		        }
+		    }
 		}
 	},
 
@@ -336,10 +346,8 @@ var mxEvent =
 	 * 
 	 * funct - Handler function that takes the event argument and a boolean up
 	 * argument for the mousewheel direction.
-	 * target - Target for installing the listener in Google Chrome. See 
-	 * https://www.chromestatus.com/features/6662647093133312.
 	 */
-	addMouseWheelListener: function(funct, target)
+	addMouseWheelListener: function(funct)
 	{
 		if (funct != null)
 		{
@@ -353,52 +361,34 @@ var mxEvent =
 					evt = window.event;
 				}
 			
-				//To prevent window zoom on trackpad pinch
-				if (evt.ctrlKey) 
+				var delta = 0;
+				
+				if (mxClient.IS_FF)
 				{
-					evt.preventDefault();
+					delta = -evt.detail / 2;
 				}
-
-				var delta = -evt.deltaY;
+				else
+				{
+					delta = evt.wheelDelta / 120;
+				}
 				
 				// Handles the event using the given function
-				if (Math.abs(evt.deltaX) > 0.5 || Math.abs(evt.deltaY) > 0.5)
+				if (delta != 0)
 				{
-					funct(evt, (evt.deltaY == 0) ?  -evt.deltaX > 0 : -evt.deltaY > 0);
+					funct(evt, delta > 0);
 				}
 			};
 	
-			target = target != null ? target : window;
-					
-			if (mxClient.IS_SF && !mxClient.IS_TOUCH)
+			// Webkit has NS event API, but IE event name and details 
+			if (mxClient.IS_NS && document.documentMode == null)
 			{
-				var scale = 1;
-				
-				mxEvent.addListener(target, 'gesturestart', function(evt)
-				{
-					mxEvent.consume(evt);
-					scale = 1;
-				});
-				
-				mxEvent.addListener(target, 'gesturechange', function(evt)
-				{
-					mxEvent.consume(evt);
-					var diff = scale - evt.scale;
-					
-					if (Math.abs(diff) > 0.2)
-					{
-						funct(evt, diff < 0, true);
-						scale = evt.scale;
-					}
-				});
-
-				mxEvent.addListener(target, 'gestureend', function(evt)
-				{
-					mxEvent.consume(evt);
-				});
+				var eventName = (mxClient.IS_SF || 	mxClient.IS_GC) ? 'mousewheel' : 'DOMMouseScroll';
+				mxEvent.addListener(window, eventName, wheelHandler);
 			}
-			
-			mxEvent.addListener(target, 'wheel', wheelHandler);
+			else
+			{
+				mxEvent.addListener(document, 'mousewheel', wheelHandler);
+			}
 		}
 	},
 	
@@ -407,18 +397,26 @@ var mxEvent =
 	 *
 	 * Disables the context menu for the given element.
 	 */
-	disableContextMenu: function(element)
+	disableContextMenu: function()
 	{
-		mxEvent.addListener(element, 'contextmenu', function(evt)
+		if (mxClient.IS_IE && (typeof(document.documentMode) === 'undefined' || document.documentMode < 9))
 		{
-			if (evt.preventDefault)
+			return function(element)
 			{
-				evt.preventDefault();
-			}
-			
-			return false;
-		});
-	},
+				mxEvent.addListener(element, 'contextmenu', function()
+				{
+					return false;
+				});
+			};
+		}
+		else
+		{
+			return function(element)
+			{
+				element.setAttribute('oncontextmenu', 'return false;');
+			};		
+		}
+	}(),
 	
 	/**
 	 * Function: getSource
@@ -450,18 +448,6 @@ var mxEvent =
 		return (evt.pointerType != null) ? (evt.pointerType == 'touch' || evt.pointerType ===
 			evt.MSPOINTER_TYPE_TOUCH) : ((evt.mozInputSource != null) ?
 					evt.mozInputSource == 5 : evt.type.indexOf('touch') == 0);
-	},
-
-	/**
-	 * Function: isPenEvent
-	 * 
-	 * Returns true if the event was generated using a pen (not a touch device or mouse).
-	 */
-	isPenEvent: function(evt)
-	{
-		return (evt.pointerType != null) ? (evt.pointerType == 'pen' || evt.pointerType ===
-			evt.MSPOINTER_TYPE_PEN) : ((evt.mozInputSource != null) ?
-					evt.mozInputSource == 2 : evt.type.indexOf('pen') == 0);
 	},
 
 	/**
@@ -1385,6 +1371,13 @@ var mxEvent =
 	ESCAPE: 'escape',
 
 	/**
+	 * Variable: CLICK
+	 *
+	 * Specifies the event name for click.
+	 */
+	CLICK: 'click',
+
+	/**
 	 * Variable: DOUBLE_CLICK
 	 *
 	 * Specifies the event name for doubleClick.
@@ -1406,3 +1399,5 @@ var mxEvent =
 	RESET: 'reset'
 
 };
+
+exports.mxEvent = mxEvent;

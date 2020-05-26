@@ -15,7 +15,7 @@
 	</script>
 
 	<!-- Loads and initializes the library -->
-	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<script type="text/javascript" src="../mxClientOld.js"></script>
 
 	<!-- Example code -->
 	<script type="text/javascript">
@@ -113,7 +113,7 @@
 				};
 
 				// Replaces existing actor shape
-				mxCellRenderer.registerShape('customShape', CustomShape);
+				mxCellRenderer.prototype.defaultShapes['customShape'] = CustomShape;
 				
 				// Loads the stencils into the registry
 				var req = mxUtils.load('stencils.xml');

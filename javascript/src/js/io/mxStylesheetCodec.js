@@ -66,7 +66,7 @@ var mxStylesheetCodec = mxCodecRegistry.register(function()
 		
 		if (type == 'function')
 		{
-			value = mxStyleRegistry.getName(value);
+			value = mxStyleRegistry.getName(style[j]);
 		}
 		else if (type == 'object')
 		{
@@ -215,3 +215,5 @@ var mxStylesheetCodec = mxCodecRegistry.register(function()
  * may contain user input.
  */
 mxStylesheetCodec.allowEval = true;
+
+exports.mxStylesheetCodec = mxStylesheetCodec;

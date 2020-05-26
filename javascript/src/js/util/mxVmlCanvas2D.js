@@ -595,12 +595,12 @@ mxVmlCanvas2D.prototype.createDiv = function(str, align, valign, overflow)
 	
 	if (state.fontBackgroundColor != null)
 	{
-		css += 'background-color:' + mxUtils.htmlEntities(state.fontBackgroundColor) + ';';
+		css += 'background-color:' + state.fontBackgroundColor + ';';
 	}
 	
 	if (state.fontBorderColor != null)
 	{
-		css += 'border:1px solid ' + mxUtils.htmlEntities(state.fontBorderColor) + ';';
+		css += 'border:1px solid ' + state.fontBorderColor + ';';
 	}
 	
 	if (mxUtils.isNode(str))
@@ -1100,3 +1100,5 @@ mxVmlCanvas2D.prototype.fillAndStroke = function()
 {
 	this.addNode(true, true);
 };
+
+exports.mxVmlCanvas2D = mxVmlCanvas2D;

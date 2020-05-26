@@ -723,25 +723,6 @@ mxCell.prototype.removeFromTerminal = function(isSource)
 };
 
 /**
- * Function: hasAttribute
- * 
- * Returns true if the user object is an XML node that contains the given
- * attribute.
- * 
- * Parameters:
- * 
- * name - Name of the attribute.
- */
-mxCell.prototype.hasAttribute = function(name)
-{
-	var userObject = this.getValue();
-	
-	return (userObject != null &&
-		userObject.nodeType == mxConstants.NODETYPE_ELEMENT && userObject.hasAttribute) ?
-		userObject.hasAttribute(name) : userObject.getAttribute(name) != null;
-};
-
-/**
  * Function: getAttribute
  *
  * Returns the specified attribute from the user object if it is an XML
@@ -761,7 +742,7 @@ mxCell.prototype.getAttribute = function(name, defaultValue)
 		userObject.nodeType == mxConstants.NODETYPE_ELEMENT) ?
 		userObject.getAttribute(name) : null;
 		
-	return (val != null) ? val : defaultValue;
+	return val || defaultValue;
 };
 
 /**
@@ -823,3 +804,5 @@ mxCell.prototype.cloneValue = function()
 	
 	return value;
 };
+
+exports.mxCell = mxCell;

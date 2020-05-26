@@ -69,7 +69,6 @@ mxElbowEdgeHandler.prototype.doubleClickOrientationResource =
 			mxEvent.consume(evt);
 		}
 	})));
-	
 	this.points.push(new mxPoint(0,0));
 
 	// Target
@@ -228,3 +227,5 @@ mxElbowEdgeHandler.prototype.redrawInnerBends = function(p0, pe)
 		this.checkLabelHandle(this.bends[1].bounds);
 	}
 };
+
+exports.mxElbowEdgeHandler = mxElbowEdgeHandler;

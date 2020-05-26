@@ -123,17 +123,6 @@ function mxCellEditor(graph)
 	
 	this.graph.view.addListener(mxEvent.SCALE, this.zoomHandler);
 	this.graph.view.addListener(mxEvent.SCALE_AND_TRANSLATE, this.zoomHandler);
-	
-	// Adds handling of deleted cells while editing
-	this.changeHandler = mxUtils.bind(this, function(sender)
-	{
-		if (this.editingCell != null && this.graph.getView().getState(this.editingCell) == null)
-		{
-			this.stopEditing(true);
-		}
-	});
-
-	this.graph.getModel().addListener(mxEvent.CHANGE, this.changeHandler);
 };
 
 /**
@@ -252,15 +241,6 @@ mxCellEditor.prototype.blurEnabled = false;
 mxCellEditor.prototype.initialValue = null;
 
 /**
- * Variable: align
- * 
- * Holds the current temporary horizontal alignment for the cell style. If this
- * is modified then the current text alignment is changed and the cell style is
- * updated when the value is applied.
- */
-mxCellEditor.prototype.align = null;
-
-/**
  * Function: init
  *
  * Creates the <textarea> and installs the event listeners. The key handler
@@ -272,13 +252,6 @@ mxCellEditor.prototype.init = function ()
 	this.textarea.className = 'mxCellEditor mxPlainTextEditor';
 	this.textarea.contentEditable = true;
 	
-	// Workaround for selection outside of DIV if height is 0
-	if (mxClient.IS_GC)
-	{
-		this.textarea.style.minHeight = '1em';
-	}
-
-	this.textarea.style.position = ((this.isLegacyEditor())) ? 'absolute' : 'relative';
 	this.installListeners(this.textarea);
 };
 
@@ -290,22 +263,6 @@ mxCellEditor.prototype.init = function ()
 mxCellEditor.prototype.applyValue = function(state, value)
 {
 	this.graph.labelChanged(state.cell, value, this.trigger);
-};
-
-/**
- * Function: setAlign
- * 
- * Sets the temporary horizontal alignment for the current editing session.
- */
-mxCellEditor.prototype.setAlign = function (align)
-{
-	if (this.textarea != null)
-	{
-		this.textarea.style.textAlign = align;
-	}
-	
-	this.align = align;
-	this.resize();
 };
 
 /**
@@ -334,18 +291,15 @@ mxCellEditor.prototype.getInitialValue = function(state, trigger)
  */
 mxCellEditor.prototype.getCurrentValue = function(state)
 {
-	return mxUtils.extractTextWithWhitespace(this.textarea.childNodes);
-};
-
-/**
- * Function: isCancelEditingKeyEvent
- * 
- * Returns true if <escapeCancelsEditing> is true and shift, control and meta
- * are not pressed.
- */
-mxCellEditor.prototype.isCancelEditingKeyEvent = function(evt)
-{
-	return this.escapeCancelsEditing || mxEvent.isShiftDown(evt) || mxEvent.isControlDown(evt) || mxEvent.isMetaDown(evt);
+	var result = mxUtils.extractTextWithWhitespace(this.textarea.childNodes);
+	
+    // Strips trailing line break
+    if (result.length > 0 && result.charAt(result.length - 1) == '\n')
+    {
+    	result = result.substring(0, result.length - 1);
+    }
+	
+	return result;
 };
 
 /**
@@ -355,14 +309,6 @@ mxCellEditor.prototype.isCancelEditingKeyEvent = function(evt)
  */
 mxCellEditor.prototype.installListeners = function(elt)
 {
-	// Applies value if text is dragged
-	// LATER: Gesture mouse events ignored for starting move
-	mxEvent.addListener(elt, 'dragstart', mxUtils.bind(this, function(evt)
-	{
-		this.graph.stopEditing(false);
-		mxEvent.consume(evt);
-	}));
-
 	// Applies value if focus is lost
 	mxEvent.addListener(elt, 'blur', mxUtils.bind(this, function(evt)
 	{
@@ -384,12 +330,23 @@ mxCellEditor.prototype.installListeners = function(elt)
 			}
 			else if (evt.keyCode == 27 /* Escape */)
 			{
-				this.graph.stopEditing(this.isCancelEditingKeyEvent(evt));
+				this.graph.stopEditing(this.escapeCancelsEditing || mxEvent.isShiftDown(evt));
 				mxEvent.consume(evt);
 			}
 		}
 	}));
 
+	// Adds handling of deleted cells while editing
+	this.changeHandler = mxUtils.bind(this, function(sender)
+	{
+		if (this.editingCell != null && this.graph.getView().getState(this.editingCell) == null)
+		{
+			this.stopEditing(true);
+		}
+	});
+
+	this.graph.getModel().addListener(mxEvent.CHANGE, this.changeHandler);
+	
 	// Keypress only fires if printable key was pressed and handles removing the empty placeholder
 	var keypressHandler = mxUtils.bind(this, function(evt)
 	{
@@ -457,7 +414,6 @@ mxCellEditor.prototype.installListeners = function(elt)
 	});
 	
 	mxEvent.addListener(elt, evtName, resizeHandler);
-	mxEvent.addListener(window, 'resize', resizeHandler);
 
 	if (document.documentMode >= 9)
 	{
@@ -508,7 +464,7 @@ mxCellEditor.prototype.resize = function()
 	{
 		this.stopEditing(true);
 	}
-	else if (this.textarea != null)
+	else
 	{
 		var isEdge = this.graph.getModel().isEdge(state.cell);
  		var scale = this.graph.getView().scale;
@@ -558,11 +514,11 @@ mxCellEditor.prototype.resize = function()
 		else
 	 	{
 	 		var lw = mxUtils.getValue(state.style, mxConstants.STYLE_LABEL_WIDTH, null);
-			m = (state.text != null && this.align == null) ? state.text.margin : null;
+			m = (state.text != null) ? state.text.margin : null;
 			
 			if (m == null)
 			{
-				m = mxUtils.getAlignmentAsPoint(this.align || mxUtils.getValue(state.style, mxConstants.STYLE_ALIGN, mxConstants.ALIGN_CENTER),
+				m = mxUtils.getAlignmentAsPoint(mxUtils.getValue(state.style, mxConstants.STYLE_ALIGN, mxConstants.ALIGN_CENTER),
 						mxUtils.getValue(state.style, mxConstants.STYLE_VERTICAL_ALIGN, mxConstants.ALIGN_MIDDLE));
 			}
 			
@@ -620,19 +576,11 @@ mxCellEditor.prototype.resize = function()
 				
 		 		// Forces automatic reflow if text is removed from an oversize label and normal word wrap
 				var tmp = Math.round(this.bounds.width / ((document.documentMode == 8) ? scale : scale)) + this.wordWrapPadding;
-
-				if (this.textarea.style.position != 'relative')
+				this.textarea.style.width = tmp + 'px';
+				
+				if (this.textarea.scrollWidth > tmp)
 				{
-					this.textarea.style.width = tmp + 'px';
-					
-					if (this.textarea.scrollWidth > tmp)
-					{
-						this.textarea.style.width = this.textarea.scrollWidth + 'px';
-					}
-				}
-				else
-				{
-					this.textarea.style.maxWidth = tmp + 'px';
+					this.textarea.style.width = this.textarea.scrollWidth + 'px';
 				}
 			}
 			else
@@ -718,45 +666,6 @@ mxCellEditor.prototype.getBackgroundColor = function(state)
 };
 
 /**
- * Function: isLegacyEditor
- * 
- * Returns true if max-width is not supported or if the SVG root element in
- * in the graph does not have CSS position absolute. In these cases the text
- * editor must use CSS position absolute to avoid an offset but it will have
- * a less accurate line wrapping width during the text editing preview. This
- * implementation returns true for IE8- and quirks mode or if the CSS position
- * of the SVG element is not absolute.
- */
-mxCellEditor.prototype.isLegacyEditor = function()
-{
-	if (mxClient.IS_VML)
-	{
-		return true;
-	}
-	else
-	{
-		var absoluteRoot = false;
-		
-		if (mxClient.IS_SVG)
-		{
-			var root = this.graph.view.getDrawPane().ownerSVGElement;
-			
-			if (root != null)
-			{
-				var css = mxUtils.getCurrentStyle(root);
-				
-				if (css != null)
-				{				
-					absoluteRoot = css.position == 'absolute';
-				}
-			}
-		}
-		
-		return !absoluteRoot;
-	}
-};
-
-/**
  * Function: startEditing
  *
  * Starts the editor for the given cell.
@@ -768,10 +677,7 @@ mxCellEditor.prototype.isLegacyEditor = function()
  */
 mxCellEditor.prototype.startEditing = function(cell, trigger)
 {
-	this.stopEditing(true);
-	this.align = null;
-	
-	// Creates new textarea instance
+	// Lazy instantiates textarea to save memory in IE
 	if (this.textarea == null)
 	{
 		this.init();
@@ -782,6 +688,7 @@ mxCellEditor.prototype.startEditing = function(cell, trigger)
 		this.graph.tooltipHandler.hideTooltip();
 	}
 	
+	this.stopEditing(true);
 	var state = this.graph.getView().getState(cell);
 	
 	if (state != null)
@@ -796,23 +703,12 @@ mxCellEditor.prototype.startEditing = function(cell, trigger)
 				mxConstants.FONT_BOLD) == mxConstants.FONT_BOLD;
 		var italic = (mxUtils.getValue(state.style, mxConstants.STYLE_FONTSTYLE, 0) &
 				mxConstants.FONT_ITALIC) == mxConstants.FONT_ITALIC;
-		var txtDecor = [];
-		
-		if ((mxUtils.getValue(state.style, mxConstants.STYLE_FONTSTYLE, 0) &
-				mxConstants.FONT_UNDERLINE) == mxConstants.FONT_UNDERLINE)
-		{
-			txtDecor.push('underline');
-		}
-		
-		if ((mxUtils.getValue(state.style, mxConstants.STYLE_FONTSTYLE, 0) &
-				mxConstants.FONT_STRIKETHROUGH) == mxConstants.FONT_STRIKETHROUGH)
-		{
-			txtDecor.push('line-through');
-		}
+		var uline = (mxUtils.getValue(state.style, mxConstants.STYLE_FONTSTYLE, 0) &
+				mxConstants.FONT_UNDERLINE) == mxConstants.FONT_UNDERLINE;
 		
 		this.textarea.style.lineHeight = (mxConstants.ABSOLUTE_LINE_HEIGHT) ? Math.round(size * mxConstants.LINE_HEIGHT) + 'px' : mxConstants.LINE_HEIGHT;
 		this.textarea.style.backgroundColor = this.getBackgroundColor(state);
-		this.textarea.style.textDecoration = txtDecor.join(' ');
+		this.textarea.style.textDecoration = (uline) ? 'underline' : '';
 		this.textarea.style.fontWeight = (bold) ? 'bold' : 'normal';
 		this.textarea.style.fontStyle = (italic) ? 'italic' : '';
 		this.textarea.style.fontSize = Math.round(size) + 'px';
@@ -883,21 +779,24 @@ mxCellEditor.prototype.startEditing = function(cell, trigger)
 		
 		this.resize();
 		
-		// Workaround for NS_ERROR_FAILURE in FF
-		try
+		if (this.textarea != null)
 		{
-			// Prefers blinking cursor over no selected text if empty
-			this.textarea.focus();
-			
-			if (this.isSelectText() && this.textarea.innerHTML.length > 0 &&
-				(this.textarea.innerHTML != this.getEmptyLabelText() || !this.clearOnChange))
+			// Workaround for NS_ERROR_FAILURE in FF
+			try
 			{
-				document.execCommand('selectAll', false, null);
+				// Prefers blinking cursor over no selected text if empty
+				this.textarea.focus();
+				
+				if (this.isSelectText() && this.textarea.innerHTML.length > 0 &&
+					(this.textarea.innerHTML != this.getEmptyLabelText() || !this.clearOnChange))
+				{
+					document.execCommand('selectAll', false, null);
+				}
 			}
-		}
-		catch (e)
-		{
-			// ignore
+			catch (e)
+			{
+				// ignore
+			}
 		}
 	}
 };
@@ -910,37 +809,6 @@ mxCellEditor.prototype.startEditing = function(cell, trigger)
 mxCellEditor.prototype.isSelectText = function()
 {
 	return this.selectText;
-};
-
-/**
- * Function: isSelectText
- * 
- * Returns <selectText>.
- */
-mxCellEditor.prototype.clearSelection = function()
-{
-	var selection = null;
-	
-	if (window.getSelection)
-	{
-		selection = window.getSelection();
-	}
-	else if (document.selection)
-	{
-		selection = document.selection;
-	}
-	
-	if (selection != null)
-	{
-		if (selection.empty)
-		{
-			selection.empty();
-		}
-		else if (selection.removeAllRanges)
-		{
-			selection.removeAllRanges();
-		}
-	}
 };
 
 /**
@@ -968,7 +836,6 @@ mxCellEditor.prototype.stopEditing = function(cancel)
 		this.trigger = null;
 		this.bounds = null;
 		this.textarea.blur();
-		this.clearSelection();
 		
 		if (this.textarea.parentNode != null)
 		{
@@ -980,50 +847,16 @@ mxCellEditor.prototype.stopEditing = function(cancel)
 			this.textarea.innerHTML = '';
 			this.clearOnChange = false;
 		}
-
-		if (state != null && (this.textarea.innerHTML != initial || this.align != null))
+		
+		if (state != null && this.textarea.innerHTML != initial)
 		{
-			this.prepareTextarea();
 			var value = this.getCurrentValue(state);
 			
-			this.graph.getModel().beginUpdate();
-			try
+			if (value != null)
 			{
-				if (value != null)
-				{
-					this.applyValue(state, value);
-				}
-				
-				if (this.align != null)
-				{
-					this.graph.setCellStyles(mxConstants.STYLE_ALIGN, this.align, [state.cell]);
-				}
-			}
-			finally
-			{
-				this.graph.getModel().endUpdate();
+				this.applyValue(state, value);
 			}
 		}
-		
-		// Forces new instance on next edit for undo history reset
-		mxEvent.release(this.textarea);
-		this.textarea = null;
-		this.align = null;
-	}
-};
-
-/**
- * Function: prepareTextarea
- * 
- * Prepares the textarea for getting its value in <stopEditing>.
- * This implementation removes the extra trailing linefeed in Firefox.
- */
-mxCellEditor.prototype.prepareTextarea = function()
-{
-	if (this.textarea.lastChild != null &&
-		this.textarea.lastChild.nodeName == 'BR')
-	{
-		this.textarea.removeChild(this.textarea.lastChild);
 	}
 };
 
@@ -1203,18 +1036,19 @@ mxCellEditor.prototype.destroy = function ()
 		}
 		
 		this.textarea = null;
-
-	}
-			
-	if (this.changeHandler != null)
-	{
-		this.graph.getModel().removeListener(this.changeHandler);
-		this.changeHandler = null;
-	}
-
-	if (this.zoomHandler)
-	{
-		this.graph.view.removeListener(this.zoomHandler);
-		this.zoomHandler = null;
+		
+		if (this.changeHandler != null)
+		{
+			this.graph.getModel().removeListener(this.changeHandler);
+			this.changeHandler = null;
+		}
+		
+		if (this.zoomHandler)
+		{
+			this.graph.view.removeListener(this.zoomHandler);
+			this.zoomHandler = null;
+		}
 	}
 };
+
+exports.mxCellEditor = mxCellEditor;
