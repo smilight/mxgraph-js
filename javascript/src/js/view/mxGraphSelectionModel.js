@@ -313,12 +313,12 @@ mxGraphSelectionModel.prototype.removeCells = function(cells)
 /**
  * Function: changeSelection
  *
- * Inner callback to add the specified <mxCell> to the selection. No event
- * is fired in this implementation.
+ * Adds/removes the specified arrays of <mxCell> to/from the selection.
  * 
- * Paramters:
+ * Parameters:
  * 
- * cell - <mxCell> to add to the selection.
+ * added - Array of <mxCell> to add to the selection.
+ * remove - Array of <mxCell> to remove from the selection.
  */
 mxGraphSelectionModel.prototype.changeSelection = function(added, removed)
 {
@@ -434,5 +434,3 @@ mxSelectionChange.prototype.execute = function()
 	this.selectionModel.fireEvent(new mxEventObject(mxEvent.CHANGE,
 			'added', this.added, 'removed', this.removed));
 };
-
-exports.mxGraphSelectionModel = mxGraphSelectionModel;

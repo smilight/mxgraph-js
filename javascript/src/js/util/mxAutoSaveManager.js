@@ -211,5 +211,3 @@ mxAutoSaveManager.prototype.destroy = function()
 {
 	this.setGraph(null);
 };
-
-exports.mxAutoSaveManager = mxAutoSaveManager;

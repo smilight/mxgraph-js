@@ -106,5 +106,3 @@ mxMinimumCycleRemover.prototype.execute = function(parent)
 		delete unseenNodes[node.id];
 	}, unseenNodes, true, seenNodesCopy);
 };
-
-exports.mxMinimumCycleRemover = mxMinimumCycleRemover;

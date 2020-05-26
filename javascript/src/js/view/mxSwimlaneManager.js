@@ -448,5 +448,3 @@ mxSwimlaneManager.prototype.destroy = function()
 {
 	this.setGraph(null);
 };
-
-exports.mxSwimlaneManager = mxSwimlaneManager;

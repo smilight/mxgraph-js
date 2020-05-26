@@ -85,7 +85,7 @@ var mxUtils =
 	 */
 	getCurrentStyle: function()
 	{
-		if (mxClient.IS_IE)
+		if (mxClient.IS_IE && (document.documentMode == null || document.documentMode < 9))
 		{
 			return function(element)
 			{
@@ -530,45 +530,61 @@ var mxUtils =
 	{
 		if (mxClient.IS_IE && (document.documentMode == null || document.documentMode < 10))
 		{
-			switch (node.nodeType)
-			{
-				case 1: /* element */
-				{
-					var newNode = doc.createElement(node.nodeName);
-					
-					if (node.attributes && node.attributes.length > 0)
-					{
-						for (var i = 0; i < node.attributes.length; i++)
-						{
-							newNode.setAttribute(node.attributes[i].nodeName,
-								node.getAttribute(node.attributes[i].nodeName));
-						}
-						
-						if (allChildren && node.childNodes && node.childNodes.length > 0)
-						{
-							for (var i = 0; i < node.childNodes.length; i++)
-							{
-								newNode.appendChild(mxUtils.importNode(doc, node.childNodes[i], allChildren));
-							}
-						}
-					}
-					
-					return newNode;
-					break;
-				}
-				case 3: /* text */
-			    case 4: /* cdata-section */
-			    case 8: /* comment */
-			    {
-			      return doc.createTextNode(node.value);
-			      break;
-			    }
-			};
+			return mxUtils.importNodeImplementation(doc, node, allChildren);
 		}
 		else
 		{
 			return doc.importNode(node, allChildren);
 		}
+	},
+
+	/**
+	 * Function: importNodeImplementation
+	 * 
+	 * Full DOM API implementation for importNode without using importNode API call.
+	 * 
+	 * Parameters:
+	 * 
+	 * doc - Document to import the node into.
+	 * node - Node to be imported.
+	 * allChildren - If all children should be imported.
+	 */
+	importNodeImplementation: function(doc, node, allChildren)
+	{
+		switch (node.nodeType)
+		{
+			case 1: /* element */
+			{
+				var newNode = doc.createElement(node.nodeName);
+				
+				if (node.attributes && node.attributes.length > 0)
+				{
+					for (var i = 0; i < node.attributes.length; i++)
+					{
+						newNode.setAttribute(node.attributes[i].nodeName,
+							node.getAttribute(node.attributes[i].nodeName));
+					}	
+				}
+				
+				if (allChildren && node.childNodes && node.childNodes.length > 0)
+				{
+					for (var i = 0; i < node.childNodes.length; i++)
+					{
+						newNode.appendChild(mxUtils.importNodeImplementation(doc, node.childNodes[i], allChildren));
+					}
+				}
+				
+				return newNode;
+				break;
+			}
+			case 3: /* text */
+		    case 4: /* cdata-section */
+		    case 8: /* comment */
+		    {
+		    	return doc.createTextNode((node.nodeValue != null) ? node.nodeValue : node.value);
+		    	break;
+		    }
+		};
 	},
 
 	/**
@@ -584,10 +600,27 @@ var mxUtils =
 		{
 			doc = document.implementation.createDocument('', '', null);
 		}
-		else if (window.ActiveXObject)
+		else if ("ActiveXObject" in window)
 		{
-			doc = new ActiveXObject('Microsoft.XMLDOM');
+			doc = mxUtils.createMsXmlDocument();
 	 	}
+	 	
+	 	return doc;
+	},
+
+	/**
+	 * Function: createMsXmlDocument
+	 * 
+	 * Returns a new, empty Microsoft.XMLDOM document using ActiveXObject.
+	 */
+	createMsXmlDocument: function()
+	{
+		var doc = new ActiveXObject('Microsoft.XMLDOM');
+		doc.async = false;
+
+		// Workaround for parsing errors with SVG DTD
+		doc.validateOnParse = false;
+		doc.resolveExternals = false;
 	 	
 	 	return doc;
 	},
@@ -628,14 +661,10 @@ var mxUtils =
 		{
 			return function(xml)
 			{
-				var result = mxUtils.createXmlDocument();
-				result.async = false;
-				// Workaround for parsing errors with SVG DTD
-				result.validateOnParse = false;
-				result.resolveExternals = false;
-				result.loadXML(xml);
+				var doc = mxUtils.createMsXmlDocument();
+				doc.loadXML(xml);
 				
-				return result;
+				return doc;
 			};
 		}
 	}(),
@@ -658,7 +687,14 @@ var mxUtils =
 		{
 			return function()
 			{
-				window.getSelection().removeAllRanges();
+				if (window.getSelection().empty)
+				{
+					window.getSelection().empty();
+				}
+				else if (window.getSelection().removeAllRanges)
+				{
+					window.getSelection().removeAllRanges();
+				}
 			};
 		}
 		else
@@ -667,78 +703,6 @@ var mxUtils =
 		}
 	}(),
 
-	/**
-	 * Function: getPrettyXML
-	 * 
-	 * Returns a pretty printed string that represents the XML tree for the
-	 * given node. This method should only be used to print XML for reading,
-	 * use <getXml> instead to obtain a string for processing.
-	 * 
-	 * Parameters:
-	 * 
-	 * node - DOM node to return the XML for.
-	 * tab - Optional string that specifies the indentation for one level.
-	 * Default is two spaces.
-	 * indent - Optional string that represents the current indentation.
-	 * Default is an empty string.
-	 */
-	getPrettyXml: function(node, tab, indent)
-	{
-		var result = [];
-		
-		if (node != null)
-		{
-			tab = tab || '  ';
-			indent = indent || '';
-			
-			if (node.nodeType == mxConstants.NODETYPE_TEXT)
-			{
-				result.push(node.value);
-			}
-			else
-			{
-				result.push(indent + '<' + node.nodeName);
-				
-				// Creates the string with the node attributes
-				// and converts all HTML entities in the values
-				var attrs = node.attributes;
-				
-				if (attrs != null)
-				{
-					for (var i = 0; i < attrs.length; i++)
-					{
-						var val = mxUtils.htmlEntities(attrs[i].value);
-						result.push(' ' + attrs[i].nodeName + '="' + val + '"');
-					}
-				}
-
-				// Recursively creates the XML string for each
-				// child nodes and appends it here with an
-				// indentation
-				var tmp = node.firstChild;
-				
-				if (tmp != null)
-				{
-					result.push('>\n');
-					
-					while (tmp != null)
-					{
-						result.push(mxUtils.getPrettyXml(tmp, tab, indent + tab));
-						tmp = tmp.nextSibling;
-					}
-					
-					result.push(indent + '</'+node.nodeName + '>\n');
-				}
-				else
-				{
-					result.push('/>\n');
-				}
-			}
-		}
-		
-		return result.join('');
-	},
-	
 	/**
 	 * Function: removeWhitespace
 	 * 
@@ -781,7 +745,7 @@ var mxUtils =
 	 */
 	htmlEntities: function(s, newline)
 	{
-		s = s || '';
+		s = String(s || '');
 		
 		s = s.replace(/&/g,'&amp;'); // 38 26
 		s = s.replace(/"/g,'&quot;'); // 34 22
@@ -828,8 +792,12 @@ var mxUtils =
 	getXml: function(node, linefeed)
 	{
 		var xml = '';
-
-		if (window.XMLSerializer != null)
+		
+		if (mxClient.IS_IE || mxClient.IS_IE11)
+		{
+			xml = mxUtils.getPrettyXml(node, '', '', '');
+		}
+		else if (window.XMLSerializer != null)
 		{
 			var xmlSerializer = new XMLSerializer();
 			xml = xmlSerializer.serializeToString(node);     
@@ -849,6 +817,120 @@ var mxUtils =
 	},
 	
 	/**
+	 * Function: getPrettyXML
+	 * 
+	 * Returns a pretty printed string that represents the XML tree for the
+	 * given node. This method should only be used to print XML for reading,
+	 * use <getXml> instead to obtain a string for processing.
+	 * 
+	 * Parameters:
+	 * 
+	 * node - DOM node to return the XML for.
+	 * tab - Optional string that specifies the indentation for one level.
+	 * Default is two spaces.
+	 * indent - Optional string that represents the current indentation.
+	 * Default is an empty string.
+	 * newline - Option string that represents a linefeed. Default is '\n'.
+	 */
+	getPrettyXml: function(node, tab, indent, newline, ns)
+	{
+		var result = [];
+		
+		if (node != null)
+		{
+			tab = (tab != null) ? tab : '  ';
+			indent = (indent != null) ? indent : '';
+			newline = (newline != null) ? newline : '\n';
+			
+			if (node.namespaceURI != null && node.namespaceURI != ns)
+			{
+				ns = node.namespaceURI;
+				
+				if (node.getAttribute('xmlns') == null)
+				{
+					node.setAttribute('xmlns', node.namespaceURI);
+				}
+			}
+			
+			if (node.nodeType == mxConstants.NODETYPE_DOCUMENT)
+			{
+				result.push(mxUtils.getPrettyXml(node.documentElement, tab, indent, newline, ns));
+			}
+			else if (node.nodeType == mxConstants.NODETYPE_DOCUMENT_FRAGMENT)
+			{
+				var tmp = node.firstChild;
+				
+				if (tmp != null)
+				{
+					while (tmp != null)
+					{
+						result.push(mxUtils.getPrettyXml(tmp, tab, indent, newline, ns));
+						tmp = tmp.nextSibling;
+					}
+				}
+			}
+			else if (node.nodeType == mxConstants.NODETYPE_COMMENT)
+			{
+				var value = mxUtils.getTextContent(node);
+				
+				if (value.length > 0)
+				{
+					result.push(indent + '<!--' + value + '-->' + newline);
+				}
+			}
+			else if (node.nodeType == mxConstants.NODETYPE_TEXT)
+			{
+				var value = mxUtils.getTextContent(node);
+				
+				if (value.length > 0)
+				{
+					result.push(indent + mxUtils.htmlEntities(mxUtils.trim(value), false) + newline);
+				}
+			}
+			else
+			{
+				result.push(indent + '<' + node.nodeName);
+				
+				// Creates the string with the node attributes
+				// and converts all HTML entities in the values
+				var attrs = node.attributes;
+				
+				if (attrs != null)
+				{
+					for (var i = 0; i < attrs.length; i++)
+					{
+						var val = mxUtils.htmlEntities(attrs[i].value);
+						result.push(' ' + attrs[i].nodeName + '="' + val + '"');
+					}
+				}
+
+				// Recursively creates the XML string for each child
+				// node and appends it here with an indentation
+				var tmp = node.firstChild;
+				
+				if (tmp != null)
+				{
+					result.push('>' + newline);
+					
+					while (tmp != null)
+					{
+						result.push(mxUtils.getPrettyXml(tmp, tab, indent + tab, newline, ns));
+						tmp = tmp.nextSibling;
+					}
+					
+					result.push(indent + '</'+ node.nodeName + '>' + newline);
+				}
+				else
+				{
+					result.push(' />' + newline);
+				}
+			}
+		}
+		
+		return result.join('');
+	},
+	
+	/**
 	 * Function: extractTextWithWhitespace
 	 * 
 	 * Returns the text content of the specified node.
@@ -859,50 +941,57 @@ var mxUtils =
 	 */
 	extractTextWithWhitespace: function(elems)
 	{
-		// Converts newlines in plain text to breaks in HTML
-		// to match the plain text output
-	    var ignoreBr = false;
-	    var ret = [];
+	    // Known block elements for handling linefeeds (list is not complete)
+		var blocks = ['BLOCKQUOTE', 'DIV', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'OL', 'P', 'PRE', 'TABLE', 'UL'];
+		var ret = [];
+		
+		function doExtract(elts)
+		{
+			// Single break should be ignored
+			if (elts.length == 1 && (elts[0].nodeName == 'BR' ||
+				elts[0].innerHTML == '\n'))
+			{
+				return;
+			}
+			
+		    for (var i = 0; i < elts.length; i++)
+		    {
+		        var elem = elts[i];
+
+				// DIV with a br or linefeed forces a linefeed
+				if (elem.nodeName == 'BR' || elem.innerHTML == '\n' ||
+					((elts.length == 1 || i == 0) && (elem.nodeName == 'DIV' &&
+					elem.innerHTML.toLowerCase() == '<br>')))
+		    	{
+	    			ret.push('\n');
+		    	}
+				else
+				{
+			        if (elem.nodeType === 3 || elem.nodeType === 4)
+			        {
+			        	if (elem.nodeValue.length > 0)
+			        	{
+			        		ret.push(elem.nodeValue);
+			        	}
+			        }
+			        else if (elem.nodeType !== 8 && elem.childNodes.length > 0)
+					{
+						doExtract(elem.childNodes);
+					}
+			        
+	        		if (i < elts.length - 1 && mxUtils.indexOf(blocks, elts[i + 1].nodeName) >= 0)
+	        		{
+	        			ret.push('\n');		
+	        		}
+				}
+		    }
+		};
+		
+		doExtract(elems);
 	    
-	    for (var i = 0; elems[i]; i++)
-	    {
-	        var elem = elems[i];
-
-	        // Get the text from text nodes and CDATA nodes
-	        if (elem.nodeType === 3 || elem.nodeType === 4)
-	        {
-	        	// Workaround for last empty element in IE 11
-	        	if (document.documentMode == 11 && i == elems.length - 1 && elem.nodeValue.length == 0)
-        		{
-        			break;
-        		}
-	        	
-	        	// Only inserts a newline if the next element is not another text element
-	        	ret.push(elem.nodeValue + ((elem.nextSibling == null || elem.nextSibling.nodeType != 3) ? '\n' : ''));
-	            ignoreBr = true;
-
-	        // Traverse everything else, except comment nodes
-	        }
-	        else if (elem.nodeType !== 8)
-	        {
-	        	// Best effort normalization translates BR (except after text) and empty P (in IE) to line breaks
-	        	if ((((mxClient.IS_IE || mxClient.IS_IE11) && elem.nodeName == 'P' && elem.innerHTML.length == 0)) ||
-	        		(!ignoreBr && elem.nodeName == 'BR') || (elem.nodeName == 'DIV' && elem.innerHTML == '<br>'))
-	        	{
-	        		ret.push('\n');
-	        	}
-	        	else
-	        	{	 
-	        		ret.push(mxUtils.extractTextWithWhitespace(elem.childNodes));
-	        	}
-
-		        ignoreBr = false;
-	        }
-	    }
-
 	    return ret.join('');
 	},
-	
+
 	/**
 	 * Function: replaceTrailingNewlines
 	 * 
@@ -933,7 +1022,8 @@ var mxUtils =
 	 */
 	getTextContent: function(node)
 	{
-		if (node.innerText !== undefined)
+		// Only IE10-
+		if (mxClient.IS_IE && node.innerText !== undefined)
 		{
 			return node.innerText;
 		}
@@ -1317,6 +1407,26 @@ var mxUtils =
 	},
 
 	/**
+	 * Function: getDocumentSize
+	 * 
+	 * Returns the client size for the current document as an <mxRectangle>.
+	 */
+	getDocumentSize: function()
+	{
+		var b = document.body;
+		var d = document.documentElement;
+		
+		try
+		{
+			return new mxRectangle(0, 0, b.clientWidth || d.clientWidth, Math.max(b.clientHeight || 0, d.clientHeight));
+		}
+		catch (e)
+		{
+			return new mxRectangle();
+		}
+	},
+	
+	/**
 	 * Function: fit
 	 * 
 	 * Makes sure the given node is inside the visible area of the window. This
@@ -1324,6 +1434,7 @@ var mxUtils =
 	 */
 	fit: function(node)
 	{
+		var ds = mxUtils.getDocumentSize();
 		var left = parseInt(node.offsetLeft);
 		var width = parseInt(node.offsetWidth);
 			
@@ -1333,7 +1444,7 @@ var mxUtils =
 
 		var b = document.body;
 		var d = document.documentElement;
-		var right = (sl) + (b.clientWidth || d.clientWidth);
+		var right = (sl) + ds.width;
 		
 		if (left + width > right)
 		{
@@ -1343,7 +1454,7 @@ var mxUtils =
 		var top = parseInt(node.offsetTop);
 		var height = parseInt(node.offsetHeight);
 		
-		var bottom = st + Math.max(b.clientHeight || 0, d.clientHeight);
+		var bottom = st + ds.height;
 		
 		if (top + height > bottom)
 		{
@@ -1424,10 +1535,25 @@ var mxUtils =
 	 * binary.
 	 * timeout - Optional timeout in ms before calling ontimeout.
 	 * ontimeout - Optional function to execute on timeout.
+	 * headers - Optional with headers, eg. {'Authorization': 'token xyz'}
 	 */
-	get: function(url, onload, onerror, binary, timeout, ontimeout)
+	get: function(url, onload, onerror, binary, timeout, ontimeout, headers)
 	{
 		var req = new mxXmlRequest(url, null, 'GET');
+		var setRequestHeaders = req.setRequestHeaders;
+		
+		if (headers)
+		{
+			req.setRequestHeaders = function(request, params)
+			{
+				setRequestHeaders.apply(this, arguments);
+				
+				for (var key in headers)
+				{
+					request.setRequestHeader(key, headers[key]);
+				}
+			};
+		}
 		
 		if (binary != null)
 		{
@@ -1731,7 +1857,10 @@ var mxUtils =
 		{
 			for (var i = 0; i < a.length; i++)
 			{
-				if (a[i] == b[i] || (a[i] != null && !a[i].equals(b[i])))
+				if ((a[i] != null && b[i] == null) ||
+					(a[i] == null && b[i] != null) ||
+					(a[i] != null && b[i] != null &&
+					(a[i].x != b[i].x || a[i].y != b[i].y)))
 				{
 					return false;
 				}
@@ -1754,6 +1883,9 @@ var mxUtils =
 	 */
 	equalEntries: function(a, b)
 	{
+		// Counts keys in b to check if all values have been compared
+		var count = 0;
+
 		if ((a == null && b != null) || (a != null && b == null) ||
 			(a != null && b != null && a.length != b.length))
 		{
@@ -1761,9 +1893,6 @@ var mxUtils =
 		}
 		else if (a != null && b != null)
 		{
-			// Counts keys in b to check if all values have been compared
-			var count = 0;
-			
 			for (var key in b)
 			{
 				count++;
@@ -2044,7 +2173,7 @@ var mxUtils =
             var cos = Math.cos(rad);
             var sin = Math.sin(rad);
 
-            cx = (cx != null) ? cx : new mxPoint(rect.x + rect.width / 2, rect.y  + rect.height / 2);
+            cx = (cx != null) ? cx : new mxPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
 
             var p1 = new mxPoint(rect.x, rect.y);
             var p2 = new mxPoint(rect.x + rect.width, rect.y);
@@ -2097,7 +2226,9 @@ var mxUtils =
 	 */
 	getPortConstraints: function(terminal, edge, source, defaultValue)
 	{
-		var value = mxUtils.getValue(terminal.style, mxConstants.STYLE_PORT_CONSTRAINT, null);
+		var value = mxUtils.getValue(terminal.style, mxConstants.STYLE_PORT_CONSTRAINT,
+			mxUtils.getValue(edge.style, (source) ? mxConstants.STYLE_SOURCE_PORT_CONSTRAINT :
+				mxConstants.STYLE_TARGET_PORT_CONSTRAINT, null));
 		
 		if (value == null)
 		{
@@ -2264,7 +2395,98 @@ var mxUtils =
 		
 		return index;
 	},
-	
+
+	/**
+	 * Function: getDirectedBounds
+	 * 
+	 * Adds the given margins to the given rectangle and rotates and flips the
+	 * rectangle according to the respective styles in style.
+	 */
+	getDirectedBounds: function (rect, m, style, flipH, flipV)
+	{
+		var d = mxUtils.getValue(style, mxConstants.STYLE_DIRECTION, mxConstants.DIRECTION_EAST);
+		flipH = (flipH != null) ? flipH : mxUtils.getValue(style, mxConstants.STYLE_FLIPH, false);
+		flipV = (flipV != null) ? flipV : mxUtils.getValue(style, mxConstants.STYLE_FLIPV, false);
+
+		m.x = Math.round(Math.max(0, Math.min(rect.width, m.x)));
+		m.y = Math.round(Math.max(0, Math.min(rect.height, m.y)));
+		m.width = Math.round(Math.max(0, Math.min(rect.width, m.width)));
+		m.height = Math.round(Math.max(0, Math.min(rect.height, m.height)));
+		
+		if ((flipV && (d == mxConstants.DIRECTION_SOUTH || d == mxConstants.DIRECTION_NORTH)) ||
+			(flipH && (d == mxConstants.DIRECTION_EAST || d == mxConstants.DIRECTION_WEST)))
+		{
+			var tmp = m.x;
+			m.x = m.width;
+			m.width = tmp;
+		}
+			
+		if ((flipH && (d == mxConstants.DIRECTION_SOUTH || d == mxConstants.DIRECTION_NORTH)) ||
+			(flipV && (d == mxConstants.DIRECTION_EAST || d == mxConstants.DIRECTION_WEST)))
+		{
+			var tmp = m.y;
+			m.y = m.height;
+			m.height = tmp;
+		}
+		
+		var m2 = mxRectangle.fromRectangle(m);
+		
+		if (d == mxConstants.DIRECTION_SOUTH)
+		{
+			m2.y = m.x;
+			m2.x = m.height;
+			m2.width = m.y;
+			m2.height = m.width;
+		}
+		else if (d == mxConstants.DIRECTION_WEST)
+		{
+			m2.y = m.height;
+			m2.x = m.width;
+			m2.width = m.x;
+			m2.height = m.y;
+		}
+		else if (d == mxConstants.DIRECTION_NORTH)
+		{
+			m2.y = m.width;
+			m2.x = m.y;
+			m2.width = m.height;
+			m2.height = m.x;
+		}
+		
+		return new mxRectangle(rect.x + m2.x, rect.y + m2.y, rect.width - m2.width - m2.x, rect.height - m2.height - m2.y);
+	},
+
+	/**
+	 * Function: getPerimeterPoint
+	 * 
+	 * Returns the intersection between the polygon defined by the array of
+	 * points and the line between center and point.
+	 */
+	getPerimeterPoint: function (pts, center, point)
+	{
+		var min = null;
+		
+		for (var i = 0; i < pts.length - 1; i++)
+		{
+			var pt = mxUtils.intersection(pts[i].x, pts[i].y, pts[i + 1].x, pts[i + 1].y,
+				center.x, center.y, point.x, point.y);
+			
+			if (pt != null)
+			{
+				var dx = point.x - pt.x;
+				var dy = point.y - pt.y;
+				var ip = {p: pt, distSq: dy * dy + dx * dx};
+				
+				if (ip != null && (min == null || min.distSq > ip.distSq))
+				{
+					min = ip;
+				}
+			}
+		}
+		
+		return (min != null) ? min.p : null;
+	},
+
 	/**
 	 * Function: rectangleIntersectsSegment
 	 * 
@@ -2488,7 +2710,25 @@ var mxUtils =
 		var offsetLeft = 0;
 		var offsetTop = 0;
 		
-		if (scrollOffset != null && scrollOffset)
+		// Ignores document scroll origin for fixed elements
+		var fixed = false;
+		var node = container;
+		var b = document.body;
+		var d = document.documentElement;
+
+		while (node != null && node != b && node != d && !fixed)
+		{
+			var style = mxUtils.getCurrentStyle(node);
+			
+			if (style != null)
+			{
+				fixed = fixed || style.position == 'fixed';
+			}
+			
+			node = node.parentNode;
+		}
+		
+		if (!scrollOffset && !fixed)
 		{
 			var offset = mxUtils.getDocumentScrollOrigin(container.ownerDocument);
 			offsetLeft += offset.x;
@@ -2533,13 +2773,26 @@ var mxUtils =
 	 * Function: getScrollOrigin
 	 * 
 	 * Returns the top, left corner of the viewrect as an <mxPoint>.
+	 * 
+	 * Parameters:
+	 * 
+	 * node - DOM node whose scroll origin should be returned.
+	 * includeAncestors - Whether the scroll origin of the ancestors should be
+	 * included. Default is false.
+	 * includeDocument - Whether the scroll origin of the document should be
+	 * included. Default is true.
 	 */
-	getScrollOrigin: function(node)
+	getScrollOrigin: function(node, includeAncestors, includeDocument)
 	{
-		var b = document.body;
-		var d = document.documentElement;
-		var result = mxUtils.getDocumentScrollOrigin((node != null) ? node.ownerDocument : document);
+		includeAncestors = (includeAncestors != null) ? includeAncestors : false;
+		includeDocument = (includeDocument != null) ? includeDocument : true;
 		
+		var doc = (node != null) ? node.ownerDocument : document;
+		var b = doc.body;
+		var d = doc.documentElement;
+		var result = new mxPoint();
+		var fixed = false;
+
 		while (node != null && node != b && node != d)
 		{
 			if (!isNaN(node.scrollLeft) && !isNaN(node.scrollTop))
@@ -2548,12 +2801,27 @@ var mxUtils =
 				result.y += node.scrollTop;
 			}
 			
-			node = node.parentNode;
+			var style = mxUtils.getCurrentStyle(node);
+			
+			if (style != null)
+			{
+				fixed = fixed || style.position == 'fixed';
+			}
+
+			node = (includeAncestors) ? node.parentNode : null;
+		}
+
+		if (!fixed && includeDocument)
+		{
+			var origin = mxUtils.getDocumentScrollOrigin(doc);
+
+			result.x += origin.x;
+			result.y += origin.y;
 		}
 		
 		return result;
 	},
-	
+
 	/**
 	 * Function: convertPoint
 	 * 
@@ -2573,7 +2841,7 @@ var mxUtils =
 	 */
 	convertPoint: function(container, x, y)
 	{
-		var origin = mxUtils.getScrollOrigin(container);
+		var origin = mxUtils.getScrollOrigin(container, false);
 		var offset = mxUtils.getOffset(container);
 
 		offset.x -= origin.x;
@@ -2599,7 +2867,7 @@ var mxUtils =
 	{
 		chars = chars || "\\s";
 		
-		return str.replace(new RegExp("^[" + chars + "]+", "g"), "");
+		return (str != null) ? str.replace(new RegExp("^[" + chars + "]+", "g"), "") : null;
 	},
 	
 	/**
@@ -2619,7 +2887,7 @@ var mxUtils =
 	{
 		chars = chars || "\\s";
 		
-		return str.replace(new RegExp("[" + chars + "]+$", "g"), "");
+		return (str != null) ? str.replace(new RegExp("[" + chars + "]+$", "g"), "") : null;
 	},
 	
 	/**
@@ -2700,9 +2968,9 @@ var mxUtils =
 	 */
 	intersection: function (x0, y0, x1, y1, x2, y2, x3, y3)
 	{
-		var denom = ((y3 - y2)*(x1 - x0)) - ((x3 - x2)*(y1 - y0));
-		var nume_a = ((x3 - x2)*(y0 - y2)) - ((y3 - y2)*(x0 - x2));
-		var nume_b = ((x1 - x0)*(y0 - y2)) - ((y1 - y0)*(x0 - x2));
+		var denom = ((y3 - y2) * (x1 - x0)) - ((x3 - x2) * (y1 - y0));
+		var nume_a = ((x3 - x2) * (y0 - y2)) - ((y3 - y2) * (x0 - x2));
+		var nume_b = ((x1 - x0) * (y0 - y2)) - ((y1 - y0) * (x0 - x2));
 
 		var ua = nume_a / denom;
 		var ub = nume_b / denom;
@@ -2710,10 +2978,10 @@ var mxUtils =
 		if(ua >= 0.0 && ua <= 1.0 && ub >= 0.0 && ub <= 1.0)
 		{
 			// Get the intersection point
-			var intersectionX = x0 + ua*(x1 - x0);
-			var intersectionY = y0 + ua*(y1 - y0);
+			var x = x0 + ua * (x1 - x0);
+			var y = y0 + ua * (y1 - y0);
 			
-			return new mxPoint(intersectionX, intersectionY);
+			return new mxPoint(x, y);
 		}
 		
 		// No intersection
@@ -3390,13 +3658,13 @@ var mxUtils =
 	 */
 	getAlignmentAsPoint: function(align, valign)
 	{
-		var dx = 0;
-		var dy = 0;
+		var dx = -0.5;
+		var dy = -0.5;
 		
 		// Horizontal alignment
-		if (align == mxConstants.ALIGN_CENTER)
+		if (align == mxConstants.ALIGN_LEFT)
 		{
-			dx = -0.5;
+			dx = 0;
 		}
 		else if (align == mxConstants.ALIGN_RIGHT)
 		{
@@ -3404,9 +3672,9 @@ var mxUtils =
 		}
 
 		// Vertical alignment
-		if (valign == mxConstants.ALIGN_MIDDLE)
+		if (valign == mxConstants.ALIGN_TOP)
 		{
-			dy = -0.5;
+			dy = 0;
 		}
 		else if (valign == mxConstants.ALIGN_BOTTOM)
 		{
@@ -3439,8 +3707,9 @@ var mxUtils =
 	 * fontFamily - String that specifies the name of the font family. Default
 	 * is <mxConstants.DEFAULT_FONTFAMILY>.
 	 * textWidth - Optional width for text wrapping.
+	 * fontStyle - Optional font style.
 	 */
-	getSizeForString: function(text, fontSize, fontFamily, textWidth)
+	getSizeForString: function(text, fontSize, fontFamily, textWidth, fontStyle)
 	{
 		fontSize = (fontSize != null) ? fontSize : mxConstants.DEFAULT_FONTSIZE;
 		fontFamily = (fontFamily != null) ? fontFamily : mxConstants.DEFAULT_FONTFAMILY;
@@ -3450,6 +3719,37 @@ var mxUtils =
 		div.style.fontFamily = fontFamily;
 		div.style.fontSize = Math.round(fontSize) + 'px';
 		div.style.lineHeight = Math.round(fontSize * mxConstants.LINE_HEIGHT) + 'px';
+		
+		// Sets the font style
+		if (fontStyle != null)
+		{
+			if ((fontStyle & mxConstants.FONT_BOLD) == mxConstants.FONT_BOLD)
+			{
+				div.style.fontWeight = 'bold';
+			}
+			
+			if ((fontStyle & mxConstants.FONT_ITALIC) == mxConstants.FONT_ITALIC)
+			{
+				div.style.fontStyle = 'italic';
+			}
+			
+			var txtDecor = [];
+			
+			if ((fontStyle & mxConstants.FONT_UNDERLINE) == mxConstants.FONT_UNDERLINE)
+			{
+				txtDecor.push('underline');
+			}
+			
+			if ((fontStyle & mxConstants.FONT_STRIKETHROUGH) == mxConstants.FONT_STRIKETHROUGH)
+			{
+				txtDecor.push('line-through');
+			}
+			
+			if (txtDecor.length > 0)
+			{
+				div.style.textDecoration = txtDecor.join(' ');
+			}
+		}
 		
 		// Disables block layout and outside wrapping and hides the div
 		div.style.position = 'absolute';
@@ -4205,5 +4505,3 @@ var mxUtils =
 	}
 
 };
-
-exports.mxUtils = mxUtils;

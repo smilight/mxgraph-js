@@ -227,5 +227,3 @@ mxUndoManager.prototype.trim = function()
 		}
 	}
 };
-
-exports.mxUndoManager = mxUndoManager;

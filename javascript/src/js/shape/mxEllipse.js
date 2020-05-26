@@ -46,5 +46,3 @@ mxEllipse.prototype.paintVertexShape = function(c, x, y, w, h)
 	c.ellipse(x, y, w, h);
 	c.fillAndStroke();
 };
-
-exports.mxEllipse = mxEllipse;

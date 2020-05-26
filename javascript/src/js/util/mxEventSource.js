@@ -187,5 +187,3 @@ mxEventSource.prototype.fireEvent = function(evt, sender)
 		}
 	}
 };
-
-exports.mxEventSource = mxEventSource;

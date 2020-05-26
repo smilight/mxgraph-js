@@ -288,12 +288,12 @@ mxRadialTreeLayout.prototype.calcRowDims = function(row, rowNum)
 
 	for (var i = 0; i < row.length; i++)
 	{
-		var child = row[i].child;
+		var child = row[i] != null ? row[i].child : null;
 
 		while (child != null)
 		{
 			var cell = child.cell;
-			vertexBounds = this.getVertexBounds(cell);
+			var vertexBounds = this.getVertexBounds(cell);
 			
 			this.rowMinX[rowNum] = Math.min(vertexBounds.x, this.rowMinX[rowNum]);
 			this.rowMaxX[rowNum] = Math.max(vertexBounds.x + vertexBounds.width, this.rowMaxX[rowNum]);
@@ -305,6 +305,7 @@ mxRadialTreeLayout.prototype.calcRowDims = function(row, rowNum)
 			{
 				rowHasChildren = true;
 			}
+			
 			this.row[rowNum].push(child);
 			child = child.next;
 		}
@@ -315,5 +316,3 @@ mxRadialTreeLayout.prototype.calcRowDims = function(row, rowNum)
 		this.calcRowDims(this.row[rowNum], rowNum + 1);
 	}
 };
-
-exports.mxRadialTreeLayout = mxRadialTreeLayout;

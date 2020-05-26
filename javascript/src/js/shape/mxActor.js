@@ -16,7 +16,7 @@
  * SampleShape.prototype = new mxActor();
  * SampleShape.prototype.constructor = vsAseShape;
  * 
- * mxCellRenderer.prototype.defaultShapes['sample'] = SampleShape;
+ * mxCellRenderer.registerShape('sample', SampleShape);
  * SampleShape.prototype.redrawPath = function(path, x, y, w, h)
  * {
  *   path.moveTo(0, 0);
@@ -84,5 +84,3 @@ mxActor.prototype.redrawPath = function(c, x, y, w, h)
 	c.curveTo(w, 2 * h / 5, w, 3 * h / 5, w, h);
 	c.close();
 };
-
-exports.mxActor = mxActor;

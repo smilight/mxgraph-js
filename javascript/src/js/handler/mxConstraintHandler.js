@@ -31,9 +31,15 @@ function mxConstraintHandler(graph)
 		{
 			this.reset();
 		}
+		else
+		{
+			this.redraw();
+		}
 	});
 	
 	this.graph.model.addListener(mxEvent.CHANGE, this.resetHandler);
+	this.graph.view.addListener(mxEvent.SCALE_AND_TRANSLATE, this.resetHandler);
+	this.graph.view.addListener(mxEvent.TRANSLATE, this.resetHandler);
 	this.graph.view.addListener(mxEvent.SCALE, this.resetHandler);
 	this.graph.addListener(mxEvent.ROOT, this.resetHandler);
 };
@@ -238,7 +244,7 @@ mxConstraintHandler.prototype.getCellForEvent = function(me, point)
 		}
 	}
 	
-	return cell;
+	return (this.graph.isCellLocked(cell)) ? null : cell;
 };
 
 /**
@@ -304,14 +310,9 @@ mxConstraintHandler.prototype.update = function(me, source, existingEdge, point)
 					minDistSq = tmp;
 					
 					var tmp = this.focusIcons[i].bounds.clone();
-					tmp.grow(mxConstants.HIGHLIGHT_SIZE);
-					
-					if (mxClient.IS_IE)
-					{
-						tmp.grow(1);
-						tmp.width -= 1;
-						tmp.height -= 1;
-					}
+					tmp.grow(mxConstants.HIGHLIGHT_SIZE + 1);
+					tmp.width -= 1;
+					tmp.height -= 1;
 					
 					if (this.focusHighlight == null)
 					{
@@ -348,6 +349,36 @@ mxConstraintHandler.prototype.update = function(me, source, existingEdge, point)
 		this.currentFocus = null;
 		this.currentPoint = null;
 	}
+};
+
+/**
+ * Function: redraw
+ * 
+ * Transfers the focus to the given state as a source or target terminal. If
+ * the handler is not enabled then the outline is painted, but the constraints
+ * are ignored.
+ */
+mxConstraintHandler.prototype.redraw = function()
+{
+	if (this.currentFocus != null && this.constraints != null && this.focusIcons != null)
+	{
+		var state = this.graph.view.getState(this.currentFocus.cell);
+		this.currentFocus = state;
+		this.currentFocusArea = new mxRectangle(state.x, state.y, state.width, state.height);
+		
+		for (var i = 0; i < this.constraints.length; i++)
+		{
+			var cp = this.graph.getConnectionPoint(state, this.constraints[i]);
+			var img = this.getImageForConstraint(state, this.constraints[i], cp);
+
+			var bounds = new mxRectangle(Math.round(cp.x - img.width / 2),
+				Math.round(cp.y - img.height / 2), img.width, img.height);
+			this.focusIcons[i].bounds = bounds;
+			this.focusIcons[i].redraw();
+			this.currentFocusArea.add(this.focusIcons[i].bounds);
+			this.focusPoints[i] = cp;
+		}
+	}	
 };
 
 /**
@@ -484,5 +515,3 @@ mxConstraintHandler.prototype.destroy = function()
 		this.mouseleaveHandler = null;
 	}
 };
-
-exports.mxConstraintHandler = mxConstraintHandler;

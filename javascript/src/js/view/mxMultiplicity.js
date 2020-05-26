@@ -255,5 +255,3 @@ mxMultiplicity.prototype.checkType = function(graph, value, type, attr, attrValu
 	
 	return false;
 };
-
-exports.mxMultiplicity = mxMultiplicity;

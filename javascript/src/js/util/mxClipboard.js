@@ -219,5 +219,3 @@ var mxClipboard =
 	}
 
 };
-
-exports.mxClipboard = mxClipboard;

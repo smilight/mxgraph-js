@@ -225,7 +225,8 @@ mxMouseEvent.prototype.isConsumed = function()
  */
 mxMouseEvent.prototype.consume = function(preventDefault)
 {
-	preventDefault = (preventDefault != null) ? preventDefault : true;
+	preventDefault = (preventDefault != null) ? preventDefault :
+		(this.evt.touches != null || mxEvent.isMouseEvent(this.evt));
 	
 	if (preventDefault && this.evt.preventDefault)
 	{
@@ -242,5 +243,3 @@ mxMouseEvent.prototype.consume = function(preventDefault)
 	// Sets local consumed state
 	this.consumed = true;
 };
-
-exports.mxMouseEvent = mxMouseEvent;

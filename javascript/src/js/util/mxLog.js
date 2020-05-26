@@ -71,6 +71,7 @@ var mxLog =
 				
 			// Adds the actual console as a textarea
 			mxLog.textarea = document.createElement('textarea');
+			mxLog.textarea.setAttribute('wrap', 'off');
 			mxLog.textarea.setAttribute('readOnly', 'true');
 			mxLog.textarea.style.height = '100%';
 			mxLog.textarea.style.resize = 'none';
@@ -372,7 +373,8 @@ var mxLog =
 			mxLog.textarea.value = mxLog.textarea.value + string;
 
 			// Workaround for no update in Presto 2.5.22 (Opera 10.5)
-			if (navigator.userAgent.indexOf('Presto/2.5') >= 0)
+			if (navigator.userAgent != null &&
+				navigator.userAgent.indexOf('Presto/2.5') >= 0)
 			{
 				mxLog.textarea.style.visibility = 'hidden';
 				mxLog.textarea.style.visibility = 'visible';
@@ -410,5 +412,3 @@ var mxLog =
 	}
 	
 };
-
-exports.mxLog = mxLog;

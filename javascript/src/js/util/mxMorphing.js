@@ -98,6 +98,7 @@ mxMorphing.prototype.cells = null;
  */
 mxMorphing.prototype.updateAnimation = function()
 {
+	mxAnimation.prototype.updateAnimation.apply(this, arguments);
 	var move = new mxCellStatePreview(this.graph);
 
 	if (this.cells != null)
@@ -246,5 +247,3 @@ mxMorphing.prototype.getOriginForCell = function(cell)
 	
 	return result;
 };
-
-exports.mxMorphing = mxMorphing;

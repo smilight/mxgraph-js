@@ -919,5 +919,3 @@ var mxPerimeter =
 		return result;
 	}
 };
-
-exports.mxPerimeter = mxPerimeter;

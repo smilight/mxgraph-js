@@ -143,5 +143,3 @@ mxCellTracker.prototype.destroy = function()
 		mxCellMarker.prototype.destroy.apply(this);
 	}
 };
-
-exports.mxCellTracker = mxCellTracker;

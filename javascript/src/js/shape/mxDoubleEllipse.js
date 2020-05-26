@@ -112,5 +112,3 @@ mxDoubleEllipse.prototype.getLabelBounds = function(rect)
 
 	return new mxRectangle(rect.x + margin, rect.y + margin, rect.width - 2 * margin, rect.height - 2 * margin);
 };
-
-exports.mxDoubleEllipse = mxDoubleEllipse;

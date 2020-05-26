@@ -37,6 +37,16 @@ function mxRhombus(bounds, fill, stroke, strokewidth)
 mxUtils.extend(mxRhombus, mxShape);
 
 /**
+ * Function: isRoundable
+ * 
+ * Adds roundable support.
+ */
+mxRhombus.prototype.isRoundable = function()
+{
+	return true;
+};
+
+/**
  * Function: paintVertexShape
  * 
  * Generic painting implementation.
@@ -52,5 +62,3 @@ mxRhombus.prototype.paintVertexShape = function(c, x, y, w, h)
 	     new mxPoint(x, y + hh)], this.isRounded, arcSize, true);
 	c.fillAndStroke();
 };
-
-exports.mxRhombus = mxRhombus;

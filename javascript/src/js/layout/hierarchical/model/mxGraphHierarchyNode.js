@@ -218,5 +218,3 @@ mxGraphHierarchyNode.prototype.getCoreCell = function()
 {
 	return this.cell;
 };
-
-exports.mxGraphHierarchyNode = mxGraphHierarchyNode;

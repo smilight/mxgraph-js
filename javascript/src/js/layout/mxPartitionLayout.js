@@ -238,5 +238,3 @@ mxPartitionLayout.prototype.execute = function(parent)
 		}
 	}
 };
-
-exports.mxPartitionLayout = mxPartitionLayout;

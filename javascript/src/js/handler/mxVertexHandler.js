@@ -229,7 +229,8 @@ mxVertexHandler.prototype.init = function()
 				this.graph.isLabelMovable(this.state.cell))
 			{
 				// Marks this as the label handle for getHandleForEvent
-				this.labelShape = this.createSizer(mxConstants.CURSOR_LABEL_HANDLE, mxEvent.LABEL_HANDLE, mxConstants.LABEL_HANDLE_SIZE, mxConstants.LABEL_HANDLE_FILLCOLOR);
+				this.labelShape = this.createSizer(mxConstants.CURSOR_LABEL_HANDLE, mxEvent.LABEL_HANDLE,
+					mxConstants.LABEL_HANDLE_SIZE, mxConstants.LABEL_HANDLE_FILLCOLOR);
 				this.sizers.push(this.labelShape);
 			}
 		}
@@ -284,7 +285,7 @@ mxVertexHandler.prototype.isConstrainedEvent = function(me)
 /**
  * Function: isCenteredEvent
  * 
- * Returns true if the aspect ratio if the cell should be maintained.
+ * Returns true if the center of the vertex should be maintained during the resize.
  */
 mxVertexHandler.prototype.isCenteredEvent = function(state, me)
 {
@@ -359,7 +360,9 @@ mxVertexHandler.prototype.createParentHighlightShape = function(bounds)
  */
 mxVertexHandler.prototype.createSelectionShape = function(bounds)
 {
-	var shape = new mxRectangleShape(bounds, null, this.getSelectionColor());
+	var shape = new mxRectangleShape(
+		mxRectangle.fromRectangle(bounds),
+		null, this.getSelectionColor());
 	shape.strokewidth = this.getSelectionStrokeWidth();
 	shape.isDashed = this.isSelectionDashed();
 	
@@ -606,77 +609,93 @@ mxVertexHandler.prototype.isLivePreviewBorder = function()
  */
 mxVertexHandler.prototype.start = function(x, y, index)
 {
-	this.inTolerance = true;
-	this.childOffsetX = 0;
-	this.childOffsetY = 0;
-	this.index = index;
-	this.startX = x;
-	this.startY = y;
-	
-	// Saves reference to parent state
-	var model = this.state.view.graph.model;
-	var parent = model.getParent(this.state.cell);
-	
-	if (this.state.view.currentRoot != parent && (model.isVertex(parent) || model.isEdge(parent)))
+	if (this.selectionBorder != null)
 	{
-		this.parentState = this.state.view.graph.view.getState(parent);
-	}
-	
-	// Creates a preview that can be on top of any HTML label
-	this.selectionBorder.node.style.display = (index == mxEvent.ROTATION_HANDLE) ? 'inline' : 'none';
-	
-	// Creates the border that represents the new bounds
-	if (!this.livePreview || this.isLivePreviewBorder())
-	{
-		this.preview = this.createSelectionShape(this.bounds);
+		this.livePreviewActive = this.livePreview && this.graph.model.getChildCount(this.state.cell) == 0;
+		this.inTolerance = true;
+		this.childOffsetX = 0;
+		this.childOffsetY = 0;
+		this.index = index;
+		this.startX = x;
+		this.startY = y;
 		
-		if (!(mxClient.IS_SVG && Number(this.state.style[mxConstants.STYLE_ROTATION] || '0') != 0) &&
-			this.state.text != null && this.state.text.node.parentNode == this.graph.container)
+		// Saves reference to parent state
+		var model = this.state.view.graph.model;
+		var parent = model.getParent(this.state.cell);
+		
+		if (this.state.view.currentRoot != parent && (model.isVertex(parent) || model.isEdge(parent)))
 		{
-			this.preview.dialect = mxConstants.DIALECT_STRICTHTML;
-			this.preview.init(this.graph.container);
+			this.parentState = this.state.view.graph.view.getState(parent);
 		}
-		else
+		
+		// Creates a preview that can be on top of any HTML label
+		this.selectionBorder.node.style.display = (index == mxEvent.ROTATION_HANDLE) ? 'inline' : 'none';
+		
+		// Creates the border that represents the new bounds
+		if (!this.livePreviewActive || this.isLivePreviewBorder())
 		{
-			this.preview.dialect = (this.graph.dialect != mxConstants.DIALECT_SVG) ?
-					mxConstants.DIALECT_VML : mxConstants.DIALECT_SVG;
-			this.preview.init(this.graph.view.getOverlayPane());
+			this.preview = this.createSelectionShape(this.bounds);
+			
+			if (!(mxClient.IS_SVG && Number(this.state.style[mxConstants.STYLE_ROTATION] || '0') != 0) &&
+				this.state.text != null && this.state.text.node.parentNode == this.graph.container)
+			{
+				this.preview.dialect = mxConstants.DIALECT_STRICTHTML;
+				this.preview.init(this.graph.container);
+			}
+			else
+			{
+				this.preview.dialect = (this.graph.dialect != mxConstants.DIALECT_SVG) ?
+						mxConstants.DIALECT_VML : mxConstants.DIALECT_SVG;
+				this.preview.init(this.graph.view.getOverlayPane());
+			}
 		}
-	}
-	
-	// Prepares the handles for live preview
-	if (this.livePreview)
-	{
-		this.hideSizers();
 		
 		if (index == mxEvent.ROTATION_HANDLE)
 		{
-			this.rotationShape.node.style.display = '';
-		}
-		else if (index == mxEvent.LABEL_HANDLE)
-		{
-			this.labelShape.node.style.display = '';
-		}
-		else if (this.sizers != null && this.sizers[index] != null)
-		{
-			this.sizers[index].node.style.display = '';
-		}
-		else if (index <= mxEvent.CUSTOM_HANDLE && this.customHandles != null)
-		{
-			this.customHandles[mxEvent.CUSTOM_HANDLE - index].setVisible(true);
-		}
-		
-		// Gets the array of connected edge handlers for redrawing
-		var edges = this.graph.getEdges(this.state.cell);
-		this.edgeHandlers = [];
-		
-		for (var i = 0; i < edges.length; i++)
-		{
-			var handler = this.graph.selectionCellsHandler.getHandler(edges[i]);
+			// With the rotation handle in a corner, need the angle and distance
+			var pos = this.getRotationHandlePosition();
 			
-			if (handler != null)
+			var dx = pos.x - this.state.getCenterX();
+			var dy = pos.y - this.state.getCenterY();
+			
+			this.startAngle = (dx != 0) ? Math.atan(dy / dx) * 180 / Math.PI + 90 : ((dy < 0) ? 180 : 0);
+			this.startDist = Math.sqrt(dx * dx + dy * dy);
+		}
+
+		// Prepares the handles for live preview
+		if (this.livePreviewActive)
+		{
+			this.hideSizers();
+			
+			if (index == mxEvent.ROTATION_HANDLE)
 			{
-				this.edgeHandlers.push(handler);
+				this.rotationShape.node.style.display = '';
+			}
+			else if (index == mxEvent.LABEL_HANDLE)
+			{
+				this.labelShape.node.style.display = '';
+			}
+			else if (this.sizers != null && this.sizers[index] != null)
+			{
+				this.sizers[index].node.style.display = '';
+			}
+			else if (index <= mxEvent.CUSTOM_HANDLE && this.customHandles != null)
+			{
+				this.customHandles[mxEvent.CUSTOM_HANDLE - index].setVisible(true);
+			}
+			
+			// Gets the array of connected edge handlers for redrawing
+			var edges = this.graph.getEdges(this.state.cell);
+			this.edgeHandlers = [];
+			
+			for (var i = 0; i < edges.length; i++)
+			{
+				var handler = this.graph.selectionCellsHandler.getHandler(edges[i]);
+				
+				if (handler != null)
+				{
+					this.edgeHandlers.push(handler);
+				}
 			}
 		}
 	}
@@ -769,7 +788,7 @@ mxVertexHandler.prototype.roundAngle = function(angle)
  */
 mxVertexHandler.prototype.roundLength = function(length)
 {
-	return Math.round(length);
+	return Math.round(length * 100) / 100;
 };
 
 /**
@@ -791,6 +810,7 @@ mxVertexHandler.prototype.mouseMove = function(sender, me)
 				if (this.customHandles != null)
 				{
 					this.customHandles[mxEvent.CUSTOM_HANDLE - this.index].processEvent(me);
+					this.customHandles[mxEvent.CUSTOM_HANDLE - this.index].active = true;
 				}
 			}
 			else if (this.index == mxEvent.LABEL_HANDLE)
@@ -855,14 +875,28 @@ mxVertexHandler.prototype.rotateVertex = function(me)
 	{
 		this.currentAlpha -= 180;
 	}
-
+	
+	this.currentAlpha -= this.startAngle;
+	
 	// Rotation raster
 	if (this.rotationRaster && this.graph.isGridEnabledEvent(me.getEvent()))
 	{
 		var dx = point.x - this.state.getCenterX();
 		var dy = point.y - this.state.getCenterY();
-		var dist = Math.abs(Math.sqrt(dx * dx + dy * dy) - 20) * 3;
-		var raster = Math.max(1, 5 * Math.min(3, Math.max(0, Math.round(80 / Math.abs(dist)))));
+		var dist = Math.sqrt(dx * dx + dy * dy);
+		
+		if (dist - this.startDist < 2)
+		{
+			raster = 15;
+		}
+		else if (dist - this.startDist < 25)
+		{
+			raster = 5;
+		}
+		else
+		{
+			raster = 1;
+		}
 		
 		this.currentAlpha = Math.round(this.currentAlpha / raster) * raster;
 	}
@@ -874,7 +908,7 @@ mxVertexHandler.prototype.rotateVertex = function(me)
 	this.selectionBorder.rotation = this.currentAlpha;
 	this.selectionBorder.redraw();
 					
-	if (this.livePreview)
+	if (this.livePreviewActive)
 	{
 		this.redrawHandles();
 	}
@@ -983,6 +1017,7 @@ mxVertexHandler.prototype.resizeVertex = function(me)
 		}
 	}
 	
+	var old = this.bounds;
 	this.bounds = new mxRectangle(((this.parentState != null) ? this.parentState.x : tr.x * scale) +
 		(this.unscaledBounds.x) * scale, ((this.parentState != null) ? this.parentState.y : tr.y * scale) +
 		(this.unscaledBounds.y) * scale, this.unscaledBounds.width * scale, this.unscaledBounds.height * scale);
@@ -1033,15 +1068,22 @@ mxVertexHandler.prototype.resizeVertex = function(me)
 		this.childOffsetX = 0;
 		this.childOffsetY = 0;
 	}
-	
-	if (this.livePreview)
-	{
-		this.updateLivePreview(me);
-	}
-	
-	if (this.preview != null)
-	{
-		this.drawPreview();
+			
+	if (!old.equals(this.bounds))
+	{	
+		if (this.livePreviewActive)
+		{
+			this.updateLivePreview(me);
+		}
+		
+		if (this.preview != null)
+		{
+			this.drawPreview();
+		}
+		else
+		{
+			this.updateParentHighlight();
+		}
 	}
 };
 
@@ -1065,9 +1107,6 @@ mxVertexHandler.prototype.updateLivePreview = function(me)
 	this.state.origin = new mxPoint(this.state.x / scale - tr.x, this.state.y / scale - tr.y);
 	this.state.width = this.bounds.width;
 	this.state.height = this.bounds.height;
-	
-	// Needed to force update of text bounds
-	this.state.unscaledWidth = null;
 	
 	// Redraws cell and handles
 	var off = this.state.absoluteOffset;
@@ -1100,6 +1139,30 @@ mxVertexHandler.prototype.updateLivePreview = function(me)
 	this.state.view.validate();
 	this.redrawHandles();
 	
+	// Moves live preview to front
+	if ((this.state.text != null && this.state.text.node != null &&
+		this.state.text.node.nextSibling != null) ||
+		(this.state.shape != null && this.state.shape.node != null &&
+		this.state.shape.node.nextSibling != null && (this.state.text == null ||
+		this.state.shape.node.nextSibling != this.state.text.node)))
+	{
+		if (this.state.shape != null && this.state.shape.node != null)
+		{
+			this.state.shape.node.parentNode.appendChild(this.state.shape.node);
+		}
+		
+		if (this.state.text != null && this.state.text.node != null)
+		{
+			this.state.text.node.parentNode.appendChild(this.state.text.node);
+		}
+	}
+	
+	// Hides folding icon
+	if (this.state.control != null && this.state.control.node != null)
+	{
+		this.state.control.node.style.visibility = 'hidden';
+	}
+	
 	// Restores current state
 	this.state.setState(tempState);
 };
@@ -1114,18 +1177,21 @@ mxVertexHandler.prototype.mouseUp = function(sender, me)
 	if (this.index != null && this.state != null)
 	{
 		var point = new mxPoint(me.getGraphX(), me.getGraphY());
+		var index = this.index;
+		this.index = null;
 
 		this.graph.getModel().beginUpdate();
 		try
 		{
-			if (this.index <= mxEvent.CUSTOM_HANDLE)
+			if (index <= mxEvent.CUSTOM_HANDLE)
 			{
 				if (this.customHandles != null)
 				{
-					this.customHandles[mxEvent.CUSTOM_HANDLE - this.index].execute();
+					this.customHandles[mxEvent.CUSTOM_HANDLE - index].active = false;
+					this.customHandles[mxEvent.CUSTOM_HANDLE - index].execute();
 				}
 			}
-			else if (this.index == mxEvent.ROTATION_HANDLE)
+			else if (index == mxEvent.ROTATION_HANDLE)
 			{
 				if (this.currentAlpha != null)
 				{
@@ -1161,7 +1227,7 @@ mxVertexHandler.prototype.mouseUp = function(sender, me)
 				var s = this.graph.view.scale;
 				var recurse = this.isRecursiveResize(this.state, me);
 				this.resizeCell(this.state.cell, this.roundLength(dx / s), this.roundLength(dy / s),
-					this.index, gridEnabled, this.isConstrainedEvent(me), recurse);
+					index, gridEnabled, this.isConstrainedEvent(me), recurse);
 			}
 		}
 		finally
@@ -1213,14 +1279,9 @@ mxVertexHandler.prototype.rotateCell = function(cell, angle, parent)
 		{
 			if (!model.isEdge(cell))
 			{
-				var state = this.graph.view.getState(cell);
-				var style = (state != null) ? state.style : this.graph.getCellStyle(cell);
-		
-				if (style != null)
-				{
-					var total = (style[mxConstants.STYLE_ROTATION] || 0) + angle;
-					this.graph.setCellStyles(mxConstants.STYLE_ROTATION, total, [cell]);
-				}
+				var style = this.graph.getCurrentCellStyle(cell);
+				var total = (style[mxConstants.STYLE_ROTATION] || 0) + angle;
+				this.graph.setCellStyles(mxConstants.STYLE_ROTATION, total, [cell]);
 			}
 			
 			var geo = this.graph.getCellGeometry(cell);
@@ -1275,7 +1336,7 @@ mxVertexHandler.prototype.reset = function()
 		this.preview = null;
 	}
 
-	if (this.livePreview && this.sizers != null)
+	if (this.livePreviewActive && this.sizers != null)
 	{
 		for (var i = 0; i < this.sizers.length; i++)
 		{
@@ -1284,13 +1345,27 @@ mxVertexHandler.prototype.reset = function()
 				this.sizers[i].node.style.display = '';
 			}
 		}
+		
+		// Shows folding icon
+		if (this.state.control != null && this.state.control.node != null)
+		{
+			this.state.control.node.style.visibility = '';
+		}
 	}
 
 	if (this.customHandles != null)
 	{
 		for (var i = 0; i < this.customHandles.length; i++)
 		{
-			this.customHandles[i].reset();
+			if (this.customHandles[i].active)
+			{
+				this.customHandles[i].active = false;
+				this.customHandles[i].reset();
+			}
+			else
+			{
+				this.customHandles[i].setVisible(true);
+			}
 		}
 	}
 	
@@ -1308,6 +1383,7 @@ mxVertexHandler.prototype.reset = function()
 	this.redrawHandles();
 	this.edgeHandlers = null;
 	this.unscaledBounds = null;
+	this.livePreviewActive = null;
 };
 
 /**
@@ -1324,20 +1400,25 @@ mxVertexHandler.prototype.resizeCell = function(cell, dx, dy, index, gridEnabled
 	{
 		if (index == mxEvent.LABEL_HANDLE)
 		{
+			var alpha = -mxUtils.toRadians(this.state.style[mxConstants.STYLE_ROTATION] || '0');
+			var cos = Math.cos(alpha);
+			var sin = Math.sin(alpha);
 			var scale = this.graph.view.scale;
-			dx = Math.round((this.labelShape.bounds.getCenterX() - this.startX) / scale);
-			dy = Math.round((this.labelShape.bounds.getCenterY() - this.startY) / scale);
-			
+			var pt = mxUtils.getRotatedPoint(new mxPoint(
+				Math.round((this.labelShape.bounds.getCenterX() - this.startX) / scale),
+				Math.round((this.labelShape.bounds.getCenterY() - this.startY) / scale)),
+				cos, sin);
+
 			geo = geo.clone();
 			
 			if (geo.offset == null)
 			{
-				geo.offset = new mxPoint(dx, dy);
+				geo.offset = pt;
 			}
 			else
 			{
-				geo.offset.x += dx;
-				geo.offset.y += dy;
+				geo.offset.x += pt.x;
+				geo.offset.y += pt.y;
 			}
 			
 			this.graph.model.setGeometry(cell, geo);
@@ -1433,6 +1514,8 @@ mxVertexHandler.prototype.moveChildren = function(cell, dx, dy)
  */
 mxVertexHandler.prototype.union = function(bounds, dx, dy, index, gridEnabled, scale, tr, constrained, centered)
 {
+	gridEnabled = (gridEnabled != null) ? gridEnabled && this.graph.gridEnabled : this.graph.gridEnabled;
+	
 	if (this.singleSizer)
 	{
 		var x = bounds.x + bounds.width + dx;
@@ -1469,6 +1552,10 @@ mxVertexHandler.prototype.union = function(bounds, dx, dy, index, gridEnabled, s
 			{
 				bottom = this.graph.snap(bottom / scale) * scale;
 			}
+			else
+			{
+				bottom = Math.round(bottom / scale) * scale;
+			}
 		}
 		else if (index < 3 /* Top Row */)
 		{
@@ -1477,6 +1564,10 @@ mxVertexHandler.prototype.union = function(bounds, dx, dy, index, gridEnabled, s
 			if (gridEnabled)
 			{
 				top = this.graph.snap(top / scale) * scale;
+			}
+			else
+			{
+				top = Math.round(top / scale) * scale;
 			}
 		}
 		
@@ -1488,6 +1579,10 @@ mxVertexHandler.prototype.union = function(bounds, dx, dy, index, gridEnabled, s
 			{
 				left = this.graph.snap(left / scale) * scale;
 			}
+			else
+			{
+				left = Math.round(left / scale) * scale;
+			}
 		}
 		else if (index == 2 || index == 4 || index == 7 /* Right */)
 		{
@@ -1496,6 +1591,10 @@ mxVertexHandler.prototype.union = function(bounds, dx, dy, index, gridEnabled, s
 			if (gridEnabled)
 			{
 				right = this.graph.snap(right / scale) * scale;
+			}
+			else
+			{
+				right = Math.round(right / scale) * scale;
 			}
 		}
 		
@@ -1574,13 +1673,16 @@ mxVertexHandler.prototype.union = function(bounds, dx, dy, index, gridEnabled, s
  * 
  * Redraws the handles and the preview.
  */
-mxVertexHandler.prototype.redraw = function()
+mxVertexHandler.prototype.redraw = function(ignoreHandles)
 {
 	this.selectionBounds = this.getSelectionBounds(this.state);
 	this.bounds = new mxRectangle(this.selectionBounds.x, this.selectionBounds.y, this.selectionBounds.width, this.selectionBounds.height);
-	
-	this.redrawHandles();
 	this.drawPreview();
+
+	if (!ignoreHandles)
+	{
+		this.redrawHandles();
+	}
 };
 
 /**
@@ -1629,6 +1731,21 @@ mxVertexHandler.prototype.redrawHandles = function()
 	this.horizontalOffset = 0;
 	this.verticalOffset = 0;
 	var s = this.bounds;
+	
+	if (this.customHandles != null)
+	{
+		for (var i = 0; i < this.customHandles.length; i++)
+		{
+			var temp = this.customHandles[i].shape.node.style.display;
+			this.customHandles[i].redraw();
+			this.customHandles[i].shape.node.style.display = temp;
+
+			// Hides custom handles during text editing
+			this.customHandles[i].shape.node.style.visibility =
+				(this.isCustomHandleVisible(this.customHandles[i])) ?
+				'' : 'hidden';
+		}
+	}
 
 	if (this.sizers != null && this.sizers.length > 0 && this.sizers[0] != null)
 	{
@@ -1746,7 +1863,10 @@ mxVertexHandler.prototype.redrawHandles = function()
 				this.moveSizerTo(this.sizers[7], pt.x, pt.y);
 				this.sizers[7].setCursor(crs[mxUtils.mod(4 + da, crs.length)]);
 				
-				this.moveSizerTo(this.sizers[8], cx + this.state.absoluteOffset.x, cy + this.state.absoluteOffset.y);
+				pt.x = cx + this.state.absoluteOffset.x;
+				pt.y = cy + this.state.absoluteOffset.y;
+				pt = mxUtils.getRotatedPoint(pt, cos, sin, ct);
+				this.moveSizerTo(this.sizers[8], pt.x, pt.y);
 			}
 			else if (this.state.width >= 2 && this.state.height >= 2)
 			{
@@ -1766,11 +1886,14 @@ mxVertexHandler.prototype.redrawHandles = function()
 		var sin = Math.sin(alpha);
 		
 		var ct = new mxPoint(this.state.getCenterX(), this.state.getCenterY());
-		var pt = mxUtils.getRotatedPoint(new mxPoint(s.x + s.width / 2, s.y + this.rotationHandleVSpacing), cos, sin, ct);
+		var pt = mxUtils.getRotatedPoint(this.getRotationHandlePosition(), cos, sin, ct);
 
 		if (this.rotationShape.node != null)
 		{
 			this.moveSizerTo(this.rotationShape, pt.x, pt.y);
+
+			// Hides rotation handle during text editing
+			this.rotationShape.node.style.visibility = (this.state.view.graph.isEditing()) ? 'hidden' : '';
 		}
 	}
 	
@@ -1786,16 +1909,26 @@ mxVertexHandler.prototype.redrawHandles = function()
 			this.edgeHandlers[i].redraw();
 		}
 	}
+};
 
-	if (this.customHandles != null)
-	{
-		for (var i = 0; i < this.customHandles.length; i++)
-		{
-			this.customHandles[i].redraw();
-		}
-	}
+/**
+ * Function: isCustomHandleVisible
+ * 
+ * Returns true if the given custom handle is visible.
+ */
+mxVertexHandler.prototype.isCustomHandleVisible = function(handle)
+{
+	return !this.graph.isEditing() && this.state.view.graph.getSelectionCount() == 1;
+};
 
-	this.updateParentHighlight();
+/**
+ * Function: getRotationHandlePosition
+ * 
+ * Returns an <mxPoint> that defines the rotation handle position.
+ */
+mxVertexHandler.prototype.getRotationHandlePosition = function()
+{
+	return new mxPoint(this.bounds.x + this.bounds.width / 2, this.bounds.y + this.rotationHandleVSpacing)
 };
 
 /**
@@ -1820,7 +1953,7 @@ mxVertexHandler.prototype.updateParentHighlight = function()
 				if (pstate != null && (b.x != pstate.x || b.y != pstate.y ||
 					b.width != pstate.width || b.height != pstate.height))
 				{
-					this.parentHighlight.bounds = pstate;
+					this.parentHighlight.bounds = mxRectangle.fromRectangle(pstate);
 					this.parentHighlight.redraw();
 				}
 			}
@@ -1846,6 +1979,7 @@ mxVertexHandler.prototype.updateParentHighlight = function()
 					this.parentHighlight.pointerEvents = false;
 					this.parentHighlight.rotation = Number(pstate.style[mxConstants.STYLE_ROTATION] || '0');
 					this.parentHighlight.init(this.graph.getView().getOverlayPane());
+					this.parentHighlight.redraw();
 				}
 			}
 		}
@@ -1875,11 +2009,7 @@ mxVertexHandler.prototype.drawPreview = function()
 	
 	this.selectionBorder.bounds = this.bounds;
 	this.selectionBorder.redraw();
-	
-	if (this.parentHighlight != null)
-	{
-		this.parentHighlight.redraw();
-	}
+	this.updateParentHighlight();
 };
 
 /**
@@ -1936,5 +2066,3 @@ mxVertexHandler.prototype.destroy = function()
 		this.customHandles = null;
 	}
 };
-
-exports.mxVertexHandler = mxVertexHandler;

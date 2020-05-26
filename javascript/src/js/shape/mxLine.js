@@ -49,5 +49,3 @@ mxLine.prototype.paintVertexShape = function(c, x, y, w, h)
 	c.lineTo(x + w, mid);
 	c.stroke();
 };
-
-exports.mxLine = mxLine;

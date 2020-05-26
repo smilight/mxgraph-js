@@ -173,5 +173,3 @@ mxImageExport.prototype.drawOverlays = function(state, canvas)
 	}
 };
 
-exports.mxImageExport = mxImageExport;
-

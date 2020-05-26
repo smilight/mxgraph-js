@@ -62,5 +62,3 @@ mxCodecRegistry.register(mxGenericChangeCodec(new mxGeometryChange(), 'geometry'
 mxCodecRegistry.register(mxGenericChangeCodec(new mxCollapseChange(), 'collapsed'));
 mxCodecRegistry.register(mxGenericChangeCodec(new mxVisibleChange(), 'visible'));
 mxCodecRegistry.register(mxGenericChangeCodec(new mxCellAttributeChange(), 'value'));
-
-exports.mxGenericChangeCodec = mxGenericChangeCodec;

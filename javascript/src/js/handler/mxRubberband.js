@@ -1,12 +1,12 @@
 /**
- * Copyright (c) 2006-2015, JGraph Ltd
- * Copyright (c) 2006-2015, Gaudenz Alder
+ * Copyright (c) 2006-2016, JGraph Ltd
+ * Copyright (c) 2006-2016, Gaudenz Alder
  */
 /**
  * Class: mxRubberband
  * 
  * Event handler that selects rectangular regions. This is not built-into
- * <mxGraph>. To enable rubberband selection in a graph, ssssssssuse the following code.
+ * <mxGraph>. To enable rubberband selection in a graph, use the following code.
  * 
  * Example:
  * 
@@ -119,6 +119,13 @@ mxRubberband.prototype.currentX = 0;
  * Holds the value of the y argument in the last call to <update>.
  */
 mxRubberband.prototype.currentY = 0;
+
+/**
+ * Variable: fadeOut
+ * 
+ * Optional fade out effect. Default is false.
+ */
+mxRubberband.prototype.fadeOut = false;
 
 /**
  * Function: isEnabled
@@ -270,8 +277,24 @@ mxRubberband.prototype.createShape = function()
 	}
 
 	this.graph.container.appendChild(this.sharedDiv);
+	var result = this.sharedDiv;
+	
+	if (mxClient.IS_SVG && (!mxClient.IS_IE || document.documentMode >= 10) && this.fadeOut)
+	{
+		this.sharedDiv = null;
+	}
 		
-	return this.sharedDiv;
+	return result;
+};
+
+/**
+ * Function: isActive
+ * 
+ * Returns true if this handler is active.
+ */
+mxRubberband.prototype.isActive = function(sender, me)
+{
+	return this.div != null && this.div.style.display != 'none';
 };
 
 /**
@@ -282,15 +305,26 @@ mxRubberband.prototype.createShape = function()
  */
 mxRubberband.prototype.mouseUp = function(sender, me)
 {
-	var execute = this.div != null && this.div.style.display != 'none';
+	var active = this.isActive();
 	this.reset();
-
-	if (execute)
+	
+	if (active)
 	{
-		var rect = new mxRectangle(this.x, this.y, this.width, this.height);
-		this.graph.selectRegion(rect, me.getEvent());
+		this.execute(me.getEvent());
 		me.consume();
 	}
+};
+
+/**
+ * Function: execute
+ * 
+ * Resets the state of this handler and selects the current region
+ * for the given event.
+ */
+mxRubberband.prototype.execute = function(evt)
+{
+	var rect = new mxRectangle(this.x, this.y, this.width, this.height);
+	this.graph.selectRegion(rect, evt);
 };
 
 /**
@@ -302,7 +336,22 @@ mxRubberband.prototype.reset = function()
 {
 	if (this.div != null)
 	{
-		this.div.parentNode.removeChild(this.div);
+		if (mxClient.IS_SVG && (!mxClient.IS_IE || document.documentMode >= 10) && this.fadeOut)
+		{
+			var temp = this.div;
+			mxUtils.setPrefixedStyle(temp.style, 'transition', 'all 0.2s linear');
+			temp.style.pointerEvents = 'none';
+			temp.style.opacity = 0;
+		    
+		    window.setTimeout(function()
+		    	{
+		    		temp.parentNode.removeChild(temp);
+		    	}, 200);	
+		}
+		else
+		{
+			this.div.parentNode.removeChild(this.div);
+		}
 	}
 
 	mxEvent.removeGestureListeners(document, null, this.dragHandler, this.dropHandler);
@@ -378,5 +427,3 @@ mxRubberband.prototype.destroy = function()
 		}
 	}
 };
-
-exports.mxRubberband = mxRubberband;

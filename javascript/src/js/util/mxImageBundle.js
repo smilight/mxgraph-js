@@ -101,5 +101,3 @@ mxImageBundle.prototype.getImage = function(key)
 	
 	return result;
 };
-
-exports.mxImageBundle = mxImageBundle;

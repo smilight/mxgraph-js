@@ -90,5 +90,3 @@ mxAnimation.prototype.stopAnimation = function()
 		this.fireEvent(new mxEventObject(mxEvent.DONE));
 	}
 };
-
-exports.mxAnimation = mxAnimation;
