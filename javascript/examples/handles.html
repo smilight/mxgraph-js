@@ -13,7 +13,7 @@
 	</script>
 
 	<!-- Loads and initializes the library -->
-	<script type="text/javascript" src="../mxClientOld.js"></script>
+	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
 	<!-- Example code -->
 	<script type="text/javascript">
@@ -60,7 +60,7 @@
 			}
 		};
 
-		mxCellRenderer.prototype.defaultShapes['myShape'] = MyShape;
+		mxCellRenderer.registerShape('myShape', MyShape);
 		
 		mxVertexHandler.prototype.createCustomHandles = function()
 		{

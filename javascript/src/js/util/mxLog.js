@@ -6,18 +6,18 @@ var mxLog =
 {
 	/**
 	 * Class: mxLog
-	 * 
+	 *
 	 * A singleton class that implements a simple console.
-	 * 
+	 *
 	 * Variable: consoleName
-	 * 
+	 *
 	 * Specifies the name of the console window. Default is 'Console'.
 	 */
 	consoleName: 'Console',
-	
+
 	/**
 	 * Variable: TRACE
-	 * 
+	 *
 	 * Specified if the output for <enter> and <leave> should be visible in the
 	 * console. Default is false.
 	 */
@@ -25,7 +25,7 @@ var mxLog =
 
 	/**
 	 * Variable: DEBUG
-	 * 
+	 *
 	 * Specifies if the output for <debug> should be visible in the console.
 	 * Default is true.
 	 */
@@ -33,7 +33,7 @@ var mxLog =
 
 	/**
 	 * Variable: WARN
-	 * 
+	 *
 	 * Specifies if the output for <warn> should be visible in the console.
 	 * Default is true.
 	 */
@@ -41,11 +41,11 @@ var mxLog =
 
 	/**
 	 * Variable: buffer
-	 * 
+	 *
 	 * Buffer for pre-initialized content.
 	 */
 	buffer: '',
-	
+
 	/**
 	 * Function: init
 	 *
@@ -68,9 +68,10 @@ var mxLog =
 			var tr = document.createElement('tr');
 			var td = document.createElement('td');
 			td.style.verticalAlign = 'top';
-				
+
 			// Adds the actual console as a textarea
 			mxLog.textarea = document.createElement('textarea');
+			mxLog.textarea.setAttribute('wrap', 'off');
 			mxLog.textarea.setAttribute('readOnly', 'true');
 			mxLog.textarea.style.height = '100%';
 			mxLog.textarea.style.resize = 'none';
@@ -85,7 +86,7 @@ var mxLog =
 			{
 				mxLog.textarea.style.width = '100%';
 			}
-			
+
 			td.appendChild(mxLog.textarea);
 			tr.appendChild(td);
 			tbody.appendChild(tr);
@@ -95,7 +96,7 @@ var mxLog =
 			mxLog.td = document.createElement('td');
 			mxLog.td.style.verticalAlign = 'top';
 			mxLog.td.setAttribute('height', '30px');
-			
+
 			tr.appendChild(mxLog.td);
 			tbody.appendChild(tr);
 			table.appendChild(tbody);
@@ -105,17 +106,17 @@ var mxLog =
 			{
 				mxLog.info();
 			});
-		
+
 			mxLog.addButton('DOM', function (evt)
 			{
 				var content = mxUtils.getInnerHtml(document.body);
 				mxLog.debug(content);
 			});
-	
+
 			mxLog.addButton('Trace', function (evt)
 			{
 				mxLog.TRACE = !mxLog.TRACE;
-				
+
 				if (mxLog.TRACE)
 				{
 					mxLog.debug('Tracing enabled');
@@ -124,7 +125,7 @@ var mxLog =
 				{
 					mxLog.debug('Tracing disabled');
 				}
-			});	
+			});
 
 			mxLog.addButton('Copy', function (evt)
 			{
@@ -136,7 +137,7 @@ var mxLog =
 				{
 					mxUtils.alert(err);
 				}
-			});			
+			});
 
 			mxLog.addButton('Show', function (evt)
 			{
@@ -148,8 +149,8 @@ var mxLog =
 				{
 					mxUtils.alert(err);
 				}
-			});	
-			
+			});
+
 			mxLog.addButton('Clear', function (evt)
 			{
 				mxLog.textarea.value = '';
@@ -158,7 +159,7 @@ var mxLog =
 			// Cross-browser code to get window size
 			var h = 0;
 			var w = 0;
-			
+
 			if (typeof(window.innerWidth) === 'number')
 			{
 				h = window.innerHeight;
@@ -176,19 +177,19 @@ var mxLog =
 			mxLog.window.setResizable(true);
 			mxLog.window.setClosable(true);
 			mxLog.window.destroyOnClose = false;
-			
+
 			// Workaround for ignored textarea height in various setups
 			if (((mxClient.IS_NS || mxClient.IS_IE) && !mxClient.IS_GC &&
 				!mxClient.IS_SF && document.compatMode != 'BackCompat') ||
 				document.documentMode == 11)
 			{
 				var elt = mxLog.window.getElement();
-				
+
 				var resizeHandler = function(sender, evt)
 				{
 					mxLog.textarea.style.height = Math.max(0, elt.offsetHeight - 70) + 'px';
-				}; 
-				
+				};
+
 				mxLog.window.addListener(mxEvent.RESIZE_END, resizeHandler);
 				mxLog.window.addListener(mxEvent.MAXIMIZE, resizeHandler);
 				mxLog.window.addListener(mxEvent.NORMALIZE, resizeHandler);
@@ -197,20 +198,20 @@ var mxLog =
 			}
 		}
 	},
-	
+
 	/**
 	 * Function: info
-	 * 
+	 *
 	 * Writes the current navigator information to the console.
 	 */
 	info: function()
 	{
 		mxLog.writeln(mxUtils.toString(navigator));
 	},
-			
+
 	/**
 	 * Function: addButton
-	 * 
+	 *
 	 * Adds a button to the console using the given label and function.
 	 */
 	addButton: function(lab, funct)
@@ -220,10 +221,10 @@ var mxLog =
 		mxEvent.addListener(button, 'click', funct);
 		mxLog.td.appendChild(button);
 	},
-				
+
 	/**
 	 * Function: isVisible
-	 * 
+	 *
 	 * Returns true if the console is visible.
 	 */
 	isVisible: function()
@@ -232,14 +233,14 @@ var mxLog =
 		{
 			return mxLog.window.isVisible();
 		}
-		
+
 		return false;
 	},
-	
+
 
 	/**
 	 * Function: show
-	 * 
+	 *
 	 * Shows the console.
 	 */
 	show: function()
@@ -249,7 +250,7 @@ var mxLog =
 
 	/**
 	 * Function: setVisible
-	 * 
+	 *
 	 * Shows or hides the console.
 	 */
 	setVisible: function(visible)
@@ -267,13 +268,13 @@ var mxLog =
 
 	/**
 	 * Function: enter
-	 * 
+	 *
 	 * Writes the specified string to the console
-	 * if <TRACE> is true and returns the current 
+	 * if <TRACE> is true and returns the current
 	 * time in milliseconds.
 	 *
 	 * Example:
-	 * 
+	 *
 	 * (code)
 	 * mxLog.show();
 	 * var t0 = mxLog.enter('Hello');
@@ -286,14 +287,14 @@ var mxLog =
 		if (mxLog.TRACE)
 		{
 			mxLog.writeln('Entering '+string);
-			
+
 			return new Date().getTime();
 		}
 	},
 
 	/**
 	 * Function: leave
-	 * 
+	 *
 	 * Writes the specified string to the console
 	 * if <TRACE> is true and computes the difference
 	 * between the current time and t0 in milliseconds.
@@ -307,14 +308,14 @@ var mxLog =
 			mxLog.writeln('Leaving '+string+dt);
 		}
 	},
-	
+
 	/**
 	 * Function: debug
-	 * 
+	 *
 	 * Adds all arguments to the console if <DEBUG> is enabled.
 	 *
 	 * Example:
-	 * 
+	 *
 	 * (code)
 	 * mxLog.show();
 	 * mxLog.debug('Hello, World!');
@@ -327,14 +328,14 @@ var mxLog =
 			mxLog.writeln.apply(this, arguments);
 		}
 	},
-	
+
 	/**
 	 * Function: warn
-	 * 
+	 *
 	 * Adds all arguments to the console if <WARN> is enabled.
 	 *
 	 * Example:
-	 * 
+	 *
 	 * (code)
 	 * mxLog.show();
 	 * mxLog.warn('Hello, World!');
@@ -350,34 +351,35 @@ var mxLog =
 
 	/**
 	 * Function: write
-	 * 
+	 *
 	 * Adds the specified strings to the console.
 	 */
 	write: function()
 	{
 		var string = '';
-		
+
 		for (var i = 0; i < arguments.length; i++)
 		{
 			string += arguments[i];
-			
+
 			if (i < arguments.length - 1)
 			{
 				string += ' ';
 			}
 		}
-		
+
 		if (mxLog.textarea != null)
 		{
 			mxLog.textarea.value = mxLog.textarea.value + string;
 
 			// Workaround for no update in Presto 2.5.22 (Opera 10.5)
-			if (navigator.userAgent.indexOf('Presto/2.5') >= 0)
+			if (navigator.userAgent != null &&
+				navigator.userAgent.indexOf('Presto/2.5') >= 0)
 			{
 				mxLog.textarea.style.visibility = 'hidden';
 				mxLog.textarea.style.visibility = 'visible';
 			}
-			
+
 			mxLog.textarea.scrollTop = mxLog.textarea.scrollHeight;
 		}
 		else
@@ -385,21 +387,21 @@ var mxLog =
 			mxLog.buffer += string;
 		}
 	},
-	
+
 	/**
 	 * Function: writeln
-	 * 
+	 *
 	 * Adds the specified strings to the console, appending a linefeed at the
 	 * end of each string.
 	 */
 	writeln: function()
 	{
 		var string = '';
-		
+
 		for (var i = 0; i < arguments.length; i++)
 		{
 			string += arguments[i];
-			
+
 			if (i < arguments.length - 1)
 			{
 				string += ' ';
@@ -408,7 +410,7 @@ var mxLog =
 
 		mxLog.write(string + '\n');
 	}
-	
+
 };
 
 exports.mxLog = mxLog;

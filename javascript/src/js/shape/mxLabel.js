@@ -8,13 +8,13 @@
  * Extends <mxShape> to implement an image shape with a label.
  * This shape is registered under <mxConstants.SHAPE_LABEL> in
  * <mxCellRenderer>.
- * 
+ *
  * Constructor: mxLabel
  *
  * Constructs a new label shape.
- * 
+ *
  * Parameters:
- * 
+ *
  * bounds - <mxRectangle> that defines the bounds. This is stored in
  * <mxShape.bounds>.
  * fill - String that defines the fill color. This is stored in <fill>.
@@ -92,8 +92,9 @@ mxLabel.prototype.redraw = function()
 		this.indicator.stroke = this.indicatorStrokeColor;
 		this.indicator.gradient = this.indicatorGradientColor;
 		this.indicator.direction = this.indicatorDirection;
+		this.indicator.redraw();
 	}
-	
+
 	mxShape.prototype.redraw.apply(this, arguments);
 };
 
@@ -111,20 +112,20 @@ mxLabel.prototype.isHtmlAllowed = function()
 
 /**
  * Function: paintForeground
- * 
+ *
  * Generic background painting implementation.
  */
 mxLabel.prototype.paintForeground = function(c, x, y, w, h)
 {
 	this.paintImage(c, x, y, w, h);
 	this.paintIndicator(c, x, y, w, h);
-	
+
 	mxRectangleShape.prototype.paintForeground.apply(this, arguments);
 };
 
 /**
  * Function: paintImage
- * 
+ *
  * Generic background painting implementation.
  */
 mxLabel.prototype.paintImage = function(c, x, y, w, h)
@@ -138,7 +139,7 @@ mxLabel.prototype.paintImage = function(c, x, y, w, h)
 
 /**
  * Function: getImageBounds
- * 
+ *
  * Generic background painting implementation.
  */
 mxLabel.prototype.getImageBounds = function(x, y, w, h)
@@ -174,13 +175,13 @@ mxLabel.prototype.getImageBounds = function(x, y, w, h)
 	{
 		y += (h - height) / 2;
 	}
-	
+
 	return new mxRectangle(x, y, width, height);
 };
 
 /**
  * Function: paintIndicator
- * 
+ *
  * Generic background painting implementation.
  */
 mxLabel.prototype.paintIndicator = function(c, x, y, w, h)
@@ -199,7 +200,7 @@ mxLabel.prototype.paintIndicator = function(c, x, y, w, h)
 
 /**
  * Function: getIndicatorBounds
- * 
+ *
  * Generic background painting implementation.
  */
 mxLabel.prototype.getIndicatorBounds = function(x, y, w, h)
@@ -208,8 +209,8 @@ mxLabel.prototype.getIndicatorBounds = function(x, y, w, h)
 	var valign = mxUtils.getValue(this.style, mxConstants.STYLE_IMAGE_VERTICAL_ALIGN, mxConstants.ALIGN_MIDDLE);
 	var width = mxUtils.getNumber(this.style, mxConstants.STYLE_INDICATOR_WIDTH, this.indicatorSize);
 	var height = mxUtils.getNumber(this.style, mxConstants.STYLE_INDICATOR_HEIGHT, this.indicatorSize);
-	var spacing = this.spacing + 5;		
-	
+	var spacing = this.spacing + 5;
+
 	if (align == mxConstants.ALIGN_RIGHT)
 	{
 		x += w - width - spacing;
@@ -222,7 +223,7 @@ mxLabel.prototype.getIndicatorBounds = function(x, y, w, h)
 	{
 		x += spacing;
 	}
-	
+
 	if (valign == mxConstants.ALIGN_BOTTOM)
 	{
 		y += h - height - spacing;
@@ -235,30 +236,30 @@ mxLabel.prototype.getIndicatorBounds = function(x, y, w, h)
 	{
 		y += (h - height) / 2;
 	}
-	
+
 	return new mxRectangle(x, y, width, height);
 };
 /**
  * Function: redrawHtmlShape
- * 
+ *
  * Generic background painting implementation.
  */
 mxLabel.prototype.redrawHtmlShape = function()
 {
 	mxRectangleShape.prototype.redrawHtmlShape.apply(this, arguments);
-	
+
 	// Removes all children
 	while(this.node.hasChildNodes())
 	{
 		this.node.removeChild(this.node.lastChild);
 	}
-	
+
 	if (this.image != null)
 	{
 		var node = document.createElement('img');
 		node.style.position = 'relative';
 		node.setAttribute('border', '0');
-		
+
 		var bounds = this.getImageBounds(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height);
 		bounds.x -= this.bounds.x;
 		bounds.y -= this.bounds.y;
@@ -267,9 +268,9 @@ mxLabel.prototype.redrawHtmlShape = function()
 		node.style.top = Math.round(bounds.y) + 'px';
 		node.style.width = Math.round(bounds.width) + 'px';
 		node.style.height = Math.round(bounds.height) + 'px';
-		
+
 		node.src = this.image;
-		
+
 		this.node.appendChild(node);
 	}
 };

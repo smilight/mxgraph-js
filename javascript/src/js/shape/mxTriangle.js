@@ -4,9 +4,9 @@
  */
 /**
  * Class: mxTriangle
- * 
+ *
  * Implementation of the triangle shape.
- * 
+ *
  * Constructor: mxTriangle
  *
  * Constructs a new triangle shape.
@@ -20,6 +20,16 @@ function mxTriangle()
  * Extends mxActor.
  */
 mxUtils.extend(mxTriangle, mxActor);
+
+/**
+ * Function: isRoundable
+ *
+ * Adds roundable support.
+ */
+mxTriangle.prototype.isRoundable = function()
+{
+	return true;
+};
 
 /**
  * Function: redrawPath

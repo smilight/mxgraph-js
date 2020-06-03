@@ -90,7 +90,7 @@ Toolbar.prototype.init = function()
 	}
 	
 	// Updates the label if the scale changes
-	var updateZoom = mxUtils.bind(this, function()
+	this.updateZoom = mxUtils.bind(this, function()
 	{
 		viewMenu.innerHTML = Math.round(this.editorUi.editor.graph.view.scale * 100) + '%' +
 			this.dropdownImageHtml;
@@ -102,14 +102,14 @@ Toolbar.prototype.init = function()
 		}
 	});
 
-	this.editorUi.editor.graph.view.addListener(mxEvent.EVENT_SCALE, updateZoom);
-	this.editorUi.editor.addListener('resetGraphView', updateZoom);
+	this.editorUi.editor.graph.view.addListener(mxEvent.EVENT_SCALE, this.updateZoom);
+	this.editorUi.editor.addListener('resetGraphView', this.updateZoom);
 
 	var elts = this.addItems(['-', 'undo', 'redo']);
 	elts[1].setAttribute('title', mxResources.get('undo') + ' (' + this.editorUi.actions.get('undo').shortcut + ')');
 	elts[2].setAttribute('title', mxResources.get('redo') + ' (' + this.editorUi.actions.get('redo').shortcut + ')');
 	
-	if (sw >= 470)
+	if (sw >= 320)
 	{
 		var elts = this.addItems(['-', 'delete']);
 		elts[1].setAttribute('title', mxResources.get('delete') + ' (' + this.editorUi.actions.get('delete').shortcut + ')');
@@ -120,33 +120,46 @@ Toolbar.prototype.init = function()
 		this.addItems(['-', 'toFront', 'toBack']);
 	}
 
-	if (sw >= 640)
+	if (sw >= 740)
 	{
-		this.addItems(['-', 'fillColor', 'strokeColor', 'shadow']);
+		this.addItems(['-', 'fillColor']);
+		
+		if (sw >= 780)
+		{
+			this.addItems(['strokeColor']);
+			
+			if (sw >= 820)
+			{
+				this.addItems(['shadow']);
+			}
+		}
 	}
 	
-	if (sw >= 320)
+	if (sw >= 400)
 	{
 		this.addSeparator();
 		
-		this.edgeShapeMenu = this.addMenuFunction('', mxResources.get('connection'), false, mxUtils.bind(this, function(menu)
+		if (sw >= 440)
 		{
-			this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_SHAPE, 'width'], [null, null], 'geIcon geSprite geSprite-connection', null, true).setAttribute('title', mxResources.get('line'));
-			this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_SHAPE, 'width'], ['link', null], 'geIcon geSprite geSprite-linkedge', null, true).setAttribute('title', mxResources.get('link'));
-			this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_SHAPE, 'width'], ['flexArrow', null], 'geIcon geSprite geSprite-arrow', null, true).setAttribute('title', mxResources.get('arrow'));
-			this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_SHAPE, 'width'], ['arrow', null], 'geIcon geSprite geSprite-simplearrow', null, true).setAttribute('title', mxResources.get('simpleArrow'));
-		}));
+			this.edgeShapeMenu = this.addMenuFunction('', mxResources.get('connection'), false, mxUtils.bind(this, function(menu)
+			{
+				this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_SHAPE, 'width'], [null, null], 'geIcon geSprite geSprite-connection', null, true).setAttribute('title', mxResources.get('line'));
+				this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_SHAPE, 'width'], ['link', null], 'geIcon geSprite geSprite-linkedge', null, true).setAttribute('title', mxResources.get('link'));
+				this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_SHAPE, 'width'], ['flexArrow', null], 'geIcon geSprite geSprite-arrow', null, true).setAttribute('title', mxResources.get('arrow'));
+				this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_SHAPE, 'width'], ['arrow', null], 'geIcon geSprite geSprite-simplearrow', null, true).setAttribute('title', mxResources.get('simpleArrow'));
+			}));
 	
-		this.addDropDownArrow(this.edgeShapeMenu, 'geSprite-connection', 44, 50, 0, 0, 22, -4);
+			this.addDropDownArrow(this.edgeShapeMenu, 'geSprite-connection', 44, 50, 0, 0, 22, -4);
+		}
 	
 		this.edgeStyleMenu = this.addMenuFunction('geSprite-orthogonal', mxResources.get('waypoints'), false, mxUtils.bind(this, function(menu)
 		{
 			this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_EDGE, mxConstants.STYLE_CURVED, mxConstants.STYLE_NOEDGESTYLE], [null, null, null], 'geIcon geSprite geSprite-straight', null, true).setAttribute('title', mxResources.get('straight'));
 			this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_EDGE, mxConstants.STYLE_CURVED, mxConstants.STYLE_NOEDGESTYLE], ['orthogonalEdgeStyle', null, null], 'geIcon geSprite geSprite-orthogonal', null, true).setAttribute('title', mxResources.get('orthogonal'));
-			this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_EDGE, mxConstants.STYLE_ELBOW, mxConstants.STYLE_CURVED, mxConstants.STYLE_NOEDGESTYLE], ['elbowEdgeStyle', null, null, null], 'geIcon geSprite geSprite-horizontalelbow', null, true).setAttribute('title', 'simple');
-			this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_EDGE, mxConstants.STYLE_ELBOW, mxConstants.STYLE_CURVED, mxConstants.STYLE_NOEDGESTYLE], ['elbowEdgeStyle', 'vertical', null, null], 'geIcon geSprite geSprite-verticalelbow', null, true).setAttribute('title', 'simple');
-			this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_EDGE, mxConstants.STYLE_ELBOW, mxConstants.STYLE_CURVED, mxConstants.STYLE_NOEDGESTYLE], ['isometricEdgeStyle', null, null, null], 'geIcon geSprite geSprite-horizontalisometric', null, true).setAttribute('title', 'isometric');
-			this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_EDGE, mxConstants.STYLE_ELBOW, mxConstants.STYLE_CURVED, mxConstants.STYLE_NOEDGESTYLE], ['isometricEdgeStyle', 'vertical', null, null], 'geIcon geSprite geSprite-verticalisometric', null, true).setAttribute('title', 'isometric');
+			this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_EDGE, mxConstants.STYLE_ELBOW, mxConstants.STYLE_CURVED, mxConstants.STYLE_NOEDGESTYLE], ['elbowEdgeStyle', null, null, null], 'geIcon geSprite geSprite-horizontalelbow', null, true).setAttribute('title', mxResources.get('simple'));
+			this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_EDGE, mxConstants.STYLE_ELBOW, mxConstants.STYLE_CURVED, mxConstants.STYLE_NOEDGESTYLE], ['elbowEdgeStyle', 'vertical', null, null], 'geIcon geSprite geSprite-verticalelbow', null, true).setAttribute('title', mxResources.get('simple'));
+			this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_EDGE, mxConstants.STYLE_ELBOW, mxConstants.STYLE_CURVED, mxConstants.STYLE_NOEDGESTYLE], ['isometricEdgeStyle', null, null, null], 'geIcon geSprite geSprite-horizontalisometric', null, true).setAttribute('title', mxResources.get('isometric'));
+			this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_EDGE, mxConstants.STYLE_ELBOW, mxConstants.STYLE_CURVED, mxConstants.STYLE_NOEDGESTYLE], ['isometricEdgeStyle', 'vertical', null, null], 'geIcon geSprite geSprite-verticalisometric', null, true).setAttribute('title', mxResources.get('isometric'));
 			this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_EDGE, mxConstants.STYLE_CURVED, mxConstants.STYLE_NOEDGESTYLE], ['orthogonalEdgeStyle', '1', null], 'geIcon geSprite geSprite-curved', null, true).setAttribute('title', mxResources.get('curved'));
 			this.editorUi.menus.edgeStyleChange(menu, '', [mxConstants.STYLE_EDGE, mxConstants.STYLE_CURVED, mxConstants.STYLE_NOEDGESTYLE], ['entityRelationEdgeStyle', null, null], 'geIcon geSprite geSprite-entity', null, true).setAttribute('title', mxResources.get('entityRelation'));
 		}));
@@ -158,6 +171,134 @@ Toolbar.prototype.init = function()
 
 	var insertMenu = this.addMenu('', mxResources.get('insert') + ' (' + mxResources.get('doubleClickTooltip') + ')', true, 'insert', null, true);
 	this.addDropDownArrow(insertMenu, 'geSprite-plus', 38, 48, -4, -3, 36, -8);
+	
+	if (urlParams['dev'] == '1')
+	{
+		this.addSeparator();
+		
+		// KNOWN: All table stuff does not work with undo/redo
+		// KNOWN: Lost focus after click on submenu with text (not icon) in quirks and IE8. This is because the TD seems
+		// to catch the focus on click in these browsers. NOTE: Workaround in mxPopupMenu for icon items (without text).
+		var elt = this.addMenuFunction('geIcon geSprite geSprite-table', mxResources.get('table'), false, mxUtils.bind(this, function(menu)
+		{
+			var graph = this.editorUi.editor.graph;
+			var cell = graph.getSelectionCell();
+	
+			if (!graph.isTableCell(cell) && !graph.isTableRow(cell) && !graph.isTable(cell))
+			{
+				this.editorUi.menus.addInsertTableItem(menu, mxUtils.bind(this, function(evt, rows, cols)
+				{
+					var table = (mxEvent.isShiftDown(evt)) ? graph.createCrossFunctionalSwimlane(rows, cols) :
+						graph.createTable(rows, cols);
+					var pt = (mxEvent.isAltDown(evt)) ? graph.getFreeInsertPoint() :
+						graph.getCenterInsertPoint(graph.getBoundingBoxFromGeometry([table], true));
+					var select = graph.importCells([table], pt.x, pt.y);
+					
+					if (select != null && select.length > 0)
+					{
+						graph.scrollCellToVisible(select[0]);
+						graph.setSelectionCells(select);
+					}
+				}));
+	    	}
+			else
+	    	{
+				elt = menu.addItem('', null, mxUtils.bind(this, function()
+				{
+					try
+					{
+						graph.insertTableColumn(cell, true);
+					}
+					catch (e)
+					{
+						this.editorUi.handleError(e);
+					}
+				}), null, 'geIcon geSprite geSprite-insertcolumnbefore');
+				elt.setAttribute('title', mxResources.get('insertColumnBefore'));
+				
+				elt = menu.addItem('', null, mxUtils.bind(this, function()
+				{	
+					try
+					{
+						graph.insertTableColumn(cell, false);
+					}
+					catch (e)
+					{
+						this.editorUi.handleError(e);
+					}
+				}), null, 'geIcon geSprite geSprite-insertcolumnafter');
+				elt.setAttribute('title', mxResources.get('insertColumnAfter'));
+	
+				elt = menu.addItem('Delete column', null, mxUtils.bind(this, function()
+				{
+					if (cell != null)
+					{
+						try
+						{
+							graph.deleteTableColumn(cell);
+						}
+						catch (e)
+						{
+							this.editorUi.handleError(e);
+						}
+					}
+				}), null, 'geIcon geSprite geSprite-deletecolumn');
+				elt.setAttribute('title', mxResources.get('deleteColumn'));
+				
+				elt = menu.addItem('', null, mxUtils.bind(this, function()
+				{
+					try
+					{
+						graph.insertTableRow(cell, true);
+					}
+					catch (e)
+					{
+						this.editorUi.handleError(e);
+					}
+				}), null, 'geIcon geSprite geSprite-insertrowbefore');
+				elt.setAttribute('title', mxResources.get('insertRowBefore'));
+	
+				elt = menu.addItem('', null, mxUtils.bind(this, function()
+				{
+					try
+					{
+						graph.insertTableRow(cell, false);
+					}
+					catch (e)
+					{
+						this.editorUi.handleError(e);
+					}
+				}), null, 'geIcon geSprite geSprite-insertrowafter');
+				elt.setAttribute('title', mxResources.get('insertRowAfter'));
+	
+				elt = menu.addItem('', null, mxUtils.bind(this, function()
+				{
+					try
+					{
+						graph.deleteTableRow(cell);
+					}
+					catch (e)
+					{
+						this.editorUi.handleError(e);
+					}
+				}), null, 'geIcon geSprite geSprite-deleterow');
+				elt.setAttribute('title', mxResources.get('deleteRow'));
+	    	}
+		}));
+		
+		elt.style.position = 'relative';
+		elt.style.whiteSpace = 'nowrap';
+		elt.style.overflow = 'hidden';
+		elt.innerHTML = '<div class="geSprite geSprite-table" style="margin-left:-2px;"></div>' + this.dropdownImageHtml;
+		elt.style.width = (mxClient.IS_QUIRKS) ? '50px' : '30px';
+	
+		// Fix for item size in kennedy theme
+		if (EditorUi.compactUi)
+		{
+			elt.getElementsByTagName('img')[0].style.left = '22px';
+			elt.getElementsByTagName('img')[0].style.top = '5px';
+		}
+	}
 };
 
 /**
@@ -278,21 +419,21 @@ Toolbar.prototype.createTextToolbar = function()
 	// to catch the focus on click in these browsers. NOTE: Workaround in mxPopupMenu for icon items (without text).
 	var alignMenu = this.addMenuFunction('', mxResources.get('align'), false, mxUtils.bind(this, function(menu)
 	{
-		elt = menu.addItem('', null, mxUtils.bind(this, function()
+		elt = menu.addItem('', null, mxUtils.bind(this, function(evt)
 		{
-			document.execCommand('justifyleft', false, null);
+			graph.cellEditor.alignText(mxConstants.ALIGN_LEFT, evt);
 		}), null, 'geIcon geSprite geSprite-left');
 		elt.setAttribute('title', mxResources.get('left'));
 
-		elt = menu.addItem('', null, mxUtils.bind(this, function()
+		elt = menu.addItem('', null, mxUtils.bind(this, function(evt)
 		{
-			document.execCommand('justifycenter', false, null);
+			graph.cellEditor.alignText(mxConstants.ALIGN_CENTER, evt);
 		}), null, 'geIcon geSprite geSprite-center');
 		elt.setAttribute('title', mxResources.get('center'));
 
-		elt = menu.addItem('', null, mxUtils.bind(this, function()
+		elt = menu.addItem('', null, mxUtils.bind(this, function(evt)
 		{
-			document.execCommand('justifyright', false, null);
+			graph.cellEditor.alignText(mxConstants.ALIGN_RIGHT, evt);
 		}), null, 'geIcon geSprite geSprite-right');
 		elt.setAttribute('title', mxResources.get('right'));
 
@@ -343,11 +484,11 @@ Toolbar.prototype.createTextToolbar = function()
 	{
 		elt = menu.addItem('', null, this.editorUi.actions.get('subscript').funct,
 			null, 'geIcon geSprite geSprite-subscript');
-		elt.setAttribute('title', mxResources.get('subscript') + ' (Ctrl+,)');
+		elt.setAttribute('title', mxResources.get('subscript') + ' (' + Editor.ctrlKey + '+,)');
 
 		elt = menu.addItem('', null, this.editorUi.actions.get('superscript').funct,
 			null, 'geIcon geSprite geSprite-superscript');
-		elt.setAttribute('title', mxResources.get('superscript') + ' (Ctrl+.)');
+		elt.setAttribute('title', mxResources.get('superscript') + ' (' + Editor.ctrlKey + '+.)');
 
 		// KNOWN: IE+FF don't return keyboard focus after color dialog (calling focus doesn't help)
 		elt = menu.addItem('', null, this.editorUi.actions.get('fontColor').funct,
@@ -437,11 +578,32 @@ Toolbar.prototype.createTextToolbar = function()
 	var elt = this.addMenuFunction('geIcon geSprite geSprite-table', mxResources.get('table'), false, mxUtils.bind(this, function(menu)
 	{
 		var elt = graph.getSelectedElement();
-		var cell = graph.getParentByName(elt, 'TD', graph.cellEditor.text2);
+		var cell = graph.getParentByNames(elt, ['TD', 'TH'], graph.cellEditor.text2);
 		var row = graph.getParentByName(elt, 'TR', graph.cellEditor.text2);
 
 		if (row == null)
     	{
+			function createTable(rows, cols)
+			{
+				var html = ['<table>'];
+				
+				for (var i = 0; i < rows; i++)
+				{
+					html.push('<tr>');
+					
+					for (var j = 0; j < cols; j++)
+					{
+						html.push('<td><br></td>');
+					}
+					
+					html.push('</tr>');
+				}
+				
+				html.push('</table>');
+				
+				return html.join('');
+			};
+			
 			this.editorUi.menus.addInsertTableItem(menu);
     	}
 		else
@@ -456,7 +618,7 @@ Toolbar.prototype.createTextToolbar = function()
 				}
 				catch (e)
 				{
-					mxUtils.alert(mxResources.get('error') + ': ' + e.message);
+					this.editorUi.handleError(e);
 				}
 			}), null, 'geIcon geSprite geSprite-insertcolumnbefore');
 			elt.setAttribute('title', mxResources.get('insertColumnBefore'));
@@ -469,7 +631,7 @@ Toolbar.prototype.createTextToolbar = function()
 				}
 				catch (e)
 				{
-					mxUtils.alert(mxResources.get('error') + ': ' + e.message);
+					this.editorUi.handleError(e);
 				}
 			}), null, 'geIcon geSprite geSprite-insertcolumnafter');
 			elt.setAttribute('title', mxResources.get('insertColumnAfter'));
@@ -484,7 +646,7 @@ Toolbar.prototype.createTextToolbar = function()
 					}
 					catch (e)
 					{
-						mxUtils.alert(mxResources.get('error') + ': ' + e.message);
+						this.editorUi.handleError(e);
 					}
 				}
 			}), null, 'geIcon geSprite geSprite-deletecolumn');
@@ -498,7 +660,7 @@ Toolbar.prototype.createTextToolbar = function()
 				}
 				catch (e)
 				{
-					mxUtils.alert(mxResources.get('error') + ': ' + e.message);
+					this.editorUi.handleError(e);
 				}
 			}), null, 'geIcon geSprite geSprite-insertrowbefore');
 			elt.setAttribute('title', mxResources.get('insertRowBefore'));
@@ -511,7 +673,7 @@ Toolbar.prototype.createTextToolbar = function()
 				}
 				catch (e)
 				{
-					mxUtils.alert(mxResources.get('error') + ': ' + e.message);
+					this.editorUi.handleError(e);
 				}
 			}), null, 'geIcon geSprite geSprite-insertrowafter');
 			elt.setAttribute('title', mxResources.get('insertRowAfter'));
@@ -524,7 +686,7 @@ Toolbar.prototype.createTextToolbar = function()
 				}
 				catch (e)
 				{
-					mxUtils.alert(mxResources.get('error') + ': ' + e.message);
+					this.editorUi.handleError(e);
 				}
 			}), null, 'geIcon geSprite geSprite-deleterow');
 			elt.setAttribute('title', mxResources.get('deleteRow'));
@@ -642,16 +804,22 @@ Toolbar.prototype.hideMenu = function()
 /**
  * Adds a label to the toolbar.
  */
-Toolbar.prototype.addMenu = function(label, tooltip, showLabels, name, c, showAll)
+Toolbar.prototype.addMenu = function(label, tooltip, showLabels, name, c, showAll, ignoreState)
 {
 	var menu = this.editorUi.menus.get(name);
-	var elt = this.addMenuFunction(label, tooltip, showLabels, menu.funct, c, showAll);
-	
-	menu.addListener('stateChanged', function()
+	var elt = this.addMenuFunction(label, tooltip, showLabels, function()
 	{
-		elt.setEnabled(menu.enabled);
-	});
-
+		menu.funct.apply(menu, arguments);
+	}, c, showAll);
+	
+	if (!ignoreState)
+	{
+		menu.addListener('stateChanged', function()
+		{
+			elt.setEnabled(menu.enabled);
+		});
+	}
+	
 	return elt;
 };
 
@@ -723,7 +891,14 @@ Toolbar.prototype.addItem = function(sprite, key, c, ignoreDisabled)
 	
 	if (action != null)
 	{
-		elt = this.addButton(sprite, action.label, action.funct, c);
+		var tooltip = action.label;
+		
+		if (action.shortcut != null)
+		{
+			tooltip += ' (' + action.shortcut + ')';
+		}
+		
+		elt = this.addButton(sprite, tooltip, action.funct, c);
 
 		if (!ignoreDisabled)
 		{
@@ -809,14 +984,12 @@ Toolbar.prototype.addClickHandler = function(elt, funct)
 			mxEvent.consume(evt);
 		});
 		
-		if (document.documentMode != null && document.documentMode >= 9)
-		{
-			// Prevents focus
-			mxEvent.addListener(elt, 'mousedown', function(evt)
-			{
-				evt.preventDefault();
-			});
-		}
+		// Prevents focus
+	    mxEvent.addListener(elt, (mxClient.IS_POINTER) ? 'pointerdown' : 'mousedown',
+        	mxUtils.bind(this, function(evt)
+    	{
+			evt.preventDefault();
+		}));
 	}
 };
 
@@ -826,7 +999,6 @@ Toolbar.prototype.addClickHandler = function(elt, funct)
 Toolbar.prototype.createButton = function(classname)
 {
 	var elt = document.createElement('a');
-	elt.setAttribute('href', 'javascript:void(0);');
 	elt.className = 'geButton';
 
 	var inner = document.createElement('div');
@@ -847,7 +1019,6 @@ Toolbar.prototype.createButton = function(classname)
 Toolbar.prototype.createLabel = function(label, tooltip)
 {
 	var elt = document.createElement('a');
-	elt.setAttribute('href', 'javascript:void(0);');
 	elt.className = 'geLabel';
 	mxUtils.write(elt, label);
 	
@@ -886,6 +1057,13 @@ Toolbar.prototype.addMenuHandler = function(elt, showLabels, funct, showAll)
 					menu.div.style.width = '40px';
 				}
 				
+				menu.hideMenu = mxUtils.bind(this, function()
+				{
+					mxPopupMenu.prototype.hideMenu.apply(menu, arguments);
+					this.editorUi.resetCurrentMenu();
+					menu.destroy();
+				});
+				
 				// Extends destroy to reset global state
 				menu.addListener(mxEvent.EVENT_HIDE, mxUtils.bind(this, function()
 				{
@@ -897,16 +1075,12 @@ Toolbar.prototype.addMenuHandler = function(elt, showLabels, funct, showAll)
 			mxEvent.consume(evt);
 		}));
 
-		// Hides menu if already showing
-		mxEvent.addListener(elt, 'mousedown', mxUtils.bind(this, function(evt)
+		// Hides menu if already showing and prevents focus
+        mxEvent.addListener(elt, (mxClient.IS_POINTER) ? 'pointerdown' : 'mousedown',
+        	mxUtils.bind(this, function(evt)
 		{
 			show = this.currentElt != elt;
-			
-			// Prevents focus
-			if (document.documentMode != null && document.documentMode >= 9)
-			{
-				evt.preventDefault();
-			}
+			evt.preventDefault();
 		}));
 	}
 };
