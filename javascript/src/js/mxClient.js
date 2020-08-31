@@ -12,17 +12,17 @@ var mxClient =
 	 * well as global constants to identify the browser and operating system in
 	 * use. You may have to load chrome://global/content/contentAreaUtils.js in
 	 * your page to disable certain security restrictions in Mozilla.
-	 *
+	 * 
 	 * Variable: VERSION
 	 *
 	 * Contains the current version of the mxGraph library. The strings that
 	 * communicate versions of mxGraph use the following format.
-	 *
+	 * 
 	 * versionMajor.versionMinor.buildNumber.revisionNumber
-	 *
-	 * Current version is 4.1.1.
+	 * 
+	 * Current version is 4.2.0.
 	 */
-	VERSION: '4.1.1',
+	VERSION: '4.2.0',
 
 	/**
 	 * Variable: IS_IE
@@ -63,21 +63,21 @@ var mxClient =
 
 	/**
 	 * Variable: IS_EM
-	 *
+	 * 
 	 * True if the browser is IE11 in enterprise mode (IE8 standards mode).
 	 */
 	IS_EM: 'spellcheck' in document.createElement('textarea') && document.documentMode == 8,
 
 	/**
 	 * Variable: VML_PREFIX
-	 *
+	 * 
 	 * Prefix for VML namespace in node names. Default is 'v'.
 	 */
 	VML_PREFIX: 'v',
 
 	/**
 	 * Variable: OFFICE_PREFIX
-	 *
+	 * 
 	 * Prefix for VML office namespace in node names. Default is 'o'.
 	 */
 	OFFICE_PREFIX: 'o',
@@ -115,50 +115,27 @@ var mxClient =
   		navigator.userAgent.indexOf('Presto/2.1.') < 0 &&
   		navigator.userAgent.indexOf('Presto/2.0.') < 0 &&
   		navigator.userAgent.indexOf('Presto/1.') < 0,
-
+  	
 	/**
 	 * Variable: IS_SF
 	 *
 	 * True if the current browser is Safari.
 	 */
-  	IS_SF: /constructor/i.test(window.HTMLElement) || (function (p) {
-  		return p.toString() === "[object SafariRemoteNotification]";
-  		})(!window['safari'] || (typeof safari !== 'undefined' && safari.pushNotification)),
+  	IS_SF: /Apple Computer, Inc/.test(navigator.vendor),
 
 	/**
 	 * Variable: IS_ANDROID
-	 *
+	 * 
 	 * Returns true if the user agent contains Android.
 	 */
   	IS_ANDROID: navigator.appVersion.indexOf('Android') >= 0,
 
 	/**
 	 * Variable: IS_IOS
-	 *
+	 * 
 	 * Returns true if the user agent is an iPad, iPhone or iPod.
 	 */
   	IS_IOS: (/iP(hone|od|ad)/.test(navigator.platform)),
-
-	/**
-	 * Variable: IOS_VERSION
-	 *
-	 * Returns the major version number for iOS devices or 0 if the
-	 * device is not an iOS device.
-	 */
-  	IOS_VERSION: (function()
-  	{
-  		if ((/iP(hone|od|ad)/.test(navigator.platform)))
-  		{
-  			var v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
-
-  			if (v != null && v.length > 0)
-  			{
-  				return parseInt(v[1]);
-  			}
-  		}
-
-  		return 0;
-  	})(),
 
 	/**
 	 * Variable: IS_GC
@@ -166,7 +143,7 @@ var mxClient =
 	 * True if the current browser is Google Chrome.
 	 */
   	IS_GC: /Google Inc/.test(navigator.vendor),
-
+	
 	/**
 	 * Variable: IS_CHROMEAPP
 	 *
@@ -180,7 +157,7 @@ var mxClient =
 	 * True if the current browser is Firefox.
 	 */
   	IS_FF: typeof InstallTrigger !== 'undefined',
-
+  	
 	/**
 	 * Variable: IS_MT
 	 *
@@ -235,7 +212,7 @@ var mxClient =
 	 * True if the client is a Mac.
 	 */
   	IS_MAC: navigator.appVersion.indexOf('Mac') > 0,
-
+	
 	/**
 	 * Variable: IS_CHROMEOS
 	 *
@@ -245,7 +222,7 @@ var mxClient =
 
 	/**
 	 * Variable: IS_TOUCH
-	 *
+	 * 
 	 * True if this device supports touchstart/-move/-end events (Apple iOS,
 	 * Android, Chromebook and Chrome Browser on touch-enabled devices).
 	 */
@@ -253,7 +230,7 @@ var mxClient =
 
 	/**
 	 * Variable: IS_POINTER
-	 *
+	 * 
 	 * True if this device supports Microsoft pointer events (always false on Macs).
 	 */
   	IS_POINTER: window.PointerEvent != null && !(navigator.appVersion.indexOf('Mac') > 0),
@@ -268,7 +245,7 @@ var mxClient =
 
 	/**
 	 * Variable: defaultBundles
-	 *
+	 * 
 	 * Contains the base names of the default bundles if mxLoadResources is false.
 	 */
   	defaultBundles: [],
@@ -278,9 +255,9 @@ var mxClient =
 	 *
 	 * Returns true if the current browser is supported, that is, if
 	 * <mxClient.IS_VML> or <mxClient.IS_SVG> is true.
-	 *
+	 * 
 	 * Example:
-	 *
+	 * 
 	 * (code)
 	 * if (!mxClient.isBrowserSupported())
 	 * {
@@ -305,9 +282,9 @@ var mxClient =
 	 *
 	 * where filename is the (relative) URL of the stylesheet. The charset
 	 * is hardcoded to ISO-8859-1 and the type is text/css.
-	 *
+	 * 
 	 * Parameters:
-	 *
+	 * 
 	 * rel - String that represents the rel attribute of the link node.
 	 * href - String that represents the href attribute of the link node.
 	 * doc - Optional parent document of the link node.
@@ -323,38 +300,38 @@ var mxClient =
 			doc.write('<link rel="' + rel + '" href="' + href + '" charset="UTF-8" type="text/css"/>');
 		}
 		else
-		{
+		{	
 			var link = doc.createElement('link');
-
+			
 			link.setAttribute('rel', rel);
 			link.setAttribute('href', href);
 			link.setAttribute('charset', 'UTF-8');
 			link.setAttribute('type', 'text/css');
-
+			
 			if (id)
 			{
 				link.setAttribute('id', id);
 			}
-
+			
 			var head = doc.getElementsByTagName('head')[0];
 	   		head.appendChild(link);
 		}
 	},
-
+	
 	/**
 	 * Function: loadResources
-	 *
+	 * 
 	 * Helper method to load the default bundles if mxLoadResources is false.
-	 *
+	 * 
 	 * Parameters:
-	 *
+	 * 
 	 * fn - Function to call after all resources have been loaded.
 	 * lan - Optional string to pass to <mxResources.add>.
 	 */
 	loadResources: function(fn, lan)
 	{
 		var pending = mxClient.defaultBundles.length;
-
+		
 		function callback()
 		{
 			if (--pending == 0)
@@ -362,18 +339,18 @@ var mxClient =
 				fn();
 			}
 		}
-
+		
 		for (var i = 0; i < mxClient.defaultBundles.length; i++)
 		{
 			mxResources.add(mxClient.defaultBundles[i], lan, callback);
 		}
 	},
-
+	
 	/**
 	 * Function: include
 	 *
 	 * Dynamically adds a script node to the document header.
-	 *
+	 * 
 	 * In production environments, the includes are resolved in the mxClient.js
 	 * file to reduce the number of requests required for client startup. This
 	 * function should only be used in development environments, but not in
@@ -385,20 +362,9 @@ var mxClient =
 	}
 };
 
-exports.mxClient = mxClient;
-
-/**
- * Detects desktop mode on iPad Pro which should block event handling like iOS 12.
- */
-if (mxClient.IS_SF && mxClient.IS_TOUCH && !mxClient.IS_IOS)
-{
-	mxClient.IOS_VERSION = 13;
-	mxClient.IOS = true;
-}
-
 /**
  * Variable: mxLoadResources
- *
+ * 
  * Optional global config variable to toggle loading of the two resource files
  * in <mxGraph> and <mxEditor>. Default is true. NOTE: This is a global variable,
  * not a variable of mxClient. If this is false, you can use <mxClient.loadResources>
@@ -418,7 +384,7 @@ if (typeof(mxLoadResources) == 'undefined')
 
 /**
  * Variable: mxForceIncludes
- *
+ * 
  * Optional global config variable to force loading the JavaScript files in
  * development mode. Default is undefined. NOTE: This is a global variable,
  * not a variable of mxClient.
@@ -437,7 +403,7 @@ if (typeof(mxForceIncludes) == 'undefined')
 
 /**
  * Variable: mxResourceExtension
- *
+ * 
  * Optional global config variable to specify the extension of resource files.
  * Default is true. NOTE: This is a global variable, not a variable of mxClient.
  *
@@ -455,7 +421,7 @@ if (typeof(mxResourceExtension) == 'undefined')
 
 /**
  * Variable: mxLoadStylesheets
- *
+ * 
  * Optional global config variable to toggle loading of the CSS files when
  * the library is initialized. Default is true. NOTE: This is a global variable,
  * not a variable of mxClient.
@@ -485,7 +451,7 @@ if (typeof(mxLoadStylesheets) == 'undefined')
  * </script>
  * <script type="text/javascript" src="/path/to/core/directory/js/mxClient.js"></script>
  * (end)
- *
+ * 
  * When using a relative path, the path is relative to the URL of the page that
  * contains the assignment. Trailing slashes are automatically removed.
  */
@@ -517,7 +483,7 @@ else
  * </script>
  * <script type="text/javascript" src="/path/to/core/directory/js/mxClient.js"></script>
  * (end)
- *
+ * 
  * When using a relative path, the path is relative to the URL of the page that
  * contains the assignment. Trailing slashes are automatically removed.
  */
@@ -533,7 +499,7 @@ if (typeof(mxImageBasePath) != 'undefined' && mxImageBasePath.length > 0)
 }
 else
 {
-	mxClient.imageBasePath = mxClient.basePath + '/images';
+	mxClient.imageBasePath = mxClient.basePath + '/images';	
 }
 
 /**
@@ -543,7 +509,7 @@ else
  * The special value 'none' will disable all built-in internationalization and
  * resource loading. See <mxResources.getSpecialBundle> for handling identifiers
  * with and without a dash.
- *
+ * 
  * Set mxLanguage prior to loading the mxClient library as follows to override
  * this setting:
  *
@@ -553,7 +519,7 @@ else
  * </script>
  * <script type="text/javascript" src="js/mxClient.js"></script>
  * (end)
- *
+ * 
  * If internationalization is disabled, then the following variables should be
  * overridden to reflect the current language of the system. These variables are
  * cleared when i18n is disabled.
@@ -578,11 +544,11 @@ else
 
 /**
  * Variable: defaultLanguage
- *
+ * 
  * Defines the default language which is used in the common resource files. Any
  * resources for this language will only load the common resource file, but not
  * the language-specific resource file. Default is 'en'.
- *
+ * 
  * Set mxDefaultLanguage prior to loading the mxClient library as follows to override
  * this setting:
  *
@@ -621,7 +587,7 @@ if (mxLoadStylesheets)
  * </script>
  * <script type="text/javascript" src="js/mxClient.js"></script>
  * (end)
- *
+ * 
  * This is used to avoid unnecessary requests to language files, ie. if a 404
  * will be returned.
  */
@@ -672,7 +638,7 @@ if (mxClient.IS_VML)
 			document.createStyleSheet().cssText = mxClient.VML_PREFIX + '\\:*{behavior:url(#default#VML)}' +
 		    	mxClient.OFFICE_PREFIX + '\\:*{behavior:url(#default#VML)}';
 		}
-
+	    
 	    if (mxLoadStylesheets)
 	    {
 	    	mxClient.link('stylesheet', mxClient.basePath + '/css/explorer.css');

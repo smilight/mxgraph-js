@@ -7,13 +7,13 @@
  *
  * Extends <mxShape> to implement an image shape. This shape is registered
  * under <mxConstants.SHAPE_IMAGE> in <mxCellRenderer>.
- *
+ * 
  * Constructor: mxImageShape
- *
+ * 
  * Constructs a new image shape.
- *
+ * 
  * Parameters:
- *
+ * 
  * bounds - <mxRectangle> that defines the bounds. This is stored in
  * <mxShape.bounds>.
  * image - String that specifies the URL of the image. This is stored in
@@ -48,7 +48,7 @@ mxImageShape.prototype.preserveImageAspect = true;
 
 /**
  * Function: getSvgScreenOffset
- *
+ * 
  * Disables offset in IE9 for crisper image output.
  */
 mxImageShape.prototype.getSvgScreenOffset = function()
@@ -58,14 +58,14 @@ mxImageShape.prototype.getSvgScreenOffset = function()
 
 /**
  * Function: apply
- *
+ * 
  * Overrides <mxShape.apply> to replace the fill and stroke colors with the
  * respective values from <mxConstants.STYLE_IMAGE_BACKGROUND> and
  * <mxConstants.STYLE_IMAGE_BORDER>.
- *
+ * 
  * Applies the style of the given <mxCellState> to the shape. This
  * implementation assigns the following styles to local fields:
- *
+ * 
  * - <mxConstants.STYLE_IMAGE_BACKGROUND> => fill
  * - <mxConstants.STYLE_IMAGE_BORDER> => stroke
  *
@@ -76,15 +76,15 @@ mxImageShape.prototype.getSvgScreenOffset = function()
 mxImageShape.prototype.apply = function(state)
 {
 	mxShape.prototype.apply.apply(this, arguments);
-
+	
 	this.fill = null;
 	this.stroke = null;
 	this.gradient = null;
-
+	
 	if (this.style != null)
 	{
 		this.preserveImageAspect = mxUtils.getNumber(this.style, mxConstants.STYLE_IMAGE_ASPECT, 1) == 1;
-
+		
 		// Legacy support for imageFlipH/V
 		this.flipH = this.flipH || mxUtils.getValue(this.style, 'imageFlipH', 0) == 1;
 		this.flipV = this.flipV || mxUtils.getValue(this.style, 'imageFlipV', 0) == 1;
@@ -93,7 +93,7 @@ mxImageShape.prototype.apply = function(state)
 
 /**
  * Function: isHtmlAllowed
- *
+ * 
  * Returns true if HTML is allowed for this shape. This implementation always
  * returns false.
  */
@@ -119,7 +119,7 @@ mxImageShape.prototype.createHtml = function()
 
 /**
  * Function: isRoundable
- *
+ * 
  * Disables inherited roundable support.
  */
 mxImageShape.prototype.isRoundable = function(c, x, y, w, h)
@@ -129,7 +129,7 @@ mxImageShape.prototype.isRoundable = function(c, x, y, w, h)
 
 /**
  * Function: paintVertexShape
- *
+ * 
  * Generic background painting implementation.
  */
 mxImageShape.prototype.paintVertexShape = function(c, x, y, w, h)
@@ -138,7 +138,7 @@ mxImageShape.prototype.paintVertexShape = function(c, x, y, w, h)
 	{
 		var fill = mxUtils.getValue(this.style, mxConstants.STYLE_IMAGE_BACKGROUND, null);
 		var stroke = mxUtils.getValue(this.style, mxConstants.STYLE_IMAGE_BORDER, null);
-
+		
 		if (fill != null)
 		{
 			// Stroke rendering required for shadow
@@ -150,9 +150,9 @@ mxImageShape.prototype.paintVertexShape = function(c, x, y, w, h)
 
 		// FlipH/V are implicit via mxShape.updateTransform
 		c.image(x, y, w, h, this.image, this.preserveImageAspect, false, false);
-
+		
 		var stroke = mxUtils.getValue(this.style, mxConstants.STYLE_IMAGE_BORDER, null);
-
+		
 		if (stroke != null)
 		{
 			c.setShadow(false);
@@ -169,7 +169,7 @@ mxImageShape.prototype.paintVertexShape = function(c, x, y, w, h)
 
 /**
  * Function: redraw
- *
+ * 
  * Overrides <mxShape.redraw> to preserve the aspect ratio of images.
  */
 mxImageShape.prototype.redrawHtmlShape = function()
@@ -186,7 +186,7 @@ mxImageShape.prototype.redrawHtmlShape = function()
 		var stroke = mxUtils.getValue(this.style, mxConstants.STYLE_IMAGE_BORDER, '');
 		this.node.style.backgroundColor = fill;
 		this.node.style.borderColor = stroke;
-
+		
 		// VML image supports PNG in IE6
 		var useVml = mxClient.IS_IE6 || ((document.documentMode == null || document.documentMode <= 8) && this.rotation != 0);
 		var img = document.createElement((useVml) ? mxClient.VML_PREFIX + ':image' : 'img');
@@ -196,7 +196,7 @@ mxImageShape.prototype.redrawHtmlShape = function()
 
 		var filter = (this.opacity < 100) ? 'alpha(opacity=' + this.opacity + ')' : '';
 		this.node.style.filter = filter;
-
+		
 		if (this.flipH && this.flipV)
 		{
 			filter += 'progid:DXImageTransform.Microsoft.BasicImage(rotation=2)';
@@ -232,7 +232,7 @@ mxImageShape.prototype.redrawHtmlShape = function()
 		// Known problem: IE clips top line of image for certain angles
 		img.style.width = this.node.style.width;
 		img.style.height = this.node.style.height;
-
+		
 		this.node.style.backgroundImage = '';
 		this.node.appendChild(img);
 	}

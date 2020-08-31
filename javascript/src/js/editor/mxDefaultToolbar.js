@@ -7,27 +7,27 @@
  *
  * Toolbar for the editor. This modifies the state of the graph
  * or inserts new cells upon mouse clicks.
- *
+ * 
  * Example:
- *
+ * 
  * Create a toolbar with a button to copy the selection into the clipboard,
  * and a combo box with one action to paste the selection from the clipboard
  * into the graph.
- *
+ * 
  * (code)
  * var toolbar = new mxDefaultToolbar(container, editor);
  * toolbar.addItem('Copy', null, 'copy');
- *
+ * 
  * var combo = toolbar.addActionCombo('More actions...');
  * toolbar.addActionOption(combo, 'Paste', 'paste');
- * (end)
+ * (end) 
  *
  * Codec:
- *
+ * 
  * This class uses the <mxDefaultToolbarCodec> to read configuration
  * data into an existing instance. See <mxDefaultToolbarCodec> for a
  * description of the configuration format.
- *
+ * 
  * Constructor: mxDefaultToolbar
  *
  * Constructs a new toolbar for the given container and editor. The
@@ -37,7 +37,7 @@
  * Parameters:
  *
  * container - DOM node that contains the toolbar.
- * editor - Reference to the enclosing <mxEditor>.
+ * editor - Reference to the enclosing <mxEditor>. 
  */
 function mxDefaultToolbar(container, editor)
 {
@@ -48,7 +48,7 @@ function mxDefaultToolbar(container, editor)
 		this.init(container);
 	}
 };
-
+	
 /**
  * Variable: editor
  *
@@ -81,7 +81,7 @@ mxDefaultToolbar.prototype.spacing = 4;
 
 /**
  * Variable: connectOnDrop
- *
+ * 
  * Specifies if elements should be connected if new cells are dropped onto
  * connectable elements. Default is false.
  */
@@ -89,7 +89,7 @@ mxDefaultToolbar.prototype.connectOnDrop = false;
 
 /**
  * Function: init
- *
+ * 
  * Constructs the <toolbar> for the given container and installs a listener
  * that updates the <mxEditor.insertFunction> on <editor> if an item is
  * selected in the toolbar. This assumes that <editor> is not null.
@@ -103,13 +103,13 @@ mxDefaultToolbar.prototype.init = function(container)
 	if (container != null)
 	{
 		this.toolbar = new mxToolbar(container);
-
+		
 		// Installs the insert function in the editor if an item is
 		// selected in the toolbar
 		this.toolbar.addListener(mxEvent.SELECT, mxUtils.bind(this, function(sender, evt)
 		{
 			var funct = evt.getProperty('function');
-
+			
 			if (funct != null)
 			{
 				this.editor.insertFunction = mxUtils.bind(this, function()
@@ -123,7 +123,7 @@ mxDefaultToolbar.prototype.init = function(container)
 				this.editor.insertFunction = null;
 			}
 		}));
-
+		
 		// Resets the selected tool after a doubleclick or escape keystroke
 		this.resetHandler = mxUtils.bind(this, function()
 		{
@@ -143,7 +143,7 @@ mxDefaultToolbar.prototype.init = function(container)
  *
  * Adds a new item that executes the given action in <editor>. The title,
  * icon and pressedIcon are used to display the toolbar item.
- *
+ * 
  * Parameters:
  *
  * title - String that represents the title (tooltip) for the item.
@@ -160,7 +160,7 @@ mxDefaultToolbar.prototype.addItem = function(title, icon, action, pressed)
 			this.editor.execute(action);
 		}
 	});
-
+	
 	return this.toolbar.addItem(title, icon, clickHandler, pressed);
 };
 
@@ -168,9 +168,9 @@ mxDefaultToolbar.prototype.addItem = function(title, icon, action, pressed)
  * Function: addSeparator
  *
  * Adds a vertical separator using the optional icon.
- *
+ * 
  * Parameters:
- *
+ * 
  * icon - Optional URL of the icon that represents the vertical separator.
  * Default is <mxClient.imageBasePath> + '/separator.gif'.
  */
@@ -179,7 +179,7 @@ mxDefaultToolbar.prototype.addSeparator = function(icon)
 	icon = icon || mxClient.imageBasePath + '/separator.gif';
 	this.toolbar.addSeparator(icon);
 };
-
+	
 /**
  * Function: addCombo
  *
@@ -190,15 +190,15 @@ mxDefaultToolbar.prototype.addCombo = function()
 {
 	return this.toolbar.addCombo();
 };
-
+		
 /**
  * Function: addActionCombo
  *
  * Helper method to invoke <mxToolbar.addActionCombo> on <toolbar> using
  * the given title and return the resulting DOM node.
- *
+ * 
  * Parameters:
- *
+ * 
  * title - String that represents the title of the combo.
  */
 mxDefaultToolbar.prototype.addActionCombo = function(title)
@@ -212,9 +212,9 @@ mxDefaultToolbar.prototype.addActionCombo = function(title)
  * Binds the given action to a option with the specified label in the
  * given combo. Combo is an object returned from an earlier call to
  * <addCombo> or <addActionCombo>.
- *
+ * 
  * Parameters:
- *
+ * 
  * combo - DOM node that represents the combo box.
  * title - String that represents the title of the combo.
  * action - Name of the action to execute in <editor>.
@@ -225,7 +225,7 @@ mxDefaultToolbar.prototype.addActionOption = function(combo, title, action)
 	{
 		this.editor.execute(action);
 	});
-
+	
 	this.addOption(combo, title, clickHandler);
 };
 
@@ -234,9 +234,9 @@ mxDefaultToolbar.prototype.addActionOption = function(combo, title, action)
  *
  * Helper method to invoke <mxToolbar.addOption> on <toolbar> and return
  * the resulting DOM node that represents the option.
- *
+ * 
  * Parameters:
- *
+ * 
  * combo - DOM node that represents the combo box.
  * title - String that represents the title of the combo.
  * value - Object that represents the value of the option.
@@ -245,15 +245,15 @@ mxDefaultToolbar.prototype.addOption = function(combo, title, value)
 {
 	return this.toolbar.addOption(combo, title, value);
 };
-
+	
 /**
  * Function: addMode
  *
  * Creates an item for selecting the given mode in the <editor>'s graph.
  * Supported modenames are select, connect and pan.
- *
+ * 
  * Parameters:
- *
+ * 
  * title - String that represents the title of the item.
  * icon - URL of the icon that represents the item.
  * mode - String that represents the mode name to be used in
@@ -268,13 +268,13 @@ mxDefaultToolbar.prototype.addMode = function(title, icon, mode, pressed, funct)
 	var clickHandler = mxUtils.bind(this, function()
 	{
 		this.editor.setMode(mode);
-
+		
 		if (funct != null)
 		{
 			funct(this.editor);
 		}
 	});
-
+	
 	return this.toolbar.addSwitchMode(title, icon, clickHandler, pressed);
 };
 
@@ -284,9 +284,9 @@ mxDefaultToolbar.prototype.addMode = function(title, icon, mode, pressed, funct)
  * Creates an item for inserting a clone of the specified prototype cell into
  * the <editor>'s graph. The ptype may either be a cell or a function that
  * returns a cell.
- *
+ * 
  * Parameters:
- *
+ * 
  * title - String that represents the title of the item.
  * icon - URL of the icon that represents the item.
  * ptype - Function or object that represents the prototype cell. If ptype
@@ -313,10 +313,10 @@ mxDefaultToolbar.prototype.addPrototype = function(title, icon, ptype, pressed, 
 		{
 			return this.editor.graph.cloneCell(ptype);
 		}
-
+		
 		return null;
 	});
-
+	
 	// Defines the function for a click event on the graph
 	// after this item has been selected in the toolbar
 	var clickHandler = mxUtils.bind(this, function(evt, cell)
@@ -329,34 +329,34 @@ mxDefaultToolbar.prototype.addPrototype = function(title, icon, ptype, pressed, 
 		{
 			this.drop(factory(), evt, cell);
 		}
-
+		
 		this.toolbar.resetMode();
 		mxEvent.consume(evt);
 	});
-
+	
 	var img = this.toolbar.addMode(title, icon, clickHandler, pressed, null, toggle);
-
+				
 	// Creates a wrapper function that calls the click handler without
 	// the graph argument
 	var dropHandler = function(graph, evt, cell)
 	{
 		clickHandler(evt, cell);
 	};
-
+	
 	this.installDropHandler(img, dropHandler);
-
+	
 	return img;
 };
 
 /**
  * Function: drop
- *
+ * 
  * Handles a drop from a toolbar item to the graph. The given vertex
  * represents the new cell to be inserted. This invokes <insert> or
  * <connect> depending on the given target cell.
- *
+ * 
  * Parameters:
- *
+ * 
  * vertex - <mxCell> to be inserted.
  * evt - Mouse event that represents the drop.
  * target - Optional <mxCell> that represents the drop target.
@@ -365,7 +365,7 @@ mxDefaultToolbar.prototype.drop = function(vertex, evt, target)
 {
 	var graph = this.editor.graph;
 	var model = graph.getModel();
-
+	
 	if (target == null ||
 		model.isEdge(target) ||
 		!this.connectOnDrop ||
@@ -376,7 +376,7 @@ mxDefaultToolbar.prototype.drop = function(vertex, evt, target)
 		{
 			target = model.getParent(target);
 		}
-
+		
 		this.insert(vertex, evt, target);
 	}
 	else
@@ -390,9 +390,9 @@ mxDefaultToolbar.prototype.drop = function(vertex, evt, target)
  *
  * Handles a drop by inserting the given vertex into the given parent cell
  * or the default parent if no parent is specified.
- *
+ * 
  * Parameters:
- *
+ * 
  * vertex - <mxCell> to be inserted.
  * evt - Mouse event that represents the drop.
  * parent - Optional <mxCell> that represents the parent.
@@ -400,13 +400,13 @@ mxDefaultToolbar.prototype.drop = function(vertex, evt, target)
 mxDefaultToolbar.prototype.insert = function(vertex, evt, target)
 {
 	var graph = this.editor.graph;
-
+	
 	if (graph.canImportCell(vertex))
 	{
 		var x = mxEvent.getClientX(evt);
 		var y = mxEvent.getClientY(evt);
 		var pt = mxUtils.convertPoint(graph.container, x, y);
-
+		
 		// Splits the target edge or inserts into target group
 		if (graph.isSplitEnabled() &&
 			graph.isSplitTarget(target, [vertex], evt))
@@ -418,15 +418,15 @@ mxDefaultToolbar.prototype.insert = function(vertex, evt, target)
 			return this.editor.addVertex(target, vertex, pt.x, pt.y);
 		}
 	}
-
+	
 	return null;
 };
 
 /**
  * Function: connect
- *
+ * 
  * Handles a drop by connecting the given vertex to the given source cell.
- *
+ * 
  * vertex - <mxCell> to be inserted.
  * evt - Mouse event that represents the drop.
  * source - Optional <mxCell> that represents the source terminal.
@@ -435,7 +435,7 @@ mxDefaultToolbar.prototype.connect = function(vertex, evt, source)
 {
 	var graph = this.editor.graph;
 	var model = graph.getModel();
-
+	
 	if (source != null &&
 		graph.isCellConnectable(vertex) &&
 		graph.isEdgeValid(null, source, vertex))
@@ -447,15 +447,15 @@ mxDefaultToolbar.prototype.connect = function(vertex, evt, source)
 		{
 			var geo = model.getGeometry(source);
 			var g = model.getGeometry(vertex).clone();
-
+			
 			// Moves the vertex away from the drop target that will
 			// be used as the source for the new connection
 			g.x = geo.x + (geo.width - g.width) / 2;
 			g.y = geo.y + (geo.height - g.height) / 2;
-
+			
 			var step = this.spacing * graph.gridSize;
 			var dist = model.getDirectedEdgeCount(source, true) * 20;
-
+			
 			if (this.editor.horizontalFlow)
 			{
 				g.x += (g.width + geo.width) / 2 + step + dist;
@@ -464,9 +464,9 @@ mxDefaultToolbar.prototype.connect = function(vertex, evt, source)
 			{
 				g.y += (g.height + geo.height) / 2 + step + dist;
 			}
-
+			
 			vertex.setGeometry(g);
-
+			
 			// Fires two add-events with the code below - should be fixed
 			// to only fire one add event for both inserts
 			var parent = model.getParent(source);
@@ -476,22 +476,22 @@ mxDefaultToolbar.prototype.connect = function(vertex, evt, source)
 			// Creates the edge using the editor instance and calls
 			// the second function that fires an add event
 			edge = this.editor.createEdge(source, vertex);
-
+			
 			if (model.getGeometry(edge) == null)
 			{
 				var edgeGeometry = new mxGeometry();
 				edgeGeometry.relative = true;
-
+				
 				model.setGeometry(edge, edgeGeometry);
 			}
-
+			
 			graph.addEdge(edge, parent, source, vertex);
 		}
 		finally
 		{
 			model.endUpdate();
 		}
-
+		
 		graph.setSelectionCells([vertex, edge]);
 		graph.scrollCellToVisible(vertex);
 	}
@@ -499,12 +499,12 @@ mxDefaultToolbar.prototype.connect = function(vertex, evt, source)
 
 /**
  * Function: installDropHandler
- *
+ * 
  * Makes the given img draggable using the given function for handling a
  * drop event.
- *
+ * 
  * Parameters:
- *
+ * 
  * img - DOM node that represents the image.
  * dropHandler - Function that handles a drop of the image.
  */
@@ -536,12 +536,12 @@ mxDefaultToolbar.prototype.installDropHandler = function (img, dropHandler)
 	else
 	{
 		mxEvent.addListener(sprite, 'load', loader);
-	}
+	}	
 };
 
 /**
  * Function: destroy
- *
+ * 
  * Destroys the <toolbar> associated with this object and removes all
  * installed listeners. This does normally not need to be called, the
  * <toolbar> is destroyed automatically when the window unloads (in IE) by
@@ -555,7 +555,7 @@ mxDefaultToolbar.prototype.destroy = function ()
 		this.editor.removeListener('escape', this.resetHandler);
 		this.resetHandler = null;
 	}
-
+	
 	if (this.toolbar != null)
 	{
 		this.toolbar.destroy();

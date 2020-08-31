@@ -4,21 +4,21 @@
  */
 /**
  * Class: mxPrintPreview
- *
+ * 
  * Implements printing of a diagram across multiple pages. The following opens
  * a print preview for an existing graph:
- *
+ * 
  * (code)
  * var preview = new mxPrintPreview(graph);
  * preview.open();
  * (end)
- *
+ * 
  * Use <mxUtils.getScaleForPageCount> as follows in order to print the graph
  * across a given number of pages:
- *
+ * 
  * (code)
  * var pageCount = mxUtils.prompt('Enter page count', '1');
- *
+ * 
  * if (pageCount != null)
  * {
  *   var scale = mxUtils.getScaleForPageCount(pageCount, graph);
@@ -26,15 +26,15 @@
  *   preview.open();
  * }
  * (end)
- *
+ * 
  * Additional pages:
- *
+ * 
  * To add additional pages before and after the output, <getCoverPages> and
  * <getAppendices> can be used, respectively.
- *
+ * 
  * (code)
  * var preview = new mxPrintPreview(graph, 1);
- *
+ * 
  * preview.getCoverPages = function(w, h)
  * {
  *   return [this.renderPage(w, h, 0, 0, mxUtils.bind(this, function(div)
@@ -42,7 +42,7 @@
  *     div.innerHTML = '<div style="position:relative;margin:4px;">Cover Page</p>'
  *   }))];
  * };
- *
+ * 
  * preview.getAppendices = function(w, h)
  * {
  *   return [this.renderPage(w, h, 0, 0, mxUtils.bind(this, function(div)
@@ -50,16 +50,16 @@
  *     div.innerHTML = '<div style="position:relative;margin:4px;">Appendix</p>'
  *   }))];
  * };
- *
+ * 
  * preview.open();
  * (end)
- *
+ * 
  * CSS:
- *
+ * 
  * The CSS from the original page is not carried over to the print preview.
  * To add CSS to the page, use the css argument in the <open> function or
  * override <writeHead> to add the respective link tags as follows:
- *
+ * 
  * (code)
  * var writeHead = preview.writeHead;
  * preview.writeHead = function(doc, css)
@@ -68,17 +68,17 @@
  *   doc.writeln('<link rel="stylesheet" type="text/css" href="style.css">');
  * };
  * (end)
- *
+ * 
  * Padding:
- *
+ * 
  * To add a padding to the page in the preview (but not the print output), use
  * the following code:
- *
+ * 
  * (code)
  * preview.writeHead = function(doc)
  * {
  *   writeHead.apply(this, arguments);
- *
+ *   
  *   doc.writeln('<style type="text/css">');
  *   doc.writeln('@media screen {');
  *   doc.writeln('  body > div { padding-top:30px;padding-left:40px;box-sizing:content-box; }');
@@ -86,18 +86,18 @@
  *   doc.writeln('</style>');
  * };
  * (end)
- *
+ * 
  * Headers:
- *
+ * 
  * Apart from setting the title argument in the mxPrintPreview constructor you
  * can override <renderPage> as follows to add a header to any page:
- *
+ * 
  * (code)
  * var oldRenderPage = mxPrintPreview.prototype.renderPage;
  * mxPrintPreview.prototype.renderPage = function(w, h, x, y, content, pageNumber)
  * {
  *   var div = oldRenderPage.apply(this, arguments);
- *
+ *   
  *   var header = document.createElement('div');
  *   header.style.position = 'absolute';
  *   header.style.top = '0px';
@@ -105,40 +105,40 @@
  *   header.style.textAlign = 'right';
  *   mxUtils.write(header, 'Your header here');
  *   div.firstChild.appendChild(header);
- *
+ *   
  *   return div;
  * };
  * (end)
- *
+ * 
  * The pageNumber argument contains the number of the current page, starting at
  * 1. To display a header on the first page only, check pageNumber and add a
  * vertical offset in the constructor call for the height of the header.
- *
+ * 
  * Page Format:
- *
+ * 
  * For landscape printing, use <mxConstants.PAGE_FORMAT_A4_LANDSCAPE> as
  * the pageFormat in <mxUtils.getScaleForPageCount> and <mxPrintPreview>.
  * Keep in mind that one can not set the defaults for the print dialog
  * of the operating system from JavaScript so the user must manually choose
  * a page format that matches this setting.
- *
+ * 
  * You can try passing the following CSS directive to <open> to set the
  * page format in the print dialog to landscape. However, this CSS
  * directive seems to be ignored in most major browsers, including IE.
- *
+ * 
  * (code)
  * @page {
  *   size: landscape;
  * }
  * (end)
- *
+ * 
  * Note that the print preview behaves differently in IE when used from the
  * filesystem or via HTTP so printing should always be tested via HTTP.
- *
+ * 
  * If you are using a DOCTYPE in the source page you can override <getDoctype>
  * and provide the same DOCTYPE for the print preview if required. Here is
  * an example for IE8 standards mode.
- *
+ * 
  * (code)
  * var preview = new mxPrintPreview(graph);
  * preview.getDoctype = function()
@@ -147,13 +147,13 @@
  * };
  * preview.open();
  * (end)
- *
+ * 
  * Constructor: mxPrintPreview
  *
  * Constructs a new print preview for the given parameters.
- *
+ * 
  * Parameters:
- *
+ * 
  * graph - <mxGraph> to be previewed.
  * scale - Optional scale of the output. Default is 1 / <mxGraph.pageScale>.
  * pageFormat - <mxRectangle> that specifies the page format (in pixels).
@@ -187,7 +187,7 @@ function mxPrintPreview(graph, scale, pageFormat, border, x0, y0, borderColor, t
 
 /**
  * Variable: graph
- *
+ * 
  * Reference to the <mxGraph> that should be previewed.
  */
 mxPrintPreview.prototype.graph = null;
@@ -201,14 +201,14 @@ mxPrintPreview.prototype.pageFormat = null;
 
 /**
  * Variable: scale
- *
+ * 
  * Holds the scale of the print preview.
  */
 mxPrintPreview.prototype.scale = null;
 
 /**
  * Variable: border
- *
+ * 
  * The border inset around each side of every page in the preview. This is set
  * to 0 if autoOrigin is false.
  */
@@ -216,21 +216,21 @@ mxPrintPreview.prototype.border = 0;
 
 /**
  * Variable: marginTop
- *
+ * 
  * The margin at the top of the page (number). Default is 0.
  */
 mxPrintPreview.prototype.marginTop = 0;
 
 /**
  * Variable: marginBottom
- *
+ * 
  * The margin at the bottom of the page (number). Default is 0.
  */
 mxPrintPreview.prototype.marginBottom = 0;
 
 /**
  * Variable: x0
- *
+ * 
  * Holds the horizontal offset of the output.
  */
 mxPrintPreview.prototype.x0 = 0;
@@ -244,7 +244,7 @@ mxPrintPreview.prototype.y0 = 0;
 
 /**
  * Variable: autoOrigin
- *
+ * 
  * Specifies if the origin should be automatically computed based on the top,
  * left corner of the actual diagram contents. The required offset will be added
  * to <x0> and <y0> in <open>. Default is true.
@@ -253,14 +253,14 @@ mxPrintPreview.prototype.autoOrigin = true;
 
 /**
  * Variable: printOverlays
- *
+ * 
  * Specifies if overlays should be printed. Default is false.
  */
 mxPrintPreview.prototype.printOverlays = false;
 
 /**
  * Variable: printControls
- *
+ * 
  * Specifies if controls (such as folding icons) should be printed. Default is
  * false.
  */
@@ -268,35 +268,35 @@ mxPrintPreview.prototype.printControls = false;
 
 /**
  * Variable: printBackgroundImage
- *
+ * 
  * Specifies if the background image should be printed. Default is false.
  */
 mxPrintPreview.prototype.printBackgroundImage = false;
 
 /**
  * Variable: backgroundColor
- *
+ * 
  * Holds the color value for the page background color. Default is #ffffff.
  */
 mxPrintPreview.prototype.backgroundColor = '#ffffff';
 
 /**
  * Variable: borderColor
- *
+ * 
  * Holds the color value for the page border.
  */
 mxPrintPreview.prototype.borderColor = null;
 
 /**
  * Variable: title
- *
+ * 
  * Holds the title of the preview window.
  */
 mxPrintPreview.prototype.title = null;
 
 /**
  * Variable: pageSelector
- *
+ * 
  * Boolean that specifies if the page selector should be
  * displayed. Default is true.
  */
@@ -304,28 +304,28 @@ mxPrintPreview.prototype.pageSelector = null;
 
 /**
  * Variable: wnd
- *
+ * 
  * Reference to the preview window.
  */
 mxPrintPreview.prototype.wnd = null;
 
 /**
  * Variable: targetWindow
- *
+ * 
  * Assign any window here to redirect the rendering in <open>.
  */
 mxPrintPreview.prototype.targetWindow = null;
 
 /**
  * Variable: pageCount
- *
+ * 
  * Holds the actual number of pages in the preview.
  */
 mxPrintPreview.prototype.pageCount = 0;
 
 /**
  * Variable: clipping
- *
+ * 
  * Specifies is clipping should be used to avoid creating too many cell states
  * in large diagrams. The bounding box of the cells in the original diagram is
  * used if this is enabled. Default is true.
@@ -334,7 +334,7 @@ mxPrintPreview.prototype.clipping = true;
 
 /**
  * Function: getWindow
- *
+ * 
  * Returns <wnd>.
  */
 mxPrintPreview.prototype.getWindow = function()
@@ -344,7 +344,7 @@ mxPrintPreview.prototype.getWindow = function()
 
 /**
  * Function: getDocType
- *
+ * 
  * Returns the string that should go before the HTML tag in the print preview
  * page. This implementation returns an X-UA meta tag for IE5 in quirks mode,
  * IE8 in IE8 standards mode and edge in IE9 standards mode.
@@ -352,7 +352,7 @@ mxPrintPreview.prototype.getWindow = function()
 mxPrintPreview.prototype.getDoctype = function()
 {
 	var dt = '';
-
+	
 	if (document.documentMode == 5)
 	{
 		dt = '<meta http-equiv="X-UA-Compatible" content="IE=5">';
@@ -366,17 +366,17 @@ mxPrintPreview.prototype.getDoctype = function()
 		// Comment needed to make standards doctype apply in IE
 		dt = '<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->';
 	}
-
+	
 	return dt;
 };
 
 /**
  * Function: appendGraph
- *
+ * 
  * Adds the given graph to the existing print preview.
- *
+ * 
  * Parameters:
- *
+ * 
  * css - Optional CSS string to be used in the head section.
  * targetWindow - Optional window that should be used for rendering. If
  * this is specified then no HEAD tag, CSS and BODY tag will be written.
@@ -392,12 +392,12 @@ mxPrintPreview.prototype.appendGraph = function(graph, scale, x0, y0, forcePageB
 
 /**
  * Function: open
- *
+ * 
  * Shows the print preview window. The window is created here if it does
  * not exist.
- *
+ * 
  * Parameters:
- *
+ * 
  * css - Optional CSS string to be used in the head section.
  * targetWindow - Optional window that should be used for rendering. If
  * this is specified then no HEAD tag, CSS and BODY tag will be written.
@@ -408,7 +408,7 @@ mxPrintPreview.prototype.open = function(css, targetWindow, forcePageBreaks, kee
 	// exception in IE. This and any other exceptions are simply ignored.
 	var previousInitializeOverlay = this.graph.cellRenderer.initializeOverlay;
 	var div = null;
-
+	
 	try
 	{
 		// Temporarily overrides the method to redirect rendering of overlays
@@ -420,7 +420,7 @@ mxPrintPreview.prototype.open = function(css, targetWindow, forcePageBreaks, kee
 				overlay.init(state.view.getDrawPane());
 			};
 		}
-
+		
 		if (this.printControls)
 		{
 			this.graph.cellRenderer.initControl = function(state, control, handleEvents, clickHandler)
@@ -429,27 +429,27 @@ mxPrintPreview.prototype.open = function(css, targetWindow, forcePageBreaks, kee
 				control.init(state.view.getDrawPane());
 			};
 		}
-
+		
 		this.wnd = (targetWindow != null) ? targetWindow : this.wnd;
 		var isNewWindow = false;
-
+		
 		if (this.wnd == null)
 		{
 			isNewWindow = true;
 			this.wnd = window.open();
 		}
-
+		
 		var doc = this.wnd.document;
-
+		
 		if (isNewWindow)
 		{
 			var dt = this.getDoctype();
-
+			
 			if (dt != null && dt.length > 0)
 			{
 				doc.writeln(dt);
 			}
-
+			
 			if (mxClient.IS_VML)
 			{
 				doc.writeln('<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">');
@@ -460,10 +460,10 @@ mxPrintPreview.prototype.open = function(css, targetWindow, forcePageBreaks, kee
 				{
 					doc.writeln('<!DOCTYPE html>');
 				}
-
+				
 				doc.writeln('<html>');
 			}
-
+			
 			doc.writeln('<head>');
 			this.writeHead(doc, css);
 			doc.writeln('</head>');
@@ -475,7 +475,7 @@ mxPrintPreview.prototype.open = function(css, targetWindow, forcePageBreaks, kee
 		var currentScale = this.graph.getView().getScale();
 		var sc = currentScale / this.scale;
 		var tr = this.graph.getView().getTranslate();
-
+		
 		// Uses the absolute origin with no offset for all printing
 		if (!this.autoOrigin)
 		{
@@ -487,11 +487,11 @@ mxPrintPreview.prototype.open = function(css, targetWindow, forcePageBreaks, kee
 			bounds.y = 0;
 			this.border = 0;
 		}
-
+		
 		// Store the available page area
 		var availableWidth = this.pageFormat.width - (this.border * 2);
 		var availableHeight = this.pageFormat.height - (this.border * 2);
-
+	
 		// Adds margins to page format
 		this.pageFormat.height += this.marginTop + this.marginBottom;
 
@@ -503,29 +503,29 @@ mxPrintPreview.prototype.open = function(css, targetWindow, forcePageBreaks, kee
 		var hpages = Math.max(1, Math.ceil((bounds.width + this.x0) / availableWidth));
 		var vpages = Math.max(1, Math.ceil((bounds.height + this.y0) / availableHeight));
 		this.pageCount = hpages * vpages;
-
+		
 		var writePageSelector = mxUtils.bind(this, function()
 		{
 			if (this.pageSelector && (vpages > 1 || hpages > 1))
 			{
 				var table = this.createPageSelector(vpages, hpages);
 				doc.body.appendChild(table);
-
+				
 				// Implements position: fixed in IE quirks mode
 				if (mxClient.IS_IE && doc.documentMode == null || doc.documentMode == 5 || doc.documentMode == 8 || doc.documentMode == 7)
 				{
 					table.style.position = 'absolute';
-
+					
 					var update = function()
 					{
 						table.style.top = ((doc.body.scrollTop || doc.documentElement.scrollTop) + 10) + 'px';
 					};
-
+					
 					mxEvent.addListener(this.wnd, 'scroll', function(evt)
 					{
 						update();
 					});
-
+					
 					mxEvent.addListener(this.wnd, 'resize', function(evt)
 					{
 						update();
@@ -533,7 +533,7 @@ mxPrintPreview.prototype.open = function(css, targetWindow, forcePageBreaks, kee
 				}
 			}
 		});
-
+		
 		var addPage = mxUtils.bind(this, function(div, addBreak)
 		{
 			// Border of the DIV (aka page) inside the document
@@ -543,11 +543,11 @@ mxPrintPreview.prototype.open = function(css, targetWindow, forcePageBreaks, kee
 				div.style.borderStyle = 'solid';
 				div.style.borderWidth = '1px';
 			}
-
+			
 			// Needs to be assigned directly because IE doesn't support
 			// child selectors, eg. body > div { background: white; }
 			div.style.background = this.backgroundColor;
-
+			
 			if (forcePageBreaks || addBreak)
 			{
 				div.style.pageBreakAfter = 'always';
@@ -589,9 +589,9 @@ mxPrintPreview.prototype.open = function(css, targetWindow, forcePageBreaks, kee
 				this.addPageBreak(doc);
 			}
 		});
-
+		
 		var cov = this.getCoverPages(this.pageFormat.width, this.pageFormat.height);
-
+		
 		if (cov != null)
 		{
 			for (var i = 0; i < cov.length; i++)
@@ -599,23 +599,23 @@ mxPrintPreview.prototype.open = function(css, targetWindow, forcePageBreaks, kee
 				addPage(cov[i], true);
 			}
 		}
-
+		
 		var apx = this.getAppendices(this.pageFormat.width, this.pageFormat.height);
-
+		
 		// Appends each page to the page output for printing, making
 		// sure there will be a page break after each page (ie. div)
 		for (var i = 0; i < vpages; i++)
 		{
 			var dy = i * availableHeight / this.scale - this.y0 / this.scale +
 					(bounds.y - tr.y * currentScale) / currentScale;
-
+			
 			for (var j = 0; j < hpages; j++)
 			{
 				if (this.wnd == null)
 				{
 					return null;
 				}
-
+				
 				var dx = j * availableWidth / this.scale - this.x0 / this.scale +
 						(bounds.x - tr.x * currentScale) / currentScale;
 				var pageNum = i * hpages + j + 1;
@@ -623,7 +623,7 @@ mxPrintPreview.prototype.open = function(css, targetWindow, forcePageBreaks, kee
 				div = this.renderPage(this.pageFormat.width, this.pageFormat.height, 0, 0, mxUtils.bind(this, function(div)
 				{
 					this.addGraphFragment(-dx, -dy, this.scale, pageNum, div, clip);
-
+					
 					if (this.printBackgroundImage)
 					{
 						this.insertBackgroundImage(div, -dx, -dy);
@@ -650,7 +650,7 @@ mxPrintPreview.prototype.open = function(css, targetWindow, forcePageBreaks, kee
 			this.closeDocument();
 			writePageSelector();
 		}
-
+		
 		this.wnd.focus();
 	}
 	catch (e)
@@ -671,7 +671,7 @@ mxPrintPreview.prototype.open = function(css, targetWindow, forcePageBreaks, kee
 
 /**
  * Function: addPageBreak
- *
+ * 
  * Adds a page break to the given document.
  */
 mxPrintPreview.prototype.addPageBreak = function(doc)
@@ -683,7 +683,7 @@ mxPrintPreview.prototype.addPageBreak = function(doc)
 
 /**
  * Function: closeDocument
- *
+ * 
  * Writes the closing tags for body and page after calling <writePostfix>.
  */
 mxPrintPreview.prototype.closeDocument = function()
@@ -693,12 +693,12 @@ mxPrintPreview.prototype.closeDocument = function()
 		if (this.wnd != null && this.wnd.document != null)
 		{
 			var doc = this.wnd.document;
-
+			
 			this.writePostfix(doc);
 			doc.writeln('</body>');
 			doc.writeln('</html>');
 			doc.close();
-
+			
 			// Removes all event handlers in the print output
 			mxEvent.release(doc.body);
 		}
@@ -711,7 +711,7 @@ mxPrintPreview.prototype.closeDocument = function()
 
 /**
  * Function: writeHead
- *
+ * 
  * Writes the HEAD section into the given document, without the opening
  * and closing HEAD tags.
  */
@@ -721,7 +721,7 @@ mxPrintPreview.prototype.writeHead = function(doc, css)
 	{
 		doc.writeln('<title>' + this.title + '</title>');
 	}
-
+	
 	// Adds required namespaces
 	if (mxClient.IS_VML)
 	{
@@ -739,7 +739,7 @@ mxPrintPreview.prototype.writeHead = function(doc, css)
 	doc.writeln('  hr.mxPageBreak { display: none; }');
 	doc.writeln('}');
 	doc.writeln('@media screen {');
-
+	
 	// NOTE: position: fixed is not supported in IE, so the page selector
 	// position (absolute) needs to be updated in IE (see below)
 	doc.writeln('  table.mxPageSelector { position: fixed; right: 10px; top: 10px;' +
@@ -748,18 +748,18 @@ mxPrintPreview.prototype.writeHead = function(doc, css)
 	doc.writeln('  table.mxPageSelector td { border: solid 1px gray; padding:4px; }');
 	doc.writeln('  body.mxPage { background: gray; }');
 	doc.writeln('}');
-
+	
 	if (css != null)
 	{
 		doc.writeln(css);
 	}
-
+	
 	doc.writeln('</style>');
 };
 
 /**
  * Function: writePostfix
- *
+ * 
  * Called before closing the body of the page. This implementation is empty.
  */
 mxPrintPreview.prototype.writePostfix = function(doc)
@@ -769,7 +769,7 @@ mxPrintPreview.prototype.writePostfix = function(doc)
 
 /**
  * Function: createPageSelector
- *
+ * 
  * Creates the page selector table.
  */
 mxPrintPreview.prototype.createPageSelector = function(vpages, hpages)
@@ -780,11 +780,11 @@ mxPrintPreview.prototype.createPageSelector = function(vpages, hpages)
 	table.setAttribute('border', '0');
 
 	var tbody = doc.createElement('tbody');
-
+	
 	for (var i = 0; i < vpages; i++)
 	{
 		var row = doc.createElement('tr');
-
+		
 		for (var j = 0; j < hpages; j++)
 		{
 			var pageNum = i * hpages + j + 1;
@@ -798,29 +798,29 @@ mxPrintPreview.prototype.createPageSelector = function(vpages, hpages)
 				var js = 'var page = document.getElementById(\'mxPage-' + pageNum + '\');page.scrollIntoView(true);event.preventDefault();';
 				a.setAttribute('onclick', js);
 			}
-
+			
 			mxUtils.write(a, pageNum, doc);
 			cell.appendChild(a);
 			row.appendChild(cell);
 		}
-
+		
 		tbody.appendChild(row);
 	}
-
+	
 	table.appendChild(tbody);
-
+	
 	return table;
 };
 
 /**
  * Function: renderPage
- *
+ * 
  * Creates a DIV that prints a single page of the given
  * graph using the given scale and returns the DIV that
  * represents the page.
- *
+ * 
  * Parameters:
- *
+ * 
  * w - Width of the page in pixels.
  * h - Height of the page in pixels.
  * dx - Optional horizontal page offset in pixels (used internally).
@@ -845,7 +845,7 @@ mxPrintPreview.prototype.renderPage = function(w, h, dx, dy, content, pageNumber
 			div.style.width = w + 'px';
 			div.style.height = h + 'px';
 			div.style.pageBreakInside = 'avoid';
-
+			
 			var innerDiv = document.createElement('div');
 			innerDiv.style.position = 'relative';
 			innerDiv.style.top = this.border + 'px';
@@ -853,7 +853,7 @@ mxPrintPreview.prototype.renderPage = function(w, h, dx, dy, content, pageNumber
 			innerDiv.style.width = (w - 2 * this.border) + 'px';
 			innerDiv.style.height = (h - 2 * this.border) + 'px';
 			innerDiv.style.overflow = 'hidden';
-
+			
 			var viewport = document.createElement('div');
 			viewport.style.position = 'relative';
 			viewport.style.marginLeft = dx + 'px';
@@ -865,13 +865,13 @@ mxPrintPreview.prototype.renderPage = function(w, h, dx, dy, content, pageNumber
 				innerDiv.style.position = 'absolute';
 				viewport.style.position = 'absolute';
 			}
-
+		
 			if (doc.documentMode == 10)
 			{
 				viewport.style.width = '100%';
 				viewport.style.height = '100%';
 			}
-
+			
 			innerDiv.appendChild(viewport);
 			div.appendChild(innerDiv);
 			document.body.appendChild(div);
@@ -884,13 +884,13 @@ mxPrintPreview.prototype.renderPage = function(w, h, dx, dy, content, pageNumber
 			div.style.height = h + 'px';
 			div.style.overflow = 'hidden';
 			div.style.pageBreakInside = 'avoid';
-
+			
 			// IE8 uses above branch currently
 			if (doc.documentMode == 8)
 			{
 				div.style.position = 'relative';
 			}
-
+			
 			var innerDiv = document.createElement('div');
 			innerDiv.style.width = (w - 2 * this.border) + 'px';
 			innerDiv.style.height = (h - 2 * this.border) + 'px';
@@ -900,14 +900,14 @@ mxPrintPreview.prototype.renderPage = function(w, h, dx, dy, content, pageNumber
 				doc.documentMode == 8 || doc.documentMode == 7))
 			{
 				innerDiv.style.marginTop = this.border + 'px';
-				innerDiv.style.marginLeft = this.border + 'px';
+				innerDiv.style.marginLeft = this.border + 'px';	
 			}
 			else
 			{
 				innerDiv.style.top = this.border + 'px';
 				innerDiv.style.left = this.border + 'px';
 			}
-
+	
 			if (this.graph.dialect == mxConstants.DIALECT_VML)
 			{
 				innerDiv.style.position = 'absolute';
@@ -922,39 +922,39 @@ mxPrintPreview.prototype.renderPage = function(w, h, dx, dy, content, pageNumber
 	{
 		div.parentNode.removeChild(div);
 		div = null;
-
+		
 		throw e;
 	}
 
 	content(arg);
-
+	 
 	return div;
 };
 
 /**
  * Function: getRoot
- *
+ * 
  * Returns the root cell for painting the graph.
  */
 mxPrintPreview.prototype.getRoot = function()
 {
 	var root = this.graph.view.currentRoot;
-
+	
 	if (root == null)
 	{
 		root = this.graph.getModel().getRoot();
 	}
-
+	
 	return root;
 };
 
 /**
  * Function: addGraphFragment
- *
+ * 
  * Adds a graph fragment to the given div.
- *
+ * 
  * Parameters:
- *
+ * 
  * dx - Horizontal translation for the diagram.
  * dy - Vertical translation for the diagram.
  * scale - Scale for the diagram.
@@ -967,7 +967,7 @@ mxPrintPreview.prototype.addGraphFragment = function(dx, dy, scale, pageNumber, 
 	var view = this.graph.getView();
 	var previousContainer = this.graph.container;
 	this.graph.container = div;
-
+	
 	var canvas = view.getCanvas();
 	var backgroundPane = view.getBackgroundPane();
 	var drawPane = view.getDrawPane();
@@ -977,7 +977,7 @@ mxPrintPreview.prototype.addGraphFragment = function(dx, dy, scale, pageNumber, 
 	if (this.graph.dialect == mxConstants.DIALECT_SVG)
 	{
 		view.createSvg();
-
+		
 		// Uses CSS transform for scaling
 		if (!mxClient.NO_FO)
 		{
@@ -986,7 +986,7 @@ mxPrintPreview.prototype.addGraphFragment = function(dx, dy, scale, pageNumber, 
 			g.setAttribute('transformOrigin', '0 0');
 			g.setAttribute('transform', 'scale(' + scale + ',' + scale + ')' +
 				'translate(' + dx + ',' + dy + ')');
-
+			
 			scale = 1;
 			dx = 0;
 			dy = 0;
@@ -1000,11 +1000,11 @@ mxPrintPreview.prototype.addGraphFragment = function(dx, dy, scale, pageNumber, 
 	{
 		view.createHtml();
 	}
-
+	
 	// Disables events on the view
 	var eventsEnabled = view.isEventsEnabled();
 	view.setEventsEnabled(false);
-
+	
 	// Disables the graph to avoid cursors
 	var graphEnabled = this.graph.isEnabled();
 	this.graph.setEnabled(false);
@@ -1012,7 +1012,7 @@ mxPrintPreview.prototype.addGraphFragment = function(dx, dy, scale, pageNumber, 
 	// Resets the translation
 	var translate = view.getTranslate();
 	view.translate = new mxPoint(dx, dy);
-
+	
 	// Redraws only states that intersect the clip
 	var redraw = this.graph.cellRenderer.redraw;
 	var states = view.states;
@@ -1032,11 +1032,11 @@ mxPrintPreview.prototype.addGraphFragment = function(dx, dy, scale, pageNumber, 
 			{
 				// Gets original state from graph to find bounding box
 				var orig = states.get(state.cell);
-
+				
 				if (orig != null)
 				{
 					var bbox = view.getBoundingBox(orig, false);
-
+					
 					// Stops rendering if outside clip for speedup but ignores
 					// edge labels where width and height is set to 0
 					if (bbox != null && bbox.width > 0 && bbox.height > 0 &&
@@ -1046,13 +1046,13 @@ mxPrintPreview.prototype.addGraphFragment = function(dx, dy, scale, pageNumber, 
 					}
 				}
 			}
-
+			
 			redraw.apply(this, arguments);
 		};
 	}
-
+	
 	var temp = null;
-
+	
 	try
 	{
 		// Creates the temporary cell states in the view and
@@ -1102,22 +1102,22 @@ mxPrintPreview.prototype.addGraphFragment = function(dx, dy, scale, pageNumber, 
 				{
 					tmp.parentNode.removeChild(tmp);
 				}
-
+				
 				tmp = next;
 			}
 		}
-
+		
 		// Puts background image behind SVG output
 		if (this.printBackgroundImage)
 		{
 			var svgs = div.getElementsByTagName('svg');
-
+			
 			if (svgs.length > 0)
 			{
 				svgs[0].style.position = 'absolute';
 			}
 		}
-
+		
 		// Completely removes the overlay pane to remove more handles
 		view.overlayPane.parentNode.removeChild(view.overlayPane);
 
@@ -1137,7 +1137,7 @@ mxPrintPreview.prototype.addGraphFragment = function(dx, dy, scale, pageNumber, 
 
 /**
  * Function: getLinkForCellState
- *
+ * 
  * Returns the link for the given cell state. This returns null.
  */
 mxPrintPreview.prototype.getLinkForCellState = function(state)
@@ -1147,13 +1147,13 @@ mxPrintPreview.prototype.getLinkForCellState = function(state)
 
 /**
  * Function: insertBackgroundImage
- *
+ * 
  * Inserts the background image into the given div.
  */
 mxPrintPreview.prototype.insertBackgroundImage = function(div, dx, dy)
 {
 	var bg = this.graph.backgroundImage;
-
+	
 	if (bg != null)
 	{
 		var img = document.createElement('img');
@@ -1163,14 +1163,14 @@ mxPrintPreview.prototype.insertBackgroundImage = function(div, dx, dy)
 		img.setAttribute('width', Math.round(this.scale * bg.width));
 		img.setAttribute('height', Math.round(this.scale * bg.height));
 		img.src = bg.src;
-
+		
 		div.insertBefore(img, div.firstChild);
 	}
 };
 
 /**
  * Function: getCoverPages
- *
+ * 
  * Returns the pages to be added before the print output. This returns null.
  */
 mxPrintPreview.prototype.getCoverPages = function()
@@ -1180,7 +1180,7 @@ mxPrintPreview.prototype.getCoverPages = function()
 
 /**
  * Function: getAppendices
- *
+ * 
  * Returns the pages to be added after the print output. This returns null.
  */
 mxPrintPreview.prototype.getAppendices = function()
@@ -1190,17 +1190,17 @@ mxPrintPreview.prototype.getAppendices = function()
 
 /**
  * Function: print
- *
+ * 
  * Opens the print preview and shows the print dialog.
- *
+ * 
  * Parameters:
- *
+ * 
  * css - Optional CSS string to be used in the head section.
  */
 mxPrintPreview.prototype.print = function(css)
 {
 	var wnd = this.open(css);
-
+	
 	if (wnd != null)
 	{
 		wnd.print();
@@ -1209,7 +1209,7 @@ mxPrintPreview.prototype.print = function(css)
 
 /**
  * Function: close
- *
+ * 
  * Closes the print preview window.
  */
 mxPrintPreview.prototype.close = function()
@@ -1220,5 +1220,4 @@ mxPrintPreview.prototype.close = function()
 		this.wnd = null;
 	}
 };
-
 exports.mxPrintPreview = mxPrintPreview;

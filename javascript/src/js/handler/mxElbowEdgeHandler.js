@@ -9,13 +9,13 @@
  * the edge label location. Uses <mxTerminalMarker> for finding and
  * highlighting new source and target vertices. This handler is automatically
  * created in <mxGraph.createHandler>. It extends <mxEdgeHandler>.
- *
+ * 
  * Constructor: mxEdgeHandler
  *
  * Constructs an edge handler for the specified <mxCellState>.
- *
+ * 
  * Parameters:
- *
+ * 
  * state - <mxCellState> of the cell to be modified.
  */
 function mxElbowEdgeHandler(state)
@@ -36,7 +36,7 @@ mxElbowEdgeHandler.prototype.flipEnabled = true;
 
 /**
  * Variable: doubleClickOrientationResource
- *
+ * 
  * Specifies the resource key for the tooltip to be displayed on the single
  * control point for routed edges. If the resource for this key does not
  * exist then the value is used as the error message. Default is
@@ -47,13 +47,13 @@ mxElbowEdgeHandler.prototype.doubleClickOrientationResource =
 
 /**
  * Function: createBends
- *
+ * 
  * Overrides <mxEdgeHandler.createBends> to create custom bends.
  */
  mxElbowEdgeHandler.prototype.createBends = function()
  {
 	var bends = [];
-
+	
 	// Source
 	var bend = this.createHandleShape(0);
 	this.initBend(bend);
@@ -69,7 +69,7 @@ mxElbowEdgeHandler.prototype.doubleClickOrientationResource =
 			mxEvent.consume(evt);
 		}
 	})));
-
+	
 	this.points.push(new mxPoint(0,0));
 
 	// Target
@@ -77,13 +77,13 @@ mxElbowEdgeHandler.prototype.doubleClickOrientationResource =
 	this.initBend(bend);
 	bend.setCursor(mxConstants.CURSOR_TERMINAL_HANDLE);
 	bends.push(bend);
-
+	
 	return bends;
  };
 
 /**
  * Function: createVirtualBend
- *
+ * 
  * Creates a virtual bend that supports double clicking and calls
  * <mxGraph.flipEdge>.
  */
@@ -104,7 +104,7 @@ mxElbowEdgeHandler.prototype.createVirtualBend = function(dblClickHandler)
 
 /**
  * Function: getCursorForBend
- *
+ * 
  * Returns the cursor to be used for the bend.
  */
 mxElbowEdgeHandler.prototype.getCursorForBend = function()
@@ -113,19 +113,19 @@ mxElbowEdgeHandler.prototype.getCursorForBend = function()
 		this.state.style[mxConstants.STYLE_EDGE] == mxConstants.EDGESTYLE_TOPTOBOTTOM ||
 		((this.state.style[mxConstants.STYLE_EDGE] == mxEdgeStyle.ElbowConnector ||
 		this.state.style[mxConstants.STYLE_EDGE] == mxConstants.EDGESTYLE_ELBOW)&&
-		this.state.style[mxConstants.STYLE_ELBOW] == mxConstants.ELBOW_VERTICAL)) ?
+		this.state.style[mxConstants.STYLE_ELBOW] == mxConstants.ELBOW_VERTICAL)) ? 
 		'row-resize' : 'col-resize';
 };
 
 /**
  * Function: getTooltipForNode
- *
+ * 
  * Returns the tooltip for the given node.
  */
 mxElbowEdgeHandler.prototype.getTooltipForNode = function(node)
 {
 	var tip = null;
-
+	
 	if (this.bends != null && this.bends[1] != null && (node == this.bends[1].node ||
 		node.parentNode == this.bends[1].node))
 	{
@@ -138,12 +138,12 @@ mxElbowEdgeHandler.prototype.getTooltipForNode = function(node)
 
 /**
  * Function: convertPoint
- *
+ * 
  * Converts the given point in-place from screen to unscaled, untranslated
  * graph coordinates and applies the grid.
- *
+ * 
  * Parameters:
- *
+ * 
  * point - <mxPoint> to be converted.
  * gridEnabled - Boolean that specifies if the grid should be applied.
  */
@@ -152,26 +152,26 @@ mxElbowEdgeHandler.prototype.convertPoint = function(point, gridEnabled)
 	var scale = this.graph.getView().getScale();
 	var tr = this.graph.getView().getTranslate();
 	var origin = this.state.origin;
-
+	
 	if (gridEnabled)
 	{
 		point.x = this.graph.snap(point.x);
 		point.y = this.graph.snap(point.y);
 	}
-
+	
 	point.x = Math.round(point.x / scale - tr.x - origin.x);
 	point.y = Math.round(point.y / scale - tr.y - origin.y);
-
+	
 	return point;
 };
 
 /**
  * Function: redrawInnerBends
- *
+ * 
  * Updates and redraws the inner bends.
- *
+ * 
  * Parameters:
- *
+ * 
  * p0 - <mxPoint> that represents the location of the first point.
  * pe - <mxPoint> that represents the location of the last point.
  */
@@ -191,7 +191,7 @@ mxElbowEdgeHandler.prototype.redrawInnerBends = function(p0, pe)
 	{
 		pt = pts[0];
 	}
-
+	
 	if (pt == null)
 	{
 		pt = new mxPoint(p0.x + (pe.x - p0.x) / 2, p0.y + (pe.y - p0.y) / 2);
@@ -222,7 +222,7 @@ mxElbowEdgeHandler.prototype.redrawInnerBends = function(p0, pe)
 
 	this.bends[1].bounds = bounds;
 	this.bends[1].redraw();
-
+	
 	if (this.manageLabelHandle)
 	{
 		this.checkLabelHandle(this.bends[1].bounds);

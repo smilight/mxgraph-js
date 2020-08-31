@@ -6,7 +6,7 @@
  * Class: mxDefaultToolbarCodec
  *
  * Custom codec for configuring <mxDefaultToolbar>s. This class is created
- * and registered dynamically at load time and used implicitely via
+ * and registered dynamically at load time and used implicitly via
  * <mxCodec> and the <mxCodecRegistry>. This codec only reads configuration
  * data for existing toolbars handlers, it does not encode or create toolbars.
  */
@@ -23,7 +23,7 @@ var mxDefaultToolbarCodec = mxCodecRegistry.register(function()
 	{
 		return null;
 	};
-
+	
 	/**
 	 * Function: decode
 	 *
@@ -35,7 +35,7 @@ var mxDefaultToolbarCodec = mxCodecRegistry.register(function()
 	 * add - Adds a new item to the toolbar. See below for attributes.
 	 * separator - Adds a vertical separator. No attributes.
 	 * hr - Adds a horizontal separator. No attributes.
-	 * br - Adds a linefeed. No attributes.
+	 * br - Adds a linefeed. No attributes. 
 	 *
 	 * Attributes:
 	 *
@@ -56,11 +56,11 @@ var mxDefaultToolbarCodec = mxCodecRegistry.register(function()
 	 * to create a combo box in the toolbar. If the icon is specified then
 	 * a list of the child node is expected to have its template attribute
 	 * set and the action is ignored instead.
-	 *
+	 * 
 	 * Nodes with a specified template may define a function to be used for
 	 * inserting the cloned template into the graph. Here is an example of such
 	 * a node:
-	 *
+	 * 
 	 * (code)
 	 * <add as="Swimlane" template="swimlane" icon="images/swimlane.gif"><![CDATA[
 	 *   function (editor, cell, evt, targetCell)
@@ -72,7 +72,7 @@ var mxDefaultToolbarCodec = mxCodecRegistry.register(function()
 	 *   }
 	 * ]]></add>
 	 * (end)
-	 *
+	 * 
 	 * In the above function, editor is the enclosing <mxEditor> instance, cell
 	 * is the clone of the template, evt is the mouse event that represents the
 	 * drop and targetCell is the cell under the mousepointer where the drop
@@ -94,7 +94,7 @@ var mxDefaultToolbarCodec = mxCodecRegistry.register(function()
 	 *   }
 	 * ]]></add>
 	 * (end)
-	 *
+	 * 
 	 * Both functions require <mxDefaultToolbarCodec.allowEval> to be set to true.
 	 *
 	 * Modes:
@@ -106,7 +106,7 @@ var mxDefaultToolbarCodec = mxCodecRegistry.register(function()
 	 * Example:
 	 *
 	 * To add items to the toolbar:
-	 *
+	 * 
 	 * (code)
 	 * <mxDefaultToolbar as="toolbar">
 	 *   <add as="save" action="save" icon="images/save.gif"/>
@@ -122,7 +122,7 @@ var mxDefaultToolbarCodec = mxCodecRegistry.register(function()
 		{
 			var editor = into.editor;
 			node = node.firstChild;
-
+			
 			while (node != null)
 			{
 				if (node.nodeType == mxConstants.NODETYPE_ELEMENT)
@@ -167,36 +167,36 @@ var mxDefaultToolbarCodec = mxCodecRegistry.register(function()
 							{
 								var cell = editor.templates[template];
 								var style = node.getAttribute('style');
-
+								
 								if (cell != null && style != null)
 								{
 									cell = editor.graph.cloneCell(cell);
 									cell.setStyle(style);
 								}
-
+								
 								var insertFunction = null;
-
+								
 								if (text != null && text.length > 0 && mxDefaultToolbarCodec.allowEval)
 								{
 									insertFunction = mxUtils.eval(text);
 								}
-
+								
 								elt = into.addPrototype(as, icon, cell, pressedIcon, insertFunction, toggle);
 							}
 							else
 							{
 								var children = mxUtils.getChildNodes(node);
-
+								
 								if (children.length > 0)
 								{
 									if (icon == null)
 									{
 										var combo = into.addActionCombo(as);
-
+										
 										for (var i=0; i<children.length; i++)
 										{
 											var child = children[i];
-
+											
 											if (child.nodeName == 'separator')
 											{
 												into.addOption(combo, '---');
@@ -215,30 +215,30 @@ var mxDefaultToolbarCodec = mxCodecRegistry.register(function()
 										var create = function()
 										{
 											var template = editor.templates[select.value];
-
+											
 											if (template != null)
 											{
 												var clone = template.clone();
 												var style = select.options[select.selectedIndex].cellStyle;
-
+												
 												if (style != null)
 												{
 													clone.setStyle(style);
 												}
-
+												
 												return clone;
 											}
 											else
 											{
 												mxLog.warn('Template '+template+' not found');
 											}
-
+											
 											return null;
 										};
-
+										
 										var img = into.addPrototype(as, icon, create, null, null, toggle);
 										select = into.addCombo();
-
+										
 										// Selects the toolbar icon if a selection change
 										// is made in the corresponding combobox.
 										mxEvent.addListener(select, 'change', function()
@@ -247,18 +247,18 @@ var mxDefaultToolbarCodec = mxCodecRegistry.register(function()
 											{
 												var pt = mxUtils.convertPoint(editor.graph.container,
 													mxEvent.getClientX(evt), mxEvent.getClientY(evt));
-
+												
 												return editor.addVertex(null, funct(), pt.x, pt.y);
 											});
-
+											
 											into.toolbar.noReset = false;
 										});
-
+										
 										// Adds the entries to the combobox
 										for (var i=0; i<children.length; i++)
 										{
 											var child = children[i];
-
+											
 											if (child.nodeName == 'separator')
 											{
 												into.addOption(select, '---');
@@ -271,16 +271,16 @@ var mxDefaultToolbarCodec = mxCodecRegistry.register(function()
 												option.cellStyle = child.getAttribute('style');
 											}
 										}
-
+										
 									}
 								}
 							}
-
+							
 							// Assigns an ID to the created element to access it later.
 							if (elt != null)
 							{
 								var id = node.getAttribute('id');
-
+								
 								if (id != null && id.length > 0)
 								{
 									elt.setAttribute('id', id);
@@ -289,14 +289,14 @@ var mxDefaultToolbarCodec = mxCodecRegistry.register(function()
 						}
 					}
 				}
-
+				
 				node = node.nextSibling;
 			}
 		}
-
+		
 		return into;
 	};
-
+	
 	// Returns the codec into the registry
 	return codec;
 
@@ -304,7 +304,7 @@ var mxDefaultToolbarCodec = mxCodecRegistry.register(function()
 
 /**
  * Variable: allowEval
- *
+ * 
  * Static global switch that specifies if the use of eval is allowed for
  * evaluating text content. Default is true. Set this to false if stylesheets
  * may contain user input

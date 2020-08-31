@@ -10,13 +10,13 @@
  * needed, then this shape's <redrawPath> should be overridden.
  * This shape is registered under <mxConstants.SHAPE_CYLINDER>
  * in <mxCellRenderer>.
- *
+ * 
  * Constructor: mxCylinder
  *
  * Constructs a new cylinder shape.
- *
+ * 
  * Parameters:
- *
+ * 
  * bounds - <mxRectangle> that defines the bounds. This is stored in
  * <mxShape.bounds>.
  * fill - String that defines the fill color. This is stored in <fill>.
@@ -55,7 +55,7 @@ mxCylinder.prototype.svgStrokeTolerance = 0;
 
 /**
  * Function: paintVertexShape
- *
+ * 
  * Redirects to redrawPath for subclasses to work.
  */
 mxCylinder.prototype.paintVertexShape = function(c, x, y, w, h)
@@ -64,7 +64,7 @@ mxCylinder.prototype.paintVertexShape = function(c, x, y, w, h)
 	c.begin();
 	this.redrawPath(c, x, y, w, h, false);
 	c.fillAndStroke();
-
+	
 	if (!this.outline || this.style == null || mxUtils.getValue(
 		this.style, mxConstants.STYLE_BACKGROUND_OUTLINE, 0) == 0)
 	{
@@ -93,12 +93,12 @@ mxCylinder.prototype.getCylinderSize = function(x, y, w, h)
 mxCylinder.prototype.redrawPath = function(c, x, y, w, h, isForeground)
 {
 	var dy = this.getCylinderSize(x, y, w, h);
-
+	
 	if ((isForeground && this.fill != null) || (!isForeground && this.fill == null))
 	{
 		c.moveTo(0, dy);
 		c.curveTo(0, 2 * dy, w, 2 * dy, w, dy);
-
+		
 		// Needs separate shapes for correct hit-detection
 		if (!isForeground)
 		{
@@ -106,7 +106,7 @@ mxCylinder.prototype.redrawPath = function(c, x, y, w, h, isForeground)
 			c.begin();
 		}
 	}
-
+	
 	if (!isForeground)
 	{
 		c.moveTo(0, dy);
