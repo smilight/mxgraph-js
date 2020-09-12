@@ -1,6 +1,6 @@
 {
   "name": "mxgraph-js",
-  "version": "4.1.1",
+  "version": "4.2.2",
   "description": "mxgraph-js model",
   "main": "dist/mxgraph-js.js",
   "directories": {
