@@ -4,7 +4,6 @@ var gulp = require('gulp');
 var usemin = require('gulp-usemin');
 var del = require('del');
 var webpack = require('webpack');
-var runSequence = require('run-sequence');
 var packageJson = require('./package');
 
 gulp.task('clean:dist', function(cb) {
@@ -48,11 +47,7 @@ gulp.task('webpack', function() {
     });
 });
 
-gulp.task('dist', function() {
-    runSequence('clean:dist', 'usemin', 'webpack', function() {
-        console.log('dist success!');
-    });
-});
+gulp.task('dist', gulp.series('clean:dist', 'usemin', 'webpack'))
 
 
 // deploy to gh-pages branch
