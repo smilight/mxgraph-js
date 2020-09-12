@@ -1,6 +1,6 @@
 {
   "name": "mxgraph-js",
-  "version": "4.1.1",
+  "version": "4.2.2",
   "description": "mxgraph-js model",
   "main": "dist/mxgraph-js.js",
   "directories": {
@@ -23,7 +23,7 @@
   "devDependencies": {
     "del": "^2.2.2",
     "gh-pages": "^0.12.0",
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.2",
     "gulp-usemin": "^0.3.26",
     "run-sequence": "^1.2.2",
     "webpack": "^1.14.0"
