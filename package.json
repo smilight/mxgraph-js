@@ -25,7 +25,6 @@
     "gh-pages": "^0.12.0",
     "gulp": "^4.0.2",
     "gulp-usemin": "^0.3.26",
-    "run-sequence": "^1.2.2",
     "webpack": "^1.14.0"
   }
 }
