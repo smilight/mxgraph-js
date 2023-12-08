@@ -937,7 +937,9 @@ mxVertexHandler.prototype.rotateVertex = function(me)
 		var dx = point.x - this.state.getCenterX();
 		var dy = point.y - this.state.getCenterY();
 		var dist = Math.sqrt(dx * dx + dy * dy);
-		
+
+		let raster = 1;
+
 		if (dist - this.startDist < 2)
 		{
 			raster = 15;
