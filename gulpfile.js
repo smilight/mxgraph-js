@@ -51,8 +51,8 @@ gulp.task('dist', gulp.series('clean:dist', 'usemin', 'webpack'))
 
 
 // deploy to gh-pages branch
-gulp.task('deploy', function() {
-    ghpages.publish(path.join(__dirname, './'), {
+gulp.task('deploy', async function() {
+    return ghpages.publish(path.join(__dirname, './'), {
         src: ['package.json', 'README.md', 'dist/*'],
         logger: function(message) {
             console.log(message);
