@@ -948,11 +948,16 @@ mxVertexHandler.prototype.rotateVertex = function(me)
 		{
 			raster = 5;
 		}
-		else
-		{
-			raster = 1;
-		}
-		
+
+		console.log({
+			dist,
+			dx, dy,
+			startDist: this.startDist,
+			raster,
+			a: this.currentAlpha,
+			calc: Math.round(this.currentAlpha / raster) * raster
+		})
+
 		this.currentAlpha = Math.round(this.currentAlpha / raster) * raster;
 	}
 	else
