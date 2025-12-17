@@ -1,53 +1,49 @@
-mxgraph-js
-=======
+# mxgraph-js (ESM)
 
-模块化mxgraph(基于版本v3.6.0).全局变量mx.
+An ESM-first packaging of mxGraph tailored for Angular and modern bundlers. Core exports are side-effect free and initialized explicitly so apps can tree-shake what they need.
 
-使用方法:
-```shell
-npm install mxgraph-js --save
+## Install
+```bash
+npm install mxgraph-js
 ```
 
-然后:
-```js
-var mx = require('mxgraph-js');
+## Core usage
+```ts
+import { mxGraph, mxClient, mxUtils } from 'mxgraph-js';
+import { initMxGraph } from 'mxgraph-js/init';
+
+await initMxGraph();
+const container = document.getElementById('graph')!;
+const graph = new mxGraph(container);
+mxUtils.alert(`mxGraph ${mxClient.VERSION} ready`);
 ```
 
-采用script方式加载.
-```html
-<script src="./mxgraph-js"></script>
+- The main entrypoint exports live bindings for all mxGraph globals (no side effects).
+- Call `initMxGraph` once to load the legacy bundle (`dist/resources/mxgraph.js`) and wire exports.
+- If hosting assets elsewhere, pass `initMxGraph({ resourcesBaseUrl: '/static/mxgraph/' })`.
+
+## Loading resources on demand
+Optional bundles stay out of core imports:
+```ts
+import { loadBundle } from 'mxgraph-js/resources';
+import { mxResources } from 'mxgraph-js';
+
+const strings = await loadBundle('graph', 'de');
+mxResources.parse(strings); // only when you need it
 ```
-然后:
-```js
-// 注入全局变量mx
-var graph = new mx.mxGraph(container);
-```
+Available bundles: `graph` and `editor` with languages `en`, `de`, `zh`.
 
-全局配置变量:
+## Angular 17+ example
+A minimal Angular app lives in `examples/angular/` (not published to npm):
+- `src/main.ts` calls `initMxGraph()` once before bootstrapping.
+- `AppComponent` renders a basic graph without loading optional resources.
+- Build with: `npm install` inside the example, then `npm run build`.
 
-The following global variables may be defined before the client is loaded to
-  specify its language or base path, respectively.
-  
-  - mxBasePath: Specifies the path in <mxClient.basePath>.
-  - mxImageBasePath: Specifies the path in <mxClient.imageBasePath>.
-  - mxLanguage: Specifies the language for resources in <mxClient.language>.
-  - mxDefaultLanguage: Specifies the default language in <mxClient.defaultLanguage>.
-  - mxLoadResources: Specifies if any resources should be loaded. Default is true.
-  - mxLoadStylesheets: Specifies if any stylesheets should be loaded. Default is true.
+## Build & packaging
+- `npm run build` – cleans, compiles TypeScript (ESM + d.ts + source maps), and bundles the legacy mxGraph sources plus runtime assets into `dist/resources/`.
+- `npm pack` produces a tarball containing only `dist/`, `README.md`, and `LICENSE` (see `package.json#files`).
+- Side effects are restricted to `dist/init.*` and `dist/resources/**` for effective tree-shaking.
 
-
-mxGraph is a fully client side JavaScript diagramming library that uses SVG and HTML for rendering. It is the underlying technology that powers the drawing functionality that you see in [draw.io](https://www.draw.io). The [sources to draw.io](https://github.com/jgraph/draw.io) are also available.
-
-mxGraph supports IE 9+, Chrome 30+, Firefox 31+, Safari versions actively patched by Apple (6.2.x, 7.1.x, 8.0.x and 9.x at time of writing), Opera 20+, Native Android browser 5.x+, the default browser in the current and previous major iOS versions (e.g. 9.x and 8.x) and Edge 20+.
-
-mxGraph uses no third-party software, it requires no plugins and can be integrated in virtually any framework. Also provided is server-side functionality in Java and .NET for persistence (open and save) functionality, as well as server-side image generation.
-
-Getting Started
-===============
-
-In the root folder there is an index.html file that contains links to all resources. You can view the documentation online on the [Github pages branch](https://jgraph.github.io/mxgraph/). The key resources are the JavaScript user manual, the JavaScript examples and the JavaScript API specificiation.
-
-Support
-=======
-
-There is a [mxgraph tag on Stack Overflow](http://stackoverflow.com/questions/tagged/mxgraph) that we try to keep answered. Please ensure your questions adhere to the [SO guidelines](http://stackoverflow.com/help/on-topic), otherwise it will be closed.
+## Development notes
+- The legacy sources remain under `javascript/src/js`; they are concatenated in `scripts/build-legacy.mjs` using the order from `index.html`.
+- Core wrappers live in `src/` (`core` exports, `init` loader, `resources` helpers) with generated TypeScript declarations.
