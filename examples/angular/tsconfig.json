@@ -1,0 +1,25 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node16",
+    "experimentalDecorators": true,
+    "target": "ES2022",
+    "useDefineForClassFields": false,
+    "module": "Node16",
+    "lib": ["ES2022", "DOM"],
+    "types": []
+  },
+  "angularCompilerOptions": {
+    "enableIvy": true
+  }
+}

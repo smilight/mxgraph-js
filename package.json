@@ -2,12 +2,41 @@
   "name": "mxgraph-js",
   "version": "4.2.2",
   "description": "mxgraph-js model",
-  "main": "dist/mxgraph-js.js",
+  "type": "module",
+  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./init": {
+      "import": "./dist/init.js",
+      "types": "./dist/init.d.ts"
+    },
+    "./resources": {
+      "import": "./dist/resources/index.js",
+      "types": "./dist/resources/index.d.ts"
+    },
+    "./resources/*": "./dist/resources/*"
+  },
+  "sideEffects": [
+    "dist/init.*",
+    "dist/resources/**"
+  ],
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "dist": "gulp dist",
+    "clean": "node ./scripts/clean.mjs",
+    "build": "npm run clean && npm run compile && node ./scripts/build-legacy.mjs",
+    "compile": "tsc -p tsconfig.json",
+    "prepack": "npm run build",
+    "dist": "npm run build",
     "deploy": "gulp deploy"
   },
   "repository": {
@@ -22,9 +51,11 @@
   "homepage": "https://github.com/smilight/mxgraph-js#readme",
   "devDependencies": {
     "del": "^2.2.2",
+    "esbuild": "^0.27.2",
     "gh-pages": "^0.12.0",
     "gulp": "^4.0.2",
     "gulp-usemin": "^0.3.26",
+    "typescript": "^5.4.0",
     "webpack": "^1.14.0"
   }
 }
