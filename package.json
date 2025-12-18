@@ -50,7 +50,8 @@
   "scripts": {
     "clean": "node ./scripts/clean.mjs",
     "generate": "node ./scripts/generate-entrypoints.mjs",
-    "build": "npm run clean && npm run generate && npm run compile && node ./scripts/post-compile.mjs && node ./scripts/build-legacy.mjs",
+    "generate:dts": "node ./scripts/generate-dts-from-jsdoc.mjs",
+    "build": "npm run clean && npm run generate && npm run generate:dts && npm run compile && node ./scripts/post-compile.mjs && node ./scripts/build-legacy.mjs",
     "compile": "tsc -p tsconfig.json",
 
     "prepare": "npm run build",

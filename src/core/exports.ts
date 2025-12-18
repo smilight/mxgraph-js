@@ -2,6 +2,7 @@
 // Live bindings to legacy mxGraph globals for tree-shakeable ESM.
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type MxGraphNamespace = Record<string, any>;
+export type * from '../generated-dts/index.js';
 
 export let mxAbstractCanvas2D: any;
 export let mxActor: any;

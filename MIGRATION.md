@@ -33,6 +33,7 @@ This release restructures `mxgraph-js` to support modern ESM tooling and Angular
 - The heavy legacy bundle and assets are only pulled in when `init` or resource helpers are imported.
 - Verified with esbuild: bundling a file that only imports `mxGraph` produces a ~90 byte bundle; bundling `init` yields ~15 KB and still excludes the 2.3 MB legacy bundle (loaded at runtime when invoked).
 - Angular prod verification: import a single handler (e.g. `mxgraph-js/mxCellHighlight`) and run `ng build --configuration production`; compare bundle size with/without the import to see tree-shaking in action.
+- Declaration generation is heuristic and based on JSDoc. Unknown parameters become `unknown` (rest args use `any[]`), unknown returns default to `unknown`, and primitive hints are inferred from names/descriptions. Improving accuracy requires refining the JSDoc or heuristics.
 
 ## Assumptions
 - The example Angular app targets a modern Angular CLI (17+) but the package is designed for Angular 21+; adjust dependency versions as needed.
