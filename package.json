@@ -1,6 +1,6 @@
 {
   "name": "mxgraph-js",
-  "version": "4.2.3",
+  "version": "4.2.3.1",
   "description": "mxgraph-js model",
   "type": "module",
   "main": "./dist/index.js",
@@ -50,7 +50,7 @@
     "prepack": "npm run build",
     "dist": "npm run build",
     "deploy": "gulp --gulpfile gulpfile.cjs deploy",
-    "release": "npm run build && npm version patch -m \"chore: release %s\""
+    "release": "node ./scripts/release.mjs"
   },
   "repository": {
     "type": "git",
