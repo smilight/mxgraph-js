@@ -3,52 +3,77 @@
   "version": "4.2.2",
   "description": "mxgraph-js model",
   "type": "module",
-  "main": "dist/index.js",
+
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "default": "./dist/index.js"
     },
     "./init": {
+      "types": "./dist/init.d.ts",
       "import": "./dist/init.js",
-      "types": "./dist/init.d.ts"
+      "default": "./dist/init.js"
     },
     "./resources": {
+      "types": "./dist/resources/index.d.ts",
       "import": "./dist/resources/index.js",
-      "types": "./dist/resources/index.d.ts"
+      "default": "./dist/resources/index.js"
     },
-    "./resources/*": "./dist/resources/*"
+    "./resources/*": "./dist/resources/*",
+
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "import": "./dist/*.js",
+      "default": "./dist/*.js"
+    }
   },
+
   "sideEffects": [
-    "dist/init.*",
-    "dist/resources/**"
+    "./dist/init.*",
+    "./dist/resources/**"
   ],
+
   "files": [
     "dist/",
     "README.md",
     "LICENSE"
   ],
+
   "directories": {
     "doc": "docs"
   },
+
   "scripts": {
     "clean": "node ./scripts/clean.mjs",
-    "build": "npm run clean && npm run compile && node ./scripts/build-legacy.mjs",
+    "generate": "node ./scripts/generate-entrypoints.mjs",
+    "build": "npm run clean && npm run generate && npm run compile && node ./scripts/post-compile.mjs && node ./scripts/build-legacy.mjs",
     "compile": "tsc -p tsconfig.json",
+
+    "prepare": "npm run build",
     "prepack": "npm run build",
+
     "dist": "npm run build",
-    "deploy": "gulp deploy"
+    "deploy": "gulp --gulpfile gulpfile.cjs deploy"
   },
+
   "repository": {
     "type": "git",
     "url": "git+https://github.com/smilight/mxgraph-js.git"
   },
+
   "author": "",
   "license": "ISC",
+
   "bugs": {
     "url": "https://github.com/smilight/mxgraph-js/issues"
   },
+
   "homepage": "https://github.com/smilight/mxgraph-js#readme",
+
   "devDependencies": {
     "del": "^2.2.2",
     "esbuild": "^0.27.2",
