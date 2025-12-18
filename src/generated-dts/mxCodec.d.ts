@@ -12,7 +12,7 @@ export declare class mxCodec {
   reference(obj: unknown): unknown;
   decode(node: unknown, into: unknown): unknown;
   encodeCell(cell: unknown, node: unknown, includeChildren: unknown): unknown;
-  isCellCodec(codec: unknown): unknown;
+  isCellCodec(codec: unknown): boolean;
   decodeCell(node: unknown, restoreStructures: unknown): unknown;
   insertIntoGraph(cell: unknown): unknown;
   setAttribute(node: unknown, attribute: unknown, value: unknown): void;

@@ -28,7 +28,7 @@ export declare class mxGraphView {
   validateCell(cell: unknown, visible: boolean): unknown;
   validateCellState(cell: unknown, recurse: unknown): unknown;
   updateCellState(state: unknown): void;
-  isCellCollapsed(cell: unknown): unknown;
+  isCellCollapsed(cell: unknown): boolean;
   updateVertexState(state: unknown, geo: unknown): void;
   updateEdgeState(state: unknown, geo: unknown): void;
   updateVertexLabelOffset(state: unknown): void;
@@ -40,7 +40,7 @@ export declare class mxGraphView {
   updateBoundsFromStencil(state: unknown): void;
   updatePoints(edge: unknown, points: unknown, source: unknown, target: unknown): void;
   transformControlPoint(state: unknown, pt: unknown, ignoreScale: number): unknown;
-  isLoopStyleEnabled(edge: unknown, points: unknown, source: unknown, target: unknown): unknown;
+  isLoopStyleEnabled(edge: unknown, points: unknown, source: unknown, target: unknown): boolean;
   getEdgeStyle(edge: unknown, points: unknown, source: unknown, target: unknown): unknown;
   updateFloatingTerminalPoints(state: unknown, source: unknown, target: unknown): void;
   updateFloatingTerminalPoint(edge: unknown, start: unknown, end: unknown, source: unknown): void;
@@ -72,8 +72,8 @@ export declare class mxGraphView {
   getDrawPane(...args: any[]): unknown;
   getOverlayPane(...args: any[]): unknown;
   getDecoratorPane(...args: any[]): unknown;
-  isContainerEvent(evt: unknown): unknown;
-  isScrollEvent(evt: unknown): unknown;
+  isContainerEvent(evt: unknown): boolean;
+  isScrollEvent(evt: unknown): boolean;
   init(...args: any[]): unknown;
   installListeners(...args: any[]): unknown;
   createHtml(...args: any[]): unknown;

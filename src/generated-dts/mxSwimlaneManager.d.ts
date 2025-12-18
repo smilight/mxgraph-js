@@ -11,11 +11,11 @@ export declare class mxSwimlaneManager {
   setResizeEnabled(value: unknown): void;
   getGraph(...args: any[]): unknown;
   setGraph(graph: unknown): void;
-  isSwimlaneIgnored(swimlane: unknown): unknown;
-  isCellHorizontal(cell: unknown): unknown;
+  isSwimlaneIgnored(swimlane: unknown): boolean;
+  isCellHorizontal(cell: unknown): boolean;
   cellsAdded(cells: unknown): unknown;
   swimlaneAdded(swimlane: unknown): unknown;
-  cellsResized(cells: unknown): unknown;
+  cellsResized(cells: unknown): boolean;
   resizeSwimlane(swimlane: unknown, w: unknown, h: unknown, parentHorizontal: unknown): unknown;
   destroy(...args: any[]): void;
 }

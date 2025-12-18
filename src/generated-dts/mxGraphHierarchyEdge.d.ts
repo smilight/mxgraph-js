@@ -4,7 +4,7 @@ export declare class mxGraphHierarchyEdge {
   invert(layer: number): unknown;
   getNextLayerConnectedCells(layer: number): unknown;
   getPreviousLayerConnectedCells(layer: number): unknown;
-  isEdge(...args: any[]): unknown;
+  isEdge(...args: any[]): boolean;
   getGeneralPurposeVariable(layer: number): unknown;
   setGeneralPurposeVariable(layer: number, value: unknown): void;
   getCoreCell(...args: any[]): unknown;

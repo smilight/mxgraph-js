@@ -8,7 +8,7 @@ export declare class mxHierarchicalLayout {
   getVisibleTerminal(edge: unknown, source: unknown): unknown;
   run(parent: unknown): unknown;
   filterDescendants(cell: unknown, result: unknown): unknown;
-  isPort(cell: unknown): unknown;
+  isPort(cell: unknown): boolean;
   getEdgesBetween(source: unknown, target: unknown, directed: unknown): unknown;
   traverse(vertex: number, directed: unknown, edge: unknown, allVertices: unknown, currentComp: unknown, hierarchyVertices: number, filledVertexSet: number): unknown;
   cycleStage(parent: unknown): unknown;

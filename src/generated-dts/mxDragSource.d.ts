@@ -11,14 +11,14 @@ export declare class mxDragSource {
   getDropTarget(graph: unknown, x: number, y: number, evt: unknown): unknown;
   createDragElement(evt: unknown): unknown;
   createPreviewElement(graph: unknown): unknown;
-  isActive(...args: any[]): unknown;
+  isActive(...args: any[]): boolean;
   reset(...args: any[]): void;
   mouseDown(evt: unknown): unknown;
   startDrag(evt: unknown): void;
   stopDrag(...args: any[]): void;
   removeDragElement(...args: any[]): void;
   getElementForEvent(evt: unknown): unknown;
-  graphContainsEvent(graph: unknown, evt: unknown): unknown;
+  graphContainsEvent(graph: unknown, evt: unknown): boolean;
   mouseMove(evt: unknown): unknown;
   mouseUp(evt: unknown): unknown;
   removeListeners(...args: any[]): void;

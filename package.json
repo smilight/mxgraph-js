@@ -58,7 +58,8 @@
     "prepack": "npm run build",
 
     "dist": "npm run build",
-    "deploy": "gulp --gulpfile gulpfile.cjs deploy"
+    "deploy": "gulp --gulpfile gulpfile.cjs deploy",
+    "release": "npm run build && npm version patch -m \"chore: release %s\""
   },
 
   "repository": {

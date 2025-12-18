@@ -7,5 +7,5 @@ export declare class mxGeometry {
   rotate(angle: unknown, cx: number): unknown;
   translate(dx: number, dy: number): unknown;
   scale(sx: number, sy: number, fixedAspect: number): unknown;
-  equals(obj: unknown): unknown;
+  equals(obj: unknown): boolean;
 }

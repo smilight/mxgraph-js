@@ -4,7 +4,7 @@ export declare class mxXmlRequest {
   isBinary(...args: any[]): unknown;
   setBinary(value: unknown): void;
   getText(...args: any[]): unknown;
-  isReady(...args: any[]): unknown;
+  isReady(...args: any[]): boolean;
   getDocumentElement(...args: any[]): unknown;
   getXml(...args: any[]): unknown;
   getStatus(...args: any[]): unknown;

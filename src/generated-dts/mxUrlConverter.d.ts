@@ -8,6 +8,6 @@ export declare class mxUrlConverter {
   setBaseUrl(value: unknown): void;
   getBaseDomain(...args: any[]): unknown;
   setBaseDomain(value: unknown): void;
-  isRelativeUrl(url: string): unknown;
+  isRelativeUrl(url: string): boolean;
   convert(url: string): unknown;
 }

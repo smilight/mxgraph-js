@@ -19,11 +19,11 @@ export declare class mxCellRenderer {
   createControl(state: unknown): unknown;
   createControlClickHandler(state: unknown): unknown;
   initControl(state: unknown, control: unknown, handleEvents: unknown, clickHandler: unknown): unknown;
-  isShapeEvent(state: unknown, evt: unknown): unknown;
-  isLabelEvent(state: unknown, evt: unknown): unknown;
+  isShapeEvent(state: unknown, evt: unknown): boolean;
+  isLabelEvent(state: unknown, evt: unknown): boolean;
   installListeners(state: unknown): unknown;
   redrawLabel(state: unknown, forced: boolean): void;
-  isTextShapeInvalid(state: unknown, shape: unknown): unknown;
+  isTextShapeInvalid(state: unknown, shape: unknown): boolean;
   redrawLabelShape(shape: unknown): void;
   getTextScale(state: unknown): unknown;
   getLabelBounds(state: unknown): unknown;
@@ -36,7 +36,7 @@ export declare class mxCellRenderer {
   redraw(state: unknown, force: boolean, rendering: unknown): void;
   redrawShape(state: unknown, force: boolean, rendering: unknown): void;
   doRedrawShape(state: unknown): unknown;
-  isShapeInvalid(state: unknown, shape: unknown): unknown;
+  isShapeInvalid(state: unknown, shape: unknown): boolean;
   destroy(state: unknown): void;
   static registerShape(key: number, shape: unknown): unknown;
 }

@@ -2,10 +2,10 @@
 export declare class mxGuide {
   constructor(graph: unknown, states: unknown);
   setStates(states: unknown): void;
-  isEnabledForEvent(evt: unknown): unknown;
+  isEnabledForEvent(evt: unknown): boolean;
   getGuideTolerance(gridEnabled: number): unknown;
   createGuideShape(horizontal: unknown): unknown;
-  isStateIgnored(state: unknown): unknown;
+  isStateIgnored(state: unknown): boolean;
   move(bounds: unknown, delta: unknown, gridEnabled: number, clone: unknown): unknown;
   getDelta(bounds: unknown, stateX: number, dx: number, stateY: number, dy: number): unknown;
   getGuideColor(state: unknown, horizontal: unknown): unknown;

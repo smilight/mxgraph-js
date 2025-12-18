@@ -9,6 +9,6 @@ export declare class mxRectangle {
   grow(amount: unknown): unknown;
   getPoint(...args: any[]): unknown;
   rotate90(...args: any[]): unknown;
-  equals(obj: unknown): unknown;
+  equals(obj: unknown): boolean;
   static fromRectangle(rect: unknown): unknown;
 }

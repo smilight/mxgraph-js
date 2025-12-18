@@ -6,7 +6,7 @@ export declare class mxStackLayout {
   getParentSize(parent: unknown): unknown;
   getLayoutCells(parent: unknown): unknown;
   snap(value: unknown): unknown;
-  execute(parent: unknown): unknown;
+  execute(parent: unknown): boolean;
   setChildGeometry(child: unknown, geo: unknown): void;
   updateParentGeometry(parent: unknown, pgeo: unknown, last: unknown): void;
 }

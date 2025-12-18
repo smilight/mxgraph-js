@@ -1,7 +1,7 @@
 // AUTO-GENERATED FROM JSDOC. DO NOT EDIT.
 export declare class mxCompactTreeLayout {
   constructor(graph: unknown, horizontal: unknown, invert: unknown);
-  isVertexIgnored(vertex: number): unknown;
+  isVertexIgnored(vertex: number): boolean;
   isHorizontal(...args: any[]): unknown;
   execute(parent: unknown, root: unknown): unknown;
   moveNode(node: unknown, dx: number, dy: number): unknown;

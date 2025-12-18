@@ -3,8 +3,8 @@ export declare class mxShape {
   constructor(stencil: unknown);
   init(container: unknown): unknown;
   initStyles(container: unknown): unknown;
-  isParseVml(...args: any[]): unknown;
-  isHtmlAllowed(...args: any[]): unknown;
+  isParseVml(...args: any[]): boolean;
+  isHtmlAllowed(...args: any[]): boolean;
   getSvgScreenOffset(...args: any[]): unknown;
   create(container: unknown): unknown;
   createSvg(...args: any[]): unknown;
@@ -16,7 +16,7 @@ export declare class mxShape {
   updateBoundsFromPoints(...args: any[]): void;
   getLabelBounds(rect: unknown): unknown;
   getLabelMargins(rect: unknown): unknown;
-  checkBounds(...args: any[]): unknown;
+  checkBounds(...args: any[]): boolean;
   createVmlGroup(...args: any[]): unknown;
   redrawShape(...args: any[]): void;
   createCanvas(...args: any[]): unknown;
@@ -47,7 +47,7 @@ export declare class mxShape {
   updateBoundingBox(...args: any[]): void;
   createBoundingBox(...args: any[]): unknown;
   augmentBoundingBox(bbox: number): unknown;
-  isPaintBoundsInverted(...args: any[]): unknown;
+  isPaintBoundsInverted(...args: any[]): boolean;
   getRotation(...args: any[]): unknown;
   getTextRotation(...args: any[]): unknown;
   getShapeRotation(...args: any[]): unknown;

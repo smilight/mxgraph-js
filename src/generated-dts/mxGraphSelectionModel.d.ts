@@ -3,8 +3,8 @@ export declare class mxGraphSelectionModel {
   constructor(graph: unknown);
   isSingleSelection(...args: any[]): unknown;
   setSingleSelection(singleSelection: unknown): void;
-  isSelected(cell: unknown): unknown;
-  isEmpty(...args: any[]): unknown;
+  isSelected(cell: unknown): boolean;
+  isEmpty(...args: any[]): boolean;
   clear(...args: any[]): void;
   setCell(cell: unknown): void;
   setCells(cells: unknown): void;

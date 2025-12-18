@@ -8,7 +8,7 @@ export declare class mxCellState {
   getVisibleTerminalState(source: unknown): unknown;
   setVisibleTerminalState(terminalState: unknown, source: unknown): void;
   getCellBounds(...args: any[]): unknown;
-  getPaintBounds(...args: any[]): unknown;
+  getPaintBounds(...args: any[]): boolean;
   updateCachedBounds(...args: any[]): void;
   setState(state: unknown): void;
   clone(...args: any[]): unknown;

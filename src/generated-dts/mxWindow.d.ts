@@ -7,7 +7,7 @@ export declare class mxWindow {
   activate(...args: any[]): unknown;
   getElement(...args: any[]): unknown;
   fit(...args: any[]): unknown;
-  isResizable(...args: any[]): unknown;
+  isResizable(...args: any[]): boolean;
   setResizable(resizable: unknown): void;
   setSize(width: number, height: number): void;
   setMinimizable(minimizable: unknown): void;
@@ -22,7 +22,7 @@ export declare class mxWindow {
   installCloseHandler(...args: any[]): unknown;
   setImage(image: unknown): void;
   setClosable(closable: unknown): void;
-  isVisible(...args: any[]): unknown;
+  isVisible(...args: any[]): boolean;
   setVisible(visible: boolean): void;
   show(...args: any[]): void;
   hide(...args: any[]): void;

@@ -7,7 +7,7 @@ export declare class mxLayoutManager {
   setBubbling(value: unknown): void;
   getGraph(...args: any[]): unknown;
   setGraph(graph: unknown): void;
-  hasLayout(cell: unknown): unknown;
+  hasLayout(cell: unknown): boolean;
   getLayout(cell: unknown, eventName: string): unknown;
   beforeUndo(undoableEdit: unknown): unknown;
   cellsMoved(cells: unknown, evt: unknown): unknown;

@@ -13,7 +13,7 @@ export declare class mxHandle {
   createShape(html: unknown): unknown;
   initShape(html: unknown): unknown;
   redraw(...args: any[]): void;
-  isHtmlRequired(...args: any[]): unknown;
+  isHtmlRequired(...args: any[]): boolean;
   rotatePoint(pt: unknown, alpha: unknown): unknown;
   flipPoint(pt: unknown): unknown;
   snapPoint(pt: unknown, ignore: unknown): unknown;

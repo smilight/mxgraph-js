@@ -1,13 +1,13 @@
 // AUTO-GENERATED FROM JSDOC. DO NOT EDIT.
 export declare class mxPanningHandler {
   constructor(graph: unknown);
-  isActive(...args: any[]): unknown;
+  isActive(...args: any[]): boolean;
   isPanningEnabled(...args: any[]): unknown;
   setPanningEnabled(value: unknown): void;
   isPinchEnabled(...args: any[]): unknown;
   setPinchEnabled(value: unknown): void;
-  isPanningTrigger(me: unknown): unknown;
-  isForcePanningEvent(me: unknown): unknown;
+  isPanningTrigger(me: unknown): boolean;
+  isForcePanningEvent(me: unknown): boolean;
   mouseDown(sender: unknown, me: unknown): unknown;
   start(me: unknown): void;
   consumePanningTrigger(me: unknown): unknown;

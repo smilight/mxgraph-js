@@ -43,7 +43,7 @@ export declare class mxEditor {
   getUrlImage(...args: any[]): unknown;
   swapStyles(first: unknown, second: unknown): unknown;
   showProperties(cell: unknown): void;
-  isPropertiesVisible(...args: any[]): unknown;
+  isPropertiesVisible(...args: any[]): boolean;
   createProperties(cell: unknown): unknown;
   hideProperties(...args: any[]): void;
   showTasks(...args: any[]): void;

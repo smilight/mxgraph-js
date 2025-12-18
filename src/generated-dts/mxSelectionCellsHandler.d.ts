@@ -4,11 +4,11 @@ export declare class mxSelectionCellsHandler {
   isEnabled(...args: any[]): unknown;
   setEnabled(value: unknown): void;
   getHandler(cell: unknown): unknown;
-  isHandled(cell: unknown): unknown;
+  isHandled(cell: unknown): boolean;
   reset(...args: any[]): void;
   getHandledSelectionCells(...args: any[]): unknown;
   refresh(...args: any[]): void;
-  isHandlerActive(handler: unknown): unknown;
+  isHandlerActive(handler: unknown): boolean;
   updateHandler(state: unknown): void;
   mouseDown(sender: unknown, me: unknown): unknown;
   mouseMove(sender: unknown, me: unknown): unknown;

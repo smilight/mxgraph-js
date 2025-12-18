@@ -4,7 +4,7 @@ export declare class mxMorphing {
   updateAnimation(...args: any[]): void;
   show(move: unknown): void;
   animateCell(cell: unknown, move: unknown, recurse: unknown): unknown;
-  stopRecursion(state: unknown, delta: unknown): void;
+  stopRecursion(state: unknown, delta: unknown): boolean;
   getDelta(state: unknown): unknown;
   getOriginForCell(cell: unknown): unknown;
 }

@@ -11,9 +11,9 @@ export declare class mxGraphHandler {
   setSelectEnabled(value: unknown): void;
   isRemoveCellsFromParent(...args: any[]): unknown;
   setRemoveCellsFromParent(value: unknown): void;
-  isPropagateSelectionCell(cell: unknown, immediate: unknown, me: unknown): unknown;
+  isPropagateSelectionCell(cell: unknown, immediate: unknown, me: unknown): boolean;
   getInitialCellForEvent(me: unknown): unknown;
-  isDelayedSelection(cell: unknown, me: unknown): unknown;
+  isDelayedSelection(cell: unknown, me: unknown): boolean;
   selectDelayed(me: unknown): unknown;
   consumeMouseEvent(evtName: string, me: unknown): unknown;
   mouseDown(sender: unknown, me: unknown): unknown;
@@ -24,14 +24,14 @@ export declare class mxGraphHandler {
   createPreviewShape(bounds: unknown): unknown;
   start(cell: unknown, x: number, y: number, cells: unknown): void;
   addStates(cell: unknown, dict: unknown): void;
-  isCellMoving(cell: unknown): unknown;
-  useGuidesForEvent(me: unknown): unknown;
+  isCellMoving(cell: unknown): boolean;
+  useGuidesForEvent(me: unknown): mxGuide;
   snap(vector: unknown): unknown;
   getDelta(me: unknown): unknown;
   updateHint(me: unknown): void;
   removeHint(...args: any[]): void;
   roundLength(length: number): unknown;
-  isValidDropTarget(target: unknown, me: unknown): unknown;
+  isValidDropTarget(target: unknown, me: unknown): boolean;
   checkPreview(...args: any[]): unknown;
   mouseMove(sender: unknown, me: unknown): unknown;
   updatePreview(remote: unknown): void;
@@ -46,9 +46,9 @@ export declare class mxGraphHandler {
   setHighlightColor(color: string): void;
   mouseUp(sender: unknown, me: unknown): unknown;
   reset(...args: any[]): void;
-  shouldRemoveCellsFromParent(parent: unknown, cells: unknown, evt: unknown): unknown;
+  shouldRemoveCellsFromParent(parent: unknown, cells: unknown, evt: unknown): boolean;
   moveCells(cells: unknown, dx: number, dy: number, clone: unknown, target: unknown, evt: unknown): unknown;
-  shouldRemoveParent(parent: unknown): unknown;
+  shouldRemoveParent(parent: unknown): boolean;
   destroyShapes(...args: any[]): void;
   destroy(...args: any[]): void;
 }

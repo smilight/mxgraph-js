@@ -1,10 +1,10 @@
 // AUTO-GENERATED FROM JSDOC. DO NOT EDIT.
 export declare class mxText {
   constructor(value: unknown, bounds: unknown, align: unknown, valign: unknown, color: string, family: number, size: number, fontStyle: number, spacing: unknown, spacingTop: number, spacingRight: number, spacingBottom: number, spacingLeft: number, horizontal: unknown, background: unknown, border: unknown, wrap: unknown, clipped: unknown, overflow: unknown, labelPadding: string, textDirection: number);
-  isParseVml(...args: any[]): unknown;
-  isHtmlAllowed(...args: any[]): unknown;
+  isParseVml(...args: any[]): boolean;
+  isHtmlAllowed(...args: any[]): boolean;
   getSvgScreenOffset(...args: any[]): unknown;
-  checkBounds(...args: any[]): unknown;
+  checkBounds(...args: any[]): boolean;
   paint(c: unknown, update: unknown): unknown;
   redraw(...args: any[]): void;
   resetStyles(...args: any[]): void;
@@ -14,7 +14,7 @@ export declare class mxText {
   updateBoundingBox(...args: any[]): void;
   getShapeRotation(...args: any[]): unknown;
   getTextRotation(...args: any[]): unknown;
-  isPaintBoundsInverted(...args: any[]): unknown;
+  isPaintBoundsInverted(...args: any[]): boolean;
   configureCanvas(c: unknown, x: number, y: number, w: unknown, h: unknown): unknown;
   updateVmlContainer(...args: any[]): void;
   getHtmlValue(...args: any[]): unknown;

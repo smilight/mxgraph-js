@@ -8,6 +8,6 @@ export declare class mxCellHighlight {
   repaint(...args: any[]): unknown;
   hide(...args: any[]): void;
   highlight(state: unknown): unknown;
-  isHighlightAt(x: number, y: number): unknown;
+  isHighlightAt(x: number, y: number): boolean;
   destroy(...args: any[]): void;
 }
