@@ -1,0 +1,46 @@
+// AUTO-GENERATED FROM JSDOC. DO NOT EDIT.
+export declare class mxAbstractCanvas2D {
+  constructor(...args: any[]);
+  createUrlConverter(...args: any[]): unknown;
+  reset(...args: any[]): void;
+  createState(...args: any[]): unknown;
+  format(value: unknown): unknown;
+  addOp(...args: any[]): void;
+  rotatePoint(x: number, y: number, theta: unknown, cx: number, cy: number): unknown;
+  save(...args: any[]): unknown;
+  restore(...args: any[]): unknown;
+  setLink(link: unknown): void;
+  scale(value: unknown): unknown;
+  translate(dx: number, dy: number): unknown;
+  rotate(theta: unknown, flipH: unknown, flipV: unknown, cx: number, cy: number): unknown;
+  setAlpha(value: unknown): void;
+  setFillAlpha(value: unknown): void;
+  setStrokeAlpha(value: unknown): void;
+  setFillColor(value: unknown): void;
+  setGradient(color1: string, color2: string, x: number, y: number, w: unknown, h: unknown, direction: unknown, alpha1: unknown, alpha2: unknown): void;
+  setStrokeColor(value: unknown): void;
+  setStrokeWidth(value: unknown): void;
+  setDashed(value: unknown, fixDash: number): void;
+  setDashPattern(value: unknown): void;
+  setLineCap(value: unknown): void;
+  setLineJoin(value: unknown): void;
+  setMiterLimit(value: unknown): void;
+  setFontColor(value: unknown): void;
+  setFontBackgroundColor(value: unknown): void;
+  setFontBorderColor(value: unknown): void;
+  setFontSize(value: unknown): void;
+  setFontFamily(value: unknown): void;
+  setFontStyle(value: unknown): void;
+  setShadow(enabled: boolean): void;
+  setShadowColor(value: unknown): void;
+  setShadowAlpha(value: unknown): void;
+  setShadowOffset(dx: number, dy: number): void;
+  begin(...args: any[]): unknown;
+  moveTo(x: number, y: number): unknown;
+  lineTo(x: number, y: number): unknown;
+  quadTo(x1: number, y1: number, x2: number, y2: number): unknown;
+  curveTo(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number): unknown;
+  arcTo(rx: number, ry: number, angle: unknown, largeArcFlag: boolean, sweepFlag: boolean, x: number, y: number): unknown;
+  close(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number): unknown;
+  end(...args: any[]): unknown;
+}

@@ -1,0 +1,42 @@
+// AUTO-GENERATED FROM JSDOC. DO NOT EDIT.
+export declare class mxCellRenderer {
+  constructor(...args: any[]);
+  initializeShape(state: unknown): unknown;
+  createShape(state: unknown): unknown;
+  createIndicatorShape(state: unknown): unknown;
+  getShape(name: string): unknown;
+  getShapeConstructor(state: unknown): unknown;
+  configureShape(state: unknown): unknown;
+  postConfigureShape(state: unknown): unknown;
+  checkPlaceholderStyles(state: unknown): unknown;
+  resolveColor(state: unknown, field: unknown, key: number): unknown;
+  getLabelValue(state: unknown): unknown;
+  createLabel(state: unknown, value: unknown): unknown;
+  initializeLabel(state: unknown, shape: unknown): unknown;
+  createCellOverlays(state: unknown): unknown;
+  initializeOverlay(state: unknown, overlay: number): unknown;
+  installCellOverlayListeners(state: unknown, overlay: number, shape: unknown): unknown;
+  createControl(state: unknown): unknown;
+  createControlClickHandler(state: unknown): unknown;
+  initControl(state: unknown, control: unknown, handleEvents: unknown, clickHandler: unknown): unknown;
+  isShapeEvent(state: unknown, evt: unknown): unknown;
+  isLabelEvent(state: unknown, evt: unknown): unknown;
+  installListeners(state: unknown): unknown;
+  redrawLabel(state: unknown, forced: boolean): void;
+  isTextShapeInvalid(state: unknown, shape: unknown): unknown;
+  redrawLabelShape(shape: unknown): void;
+  getTextScale(state: unknown): unknown;
+  getLabelBounds(state: unknown): unknown;
+  rotateLabelBounds(state: unknown, bounds: unknown): unknown;
+  redrawCellOverlays(state: unknown, forced: boolean): void;
+  redrawControl(state: unknown, forced: boolean): void;
+  getControlBounds(state: unknown, w: unknown, h: unknown): unknown;
+  insertStateAfter(state: unknown, node: unknown, htmlNode: unknown): unknown;
+  getShapesForState(state: unknown): unknown;
+  redraw(state: unknown, force: boolean, rendering: unknown): void;
+  redrawShape(state: unknown, force: boolean, rendering: unknown): void;
+  doRedrawShape(state: unknown): unknown;
+  isShapeInvalid(state: unknown, shape: unknown): unknown;
+  destroy(state: unknown): void;
+  static registerShape(key: number, shape: unknown): unknown;
+}

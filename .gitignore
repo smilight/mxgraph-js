@@ -13,3 +13,6 @@ dist
 .DS_Store
 .env
 npm-debug.log
+examples/angular/.angular
+examples/angular/dist
+examples/angular/node_modules

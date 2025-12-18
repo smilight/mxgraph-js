@@ -14,6 +14,6 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "src/generated-dts/**/*.d.ts"],
   "exclude": ["dist", "node_modules", "examples"]
 }

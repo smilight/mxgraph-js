@@ -1,0 +1,48 @@
+// AUTO-GENERATED FROM JSDOC. DO NOT EDIT.
+export declare class mxXmlCanvas2D {
+  constructor(root: unknown);
+  writeDefaults(...args: any[]): unknown;
+  format(value: unknown): unknown;
+  createElement(name: string): unknown;
+  save(...args: any[]): unknown;
+  restore(...args: any[]): unknown;
+  scale(value: unknown): unknown;
+  translate(dx: number, dy: number): unknown;
+  rotate(theta: unknown, flipH: unknown, flipV: unknown, cx: number, cy: number): unknown;
+  setAlpha(value: unknown): void;
+  setFillAlpha(value: unknown): void;
+  setStrokeAlpha(value: unknown): void;
+  setFillColor(value: unknown): void;
+  setGradient(color1: string, color2: string, x: number, y: number, w: unknown, h: unknown, direction: unknown, alpha1: unknown, alpha2: unknown): void;
+  setStrokeColor(value: unknown): void;
+  setStrokeWidth(value: unknown): void;
+  setDashed(value: unknown, fixDash: number): void;
+  setDashPattern(value: unknown): void;
+  setLineCap(value: unknown): void;
+  setLineJoin(value: unknown): void;
+  setMiterLimit(value: unknown): void;
+  setFontColor(value: unknown): void;
+  setFontBackgroundColor(value: unknown): void;
+  setFontBorderColor(value: unknown): void;
+  setFontSize(value: unknown): void;
+  setFontFamily(value: unknown): void;
+  setFontStyle(value: unknown): void;
+  setShadow(value: unknown): void;
+  setShadowColor(value: unknown): void;
+  setShadowAlpha(value: unknown): void;
+  setShadowOffset(dx: number, dy: number): void;
+  rect(x: number, y: number, w: unknown, h: unknown): unknown;
+  roundrect(x: number, y: number, w: unknown, h: unknown, dx: number, dy: number): unknown;
+  ellipse(x: number, y: number, w: unknown, h: unknown): unknown;
+  image(x: number, y: number, w: unknown, h: unknown, src: unknown, aspect: unknown, flipH: unknown, flipV: unknown): unknown;
+  begin(...args: any[]): unknown;
+  moveTo(x: number, y: number): unknown;
+  lineTo(x: number, y: number): unknown;
+  quadTo(x1: number, y1: number, x2: number, y2: number): unknown;
+  curveTo(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number): unknown;
+  close(...args: any[]): unknown;
+  text(x: number, y: number, w: unknown, h: unknown, str: unknown, align: unknown, valign: unknown, wrap: unknown, format: unknown, overflow: unknown, clip: unknown, rotation: unknown, dir: unknown): unknown;
+  stroke(...args: any[]): unknown;
+  fill(...args: any[]): unknown;
+  fillAndStroke(...args: any[]): unknown;
+}
