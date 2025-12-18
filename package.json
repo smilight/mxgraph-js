@@ -1,12 +1,10 @@
 {
   "name": "mxgraph-js",
-  "version": "4.2.2",
+  "version": "4.2.3",
   "description": "mxgraph-js model",
   "type": "module",
-
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -24,58 +22,46 @@
       "default": "./dist/resources/index.js"
     },
     "./resources/*": "./dist/resources/*",
-
     "./*": {
       "types": "./dist/*.d.ts",
       "import": "./dist/*.js",
       "default": "./dist/*.js"
     }
   },
-
   "sideEffects": [
     "./dist/init.*",
     "./dist/resources/**"
   ],
-
   "files": [
     "dist/",
     "README.md",
     "LICENSE"
   ],
-
   "directories": {
     "doc": "docs"
   },
-
   "scripts": {
     "clean": "node ./scripts/clean.mjs",
     "generate": "node ./scripts/generate-entrypoints.mjs",
     "generate:dts": "node ./scripts/generate-dts-from-jsdoc.mjs",
     "build": "npm run clean && npm run generate && npm run generate:dts && npm run compile && node ./scripts/post-compile.mjs && node ./scripts/build-legacy.mjs",
     "compile": "tsc -p tsconfig.json",
-
     "prepare": "npm run build",
     "prepack": "npm run build",
-
     "dist": "npm run build",
     "deploy": "gulp --gulpfile gulpfile.cjs deploy",
     "release": "npm run build && npm version patch -m \"chore: release %s\""
   },
-
   "repository": {
     "type": "git",
     "url": "git+https://github.com/smilight/mxgraph-js.git"
   },
-
   "author": "",
   "license": "ISC",
-
   "bugs": {
     "url": "https://github.com/smilight/mxgraph-js/issues"
   },
-
   "homepage": "https://github.com/smilight/mxgraph-js#readme",
-
   "devDependencies": {
     "del": "^2.2.2",
     "esbuild": "^0.27.2",
