@@ -1,0 +1,44 @@
+// AUTO-GENERATED FROM JSDOC. DO NOT EDIT.
+export declare class mxSvgCanvas2D {
+  constructor(root: unknown, styleEnabled: number);
+  format(value: unknown): unknown;
+  getBaseUrl(...args: any[]): unknown;
+  reset(...args: any[]): void;
+  createStyle(x: number): unknown;
+  createElement(tagName: string, namespace: string): unknown;
+  getAlternateText(fo: unknown, x: number, y: number, w: unknown, h: unknown, str: unknown, align: unknown, valign: unknown, wrap: unknown, format: unknown, overflow: unknown, clip: unknown, rotation: unknown): unknown;
+  createAlternateContent(fo: unknown, x: number, y: number, w: unknown, h: unknown, str: unknown, align: unknown, valign: unknown, wrap: unknown, format: unknown, overflow: unknown, clip: unknown, rotation: unknown): unknown;
+  createGradientId(start: unknown, end: unknown, alpha1: unknown, alpha2: unknown, direction: unknown): unknown;
+  getSvgGradient(start: unknown, end: unknown, alpha1: unknown, alpha2: unknown, direction: unknown): unknown;
+  createSvgGradient(start: unknown, end: unknown, alpha1: unknown, alpha2: unknown, direction: unknown): unknown;
+  addNode(filled: unknown, stroked: unknown): void;
+  updateFill(...args: any[]): void;
+  getCurrentStrokeWidth(...args: any[]): unknown;
+  updateStroke(...args: any[]): void;
+  updateStrokeAttributes(...args: any[]): void;
+  createDashPattern(scale: number): unknown;
+  createTolerance(node: unknown): unknown;
+  createShadow(node: unknown): unknown;
+  setLink(link: unknown): void;
+  rotate(theta: unknown, flipH: unknown, flipV: unknown, cx: number, cy: number): unknown;
+  begin(...args: any[]): unknown;
+  rect(x: number, y: number, w: unknown, h: unknown): unknown;
+  roundrect(x: number, y: number, w: unknown, h: unknown, dx: number, dy: number): unknown;
+  ellipse(x: number, y: number, w: unknown, h: unknown): unknown;
+  image(x: number, y: number, w: unknown, h: unknown, src: unknown, aspect: unknown, flipH: unknown, flipV: unknown): unknown;
+  convertHtml(val: unknown): unknown;
+  createDiv(str: unknown): unknown;
+  updateText(x: number, y: number, w: unknown, h: unknown, align: unknown, valign: unknown, wrap: unknown, overflow: unknown, clip: unknown, rotation: unknown, node: unknown): void;
+  addForeignObject(x: number, y: number, w: unknown, h: unknown, str: unknown, align: unknown, valign: unknown, wrap: unknown, format: unknown, overflow: unknown, clip: unknown, rotation: unknown, dir: unknown, div: unknown, root: unknown): void;
+  updateTextNodes(x: number, y: number, w: unknown, h: unknown, align: unknown, valign: unknown, wrap: unknown, overflow: unknown, clip: unknown, rotation: unknown, g: unknown): void;
+  getTextCss(...args: any[]): unknown;
+  text(x: number, y: number, w: unknown, h: unknown, str: unknown, align: unknown, valign: unknown, wrap: unknown, format: unknown, overflow: unknown, clip: unknown, rotation: unknown, dir: unknown): unknown;
+  createClip(x: number, y: number, w: unknown, h: unknown): unknown;
+  plainText(x: number, y: number, w: unknown, h: unknown, str: unknown, align: unknown, valign: unknown, wrap: unknown, overflow: unknown, clip: unknown, rotation: unknown, dir: unknown): unknown;
+  updateFont(node: unknown): void;
+  addTextBackground(node: unknown, str: unknown, x: number, y: number, w: unknown, h: unknown, align: unknown, valign: unknown, overflow: unknown): void;
+  stroke(...args: any[]): unknown;
+  fill(...args: any[]): unknown;
+  fillAndStroke(...args: any[]): unknown;
+  static createCss(w: unknown, h: unknown, align: unknown, valign: unknown, wrap: unknown, overflow: unknown, clip: unknown, bg: unknown, border: unknown, flex: number, block: unknown, s: unknown, callback: unknown): unknown;
+}

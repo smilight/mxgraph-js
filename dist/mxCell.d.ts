@@ -1,0 +1,44 @@
+// AUTO-GENERATED FROM JSDOC. DO NOT EDIT.
+export declare class mxCell {
+  constructor(value: unknown, geometry: number, style: number);
+  getId(...args: any[]): unknown;
+  setId(id: number): void;
+  getValue(...args: any[]): unknown;
+  setValue(value: unknown): void;
+  valueChanged(newValue: unknown): unknown;
+  getGeometry(...args: any[]): unknown;
+  setGeometry(geometry: number): void;
+  getStyle(...args: any[]): unknown;
+  setStyle(style: number): void;
+  isVertex(...args: any[]): boolean;
+  setVertex(vertex: number): void;
+  isEdge(...args: any[]): boolean;
+  setEdge(edge: unknown): void;
+  isConnectable(...args: any[]): boolean;
+  setConnectable(connectable: unknown): void;
+  isVisible(...args: any[]): boolean;
+  setVisible(visible: boolean): void;
+  isCollapsed(...args: any[]): boolean;
+  setCollapsed(collapsed: unknown): void;
+  getParent(...args: any[]): unknown;
+  setParent(parent: unknown): void;
+  getTerminal(source: unknown): unknown;
+  setTerminal(terminal: unknown, isSource: boolean): void;
+  getChildCount(...args: any[]): unknown;
+  getIndex(child: unknown): unknown;
+  getChildAt(index: number): unknown;
+  insert(child: unknown, index: number): unknown;
+  remove(index: number): void;
+  removeFromParent(...args: any[]): void;
+  getEdgeCount(...args: any[]): unknown;
+  getEdgeIndex(edge: unknown): unknown;
+  getEdgeAt(index: number): unknown;
+  insertEdge(edge: unknown, isOutgoing: boolean): unknown;
+  removeEdge(edge: unknown, isOutgoing: boolean): void;
+  removeFromTerminal(isSource: boolean): void;
+  hasAttribute(name: string): boolean;
+  getAttribute(name: string, defaultValue: unknown): unknown;
+  setAttribute(name: string, value: unknown): void;
+  clone(...args: any[]): unknown;
+  cloneValue(...args: any[]): unknown;
+}
